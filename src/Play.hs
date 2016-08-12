@@ -5,6 +5,7 @@
 -- | Module  : Play. to be deleted
 -- | Author  : Xiao Ling
 -- | Date    : 8/10/2016
+-- | Note    : check swaped file usage:   sysctl vm.swapusage
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
@@ -13,13 +14,13 @@
 module Play where
 
 
-import Prelude hiding   (readFile, writeFile, concat)
+import Prelude hiding             (writeFile, concat)
 
 import Control.Monad
-import Codec.Compression.GZip     (decompress)
-import Control.Exception.Base     (Exception, SomeException,)
-import Data.ByteString.Lazy.Char8 (ByteString, readFile, writeFile, concat, pack)
+import Control.Monad.State        (StateT, modify, liftIO, runStateT)
 import System.Directory           (getDirectoryContents, doesDirectoryExist)
+import Data.ByteString.Lazy.Char8 (ByteString, writeFile, concat)
+import Codec.Compression.GZip     (decompress)
 
 import Core
 import Utils
@@ -36,7 +37,7 @@ import Utils
 -- * Input and output paths
 inPath, outPath :: FilePath
 inPath  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
-outPath = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/"
+outPath = "/Users/lingxiao/Documents/NLP/Code/Papers/output/"
 
 [in2 , in3 , in4 , in5 ] = (\n -> inPath ++ show n ++ "gms/") <$> [2..5]
 [out2, out3, out4, out5] = (\n -> show n ++ "gms.txt")        <$> [2..5]
@@ -70,7 +71,9 @@ concatFile bbs f = do
     mbs <- (fmap . fmap) decompress $ readFile' f
     case mbs of
         Left _   -> return bbs
-        Right bs -> return . concat $ [bs, bbs]
+        Right bs -> do
+            print "------------ Concactenating file -----------"
+            return . concat $ [bs, bbs]
 
 
 -- * Check if : `inPath` exist
@@ -92,6 +95,47 @@ pathErr inPath outPath outName
                 case mfs of
                     Left e   -> return . Left . FE $ e
                     Right fs -> return . return $ fs
+
+------------------------------------------------
+------------------------------------------------
+
+inP  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/toyset/"
+outP = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/"
+
+file = in2 ++ "2gm-0014.gz"
+
+
+--glue' :: FilePath -> [FilePath] -> IO ()   
+--glue' outPath fs = do
+--    bs <- foldM concatFile mempty fs
+--    writeFile outPath bs
+
+
+catFile :: ByteString -> FilePath -> StateT Int IO ByteString
+catFile bbs f = do
+    mbs <- liftIO $ readFile' f 
+    case mbs of
+        Left _   -> return bbs
+        Right bs -> modify (+1) >> (return . concat $ [bs, bbs])
+
+
+m = catFile mempty file
+
+
+
+    --mbs <- (fmap . fmap) decompress $ readFile' f
+
+    --case mbs of
+    --    Left _   -> return bbs
+    --    Right bs -> do
+    --        return . concat $ [bs, bbs]
+
+
+
+
+
+
+
 
 
 
