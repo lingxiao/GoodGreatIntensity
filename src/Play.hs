@@ -26,6 +26,11 @@ import Core
 import Utils
 
 
+
+{-----------------------------------------------------------------------------
+    I. Play with path
+------------------------------------------------------------------------------}
+
 -- * Input and output paths
 inPath, outPath :: FilePath
 inPath  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
@@ -120,6 +125,44 @@ m = catFile mempty file
     --    Right bs -> do
     --        return . concat $ [bs, bbs]
 
+
+{-
+
+import Control.Monad.Operational
+
+data FileOperationI a where
+  ReadFromFile :: FilePath -> FileOperationI String
+
+type FileOperationM = ProgramM FileOperationI
+
+readFromFile :: FilePath -> FileOperationM String
+readFromFile = singleton . ReadFile
+
+prefix :: FilePath -> FilePath -> FilePath
+prefix = undefined
+
+foldOverItAndDoStuff :: [(FilePath, String)] -> [(FilePath, String)]
+foldOverItAndDoStuff = undefined
+
+countFiles :: FileOperationM a
+countFiles = do
+    filePaths <- seePaths directoryPath
+    files     <- forM filePaths (\path -> (,) path <$> readFromFile path)
+    let files' = foldOverItAndDoStuff files
+    save (map (prefix outputDirectory files'))
+    print "ok!"
+
+runOp :: FileOperationM a -> IO a
+runOp m =
+  case view m of
+    Return x -> return x
+    ReadFromFile p :>>= f -> do
+       contents <- readFile p
+       runOp (f contents)
+
+main = runOp countFiles
+
+-}
 
 
 
