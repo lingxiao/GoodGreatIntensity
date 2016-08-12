@@ -26,14 +26,6 @@ import Core
 import Utils
 
 
--- * Notes: all data in utf8
--- * 
-
--- * The first problem is what to do with this n gram corpus
--- * download it
--- * figure out its format
--- * what kind of basic counting can you do on it?
-
 -- * Input and output paths
 inPath, outPath :: FilePath
 inPath  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
@@ -56,6 +48,7 @@ concatGzFiles inPath outPath outName = do
             return Success
 
 -- * concat all the files found in `fs` together and save to `outpath`
+-- * NOTE: FoldM is stric so this puts the whole file in memory!
 glue :: FilePath -> [FilePath] -> IO ()   
 glue outPath fs = do
     bs <- foldM concatFile mempty fs
@@ -79,10 +72,11 @@ concatFile bbs f = do
 -- * Check if : `inPath` exist
 -- *            `outPath` exist
 -- *            `outName` is valid
+-- * if yes then output all file paths in directory `inPath`
 pathErr :: FilePath 
-            -> FilePath 
-            -> String 
-            -> IO (Either (Message String) [FilePath])
+        -> FilePath 
+        -> String 
+        -> IO (Either (Message String) [FilePath])
 
 pathErr inPath outPath outName 
     | null outName  = return . Left . Other $ "output name invalid"
@@ -90,11 +84,7 @@ pathErr inPath outPath outName
         yes <- doesDirectoryExist outPath
         case yes of
             False -> return . Left . FE . NonExistantOutDir $ outPath
-            _     -> do
-                mfs <- getDirContents inPath
-                case mfs of
-                    Left e   -> return . Left . FE $ e
-                    Right fs -> return . return $ fs
+            _     -> seePaths inPath
 
 ------------------------------------------------
 ------------------------------------------------

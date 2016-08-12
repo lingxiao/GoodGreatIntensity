@@ -20,11 +20,26 @@ import Data.ByteString.Lazy.Char8 (ByteString, readFile)
 
 
 {-----------------------------------------------------------------------------
-    I. Opening directories and reading Files
-       These are non exception throwing versions of 
-        similarly named functions
+    I. Common file path routines
 ------------------------------------------------------------------------------}
 
+-- * if : `inPath` exist
+-- *      `outPath` exist
+-- *      `outName` is valid
+-- * then output all file paths 
+seePaths :: FilePath -> IO (Either (Message String) [FilePath])
+seePaths inPath = do
+    mfs <- getDirContents inPath
+    case mfs of
+        Left e   -> return . Left . FE $ e
+        Right fs -> return . return $ fs
+
+
+
+{-----------------------------------------------------------------------------
+    II. Opening directories and reading Files primitives
+       These are non exception throwing versions of similarly named functions
+------------------------------------------------------------------------------}
 
 readFile' :: FilePath -> IO (Either (FileError FilePath) ByteString)
 readFile' f = tryJust 
@@ -36,4 +51,3 @@ getDirContents :: FilePath -> IO (Either (FileError FilePath) [FilePath])
 getDirContents f = tryJust
                     (\(e :: SomeException) -> pure $ NonExistantInputDir f)
                     (getDirectoryContents f)
-
