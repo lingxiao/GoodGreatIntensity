@@ -12,9 +12,16 @@ module Core where
 
 
 {-----------------------------------------------------------------------------
-    I. File Errors
+    I. System Messages
 ------------------------------------------------------------------------------}
 
-data FileError = FileDoesNotExist
+data Message a   = Success
+                 | FE (FileError a)
+                 | Other a
+                 deriving (Show)
+
+data FileError a = FileDoesNotExist   a
+                 | NonExistantInputDir a
+                 | NonExistantOutDir   a
     deriving (Show)
 

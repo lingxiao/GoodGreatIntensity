@@ -14,22 +14,26 @@ module Utils where
 import Core
 
 import Prelude hiding             (readFile)
+import System.Directory           (getDirectoryContents)
 import Control.Exception.Base     (SomeException, tryJust)
 import Data.ByteString.Lazy.Char8 (ByteString, readFile)
 
 
 {-----------------------------------------------------------------------------
-    I. Reading Files
+    I. Opening directories and reading Files
+       These are non exception throwing versions of 
+        similarly named functions
 ------------------------------------------------------------------------------}
 
-readFile' :: FilePath -> IO (Either (Maybe FileError) (Maybe ByteString))
+
+readFile' :: FilePath -> IO (Either (FileError FilePath) ByteString)
 readFile' f = tryJust 
-                    (\(e :: SomeException) -> pure Nothing)
-                    (Just <$> readFile f)
+              (\(e :: SomeException) -> pure $ FileDoesNotExist f)
+              (readFile f)
 
 
-readFile'' :: FilePath -> IO (Maybe ByteString)
-readFile'' f = (\ma -> case ma of
-                        Left _  -> Nothing
-                        Right a -> a
-                ) <$> readFile' f
+getDirContents :: FilePath -> IO (Either (FileError FilePath) [FilePath])
+getDirContents f = tryJust
+                    (\(e :: SomeException) -> pure $ NonExistantInputDir f)
+                    (getDirectoryContents f)
+

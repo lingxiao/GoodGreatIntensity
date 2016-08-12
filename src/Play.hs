@@ -13,12 +13,13 @@
 module Play where
 
 
-import System.Directory (getDirectoryContents)
 import Prelude hiding   (readFile, writeFile, concat)
 
+import Control.Monad
 import Codec.Compression.GZip     (decompress)
 import Control.Exception.Base     (Exception, SomeException,)
 import Data.ByteString.Lazy.Char8 (ByteString, readFile, writeFile, concat, pack)
+import System.Directory           (getDirectoryContents, doesDirectoryExist)
 
 import Core
 import Utils
@@ -32,50 +33,65 @@ import Utils
 -- * figure out its format
 -- * what kind of basic counting can you do on it?
 
+-- * Input and output paths
+inPath, outPath :: FilePath
+inPath  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
+outPath = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/"
 
--- * start by playing with google one gram
-
-path1, path2 :: FilePath
-
-path  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/"
-
-path1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/2gm-0015.gz"
-path2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/2gm-0016.gz"
-out   = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/src/foo.txt"
-
-bar :: IO ()
-bar = do
-    fs <- getDirectoryContents path
-    print fs
+[in2 , in3 , in4 , in5 ] = (\n -> inPath ++ show n ++ "gms/") <$> [2..5]
+[out2, out3, out4, out5] = (\n -> show n ++ "gms.txt")        <$> [2..5]
 
 
-concatFile :: FilePath -> ByteString -> IO ByteString
-concatFile f bbs = do
-    bs <- decompress <$> readFile f
-    return . concat $ [bs, bbs]
+-- * Given path to input directory `inPath` and output directory 'outPath'
+-- * find and unzip all .gz files and concat into one giant file,
+-- * then save at `outPath` with `outName`
+concatGzFiles :: FilePath -> FilePath -> String -> IO (Message String)
+concatGzFiles inPath outPath outName = do
+    mfs <- pathErr inPath outPath outName
+    case mfs of
+        Left e   -> return e
+        Right fs -> do
+            glue (outPath ++ outName) $ ((++) inPath) <$> fs 
+            return Success
+
+-- * concat all the files found in `fs` together and save to `outpath`
+glue :: FilePath -> [FilePath] -> IO ()   
+glue outPath fs = do
+    bs <- foldM concatFile mempty fs
+    writeFile outPath bs
 
 
-foo :: IO ()
-foo = do
-    xs1 <- decompress <$> readFile path1  
-    xs2 <- decompress <$> readFile path2 
-    let xs = concat[xs1, xs2]  ::  ByteString
-    return ()
-    --writeFile out xs
+-- * Open file from path `f` and
+-- * if file exist, concat file with `bbs`
+-- * if file does not exist, then output `bbs` unchanged
+-- * Note: this function fails silently
+concatFile :: ByteString -> FilePath -> IO ByteString
+concatFile bbs f = do
+    mbs <- (fmap . fmap) decompress $ readFile' f
+    case mbs of
+        Left _   -> return bbs
+        Right bs -> return . concat $ [bs, bbs]
 
 
-{-----------------------------------------------------------------------------
+-- * Check if : `inPath` exist
+-- *            `outPath` exist
+-- *            `outName` is valid
+pathErr :: FilePath 
+            -> FilePath 
+            -> String 
+            -> IO (Either (Message String) [FilePath])
 
-tryJust (\(e :: SomeException) -> pure Nothing) (Just <$> readFile "foo.txt")
-
-mainNoConduit :: FilePath -> FilePath  -> IO ()
-mainNoConduit f1 f2 = do
-  xxs  <- readFile f1
-  let xxs' = unpack . preprocess . pack $ xxs
-  writeFile f2 xxs'
-    where preprocess = toCaseFold . strip
-------------------------------------------------------------------------------}
-
+pathErr inPath outPath outName 
+    | null outName  = return . Left . Other $ "output name invalid"
+    | otherwise     = do
+        yes <- doesDirectoryExist outPath
+        case yes of
+            False -> return . Left . FE . NonExistantOutDir $ outPath
+            _     -> do
+                mfs <- getDirContents inPath
+                case mfs of
+                    Left e   -> return . Left . FE $ e
+                    Right fs -> return . return $ fs
 
 
 
