@@ -22,12 +22,14 @@ library
 
   build-depends:       base >= 4.7 && < 5
                      , mtl
+                     , zip
                      , zlib
                      , base
                      , text
                      , conduit
                      , conduit-extra 
-                     , zip
+                     , resourcet
+                     , transformers
                      , bytestring
                      , resourcet
                      , directory

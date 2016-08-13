@@ -31,7 +31,6 @@ countLines = do
     fs <- readFile path2
     print . length $ fs
 
-
 countLines2 :: IO ()
 countLines2 = do 
     mfs <- seePaths path2'
