@@ -34,8 +34,6 @@ seePaths inPath = do
         Left e   -> return . Left . FE $ e
         Right fs -> return . return $ fs
 
-
-
 {-----------------------------------------------------------------------------
     II. Opening directories and reading Files primitives
        These are non exception throwing versions of similarly named functions
@@ -47,7 +45,7 @@ readFile' f = tryJust
               (readFile f)
 
 
-getDirContents :: FilePath -> IO (Either (FileError FilePath) [FilePath])
+getDirContents :: FilePath -> IO (Either FileError [FilePath])
 getDirContents f = tryJust
                     (\(e :: SomeException) -> pure $ NonExistentInputDir f)
                     (getDirectoryContents f)

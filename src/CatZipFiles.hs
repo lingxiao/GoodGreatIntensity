@@ -15,7 +15,7 @@
 module CatFiles where
 
 
-import Prelude hiding             (writeFile, concat)
+import Prelude hiding             (writeFile, readFile, concat)
 
 import Control.Monad
 import Control.Monad.State        (StateT, modify, liftIO, runStateT)
@@ -32,21 +32,12 @@ import Core
 
 path = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/src/sample.txt"
 
-tick :: FileOp Int m => m ()
+tick :: FileOpS Int m => m ()
 tick = modify succ 
 
 
-
-
-
-
-
--- * do a simple that open filepath
-openF :: FileOp Int m => m ()
-openF = do
-   f <- liftIO $ readFile path
-   tick
-   liftIO $ print f
-   return ()
+{-----------------------------------------------------------------------------
+    Opening and 
+------------------------------------------------------------------------------}
 
 
