@@ -68,15 +68,12 @@ run :: (Monad m, MonadBaseControl IO m)
 run m = runS m ()
 
 
--- * A counter to track, ie, how many files we've seen
-tick :: FileOpS m Int => m ()
-tick = modify succ 
-
 -- * When logging to console, `demark` the
 -- * messages with "============="
-demark :: FileOpS m s => m ()
-demark = liftIO . putStrLn $ foldr (++) mempty 
-                           $ (const "-") <$> [1..50] 
+demark :: IO ()
+demark = putStrLn $ foldr (++) mempty 
+                  $ (const "-") <$> [1..50] 
+
 
 
 

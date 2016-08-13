@@ -48,33 +48,42 @@ bar = runConduit $ sourceDirectory path' =$= idc =$= logData =$= cap
 err :: FileOp m => m ()
 err = runConduit $ sourceFile "" =$= logData =$= cap
 
--- * trivially: make a sourceFile output "" if file not found
-sourceFileE :: (FileOpS m s, Exception e)
+-- * now stream all files and print 
+-- * if a file extension does not exist then skip over it
+err2 :: FileOp m => m ()
+err2 = runConduit $ sourceFileE "" =$= logData =$= cap
+
+-- * now shallow traverse all files and open, if file does not exist then 
+-- * then output empty bytestring
+
+
+
+
+
+{-----------------------------------------------------------------------------
+   Conduit Utilities
+------------------------------------------------------------------------------}
+
+-- * open zip file and unzip
+
+-- * if no file exists at `FilePath` `f`, then
+-- * output empty ByteString
+sourceFileE :: FileOpS m s
             => FilePath -> Source m ByteString
 sourceFileE f = catchC (sourceFile f) 
                 (\(e :: SomeException) -> yield mempty)
 
 
--- * now stream all files and print 
--- * if a file extension does not exist then skip over it
-baz :: FileOpS m s => Conduit i m o
-baz = undefined
-
-
-{-----------------------------------------------------------------------------
-   Conduit Utility Functions
-------------------------------------------------------------------------------}
-
--- * open zip file and unzip
-
 -- * Log the current index of file `mxs` encountered
+-- * for each new file encountered, increment the counter
 logNum :: (Show i, FileOpS m Int) => Conduit i m i
 logNum = awaitForever $ \xs -> do
-                lift tick
+                lift . modify $ succ
                 n <- lift get
-                --demark   >> 
+                liftIO demark
                 log_ n
-                yield xs >> logNum
+                yield xs
+                logNum
                   where 
                     log_ n = liftIO . putStrLn 
                            $ "file number " ++ show n
@@ -83,9 +92,10 @@ logNum = awaitForever $ \xs -> do
 -- * Print actual data `xs` to console
 logData :: (Show i, FileOpS m s) => Conduit i m i
 logData = awaitForever $ \xs -> do
-                --demark   >> 
-                (liftIO . putStrLn . show $ xs)
-                yield xs >> logData
+                liftIO demark
+                liftIO . putStrLn . show $ xs
+                yield xs
+                logData
 
 
 -- * `cap` a conduit pipeline 
@@ -94,9 +104,9 @@ cap = do
   mx <- await
   case mx of
     Nothing -> do
-      --demark
+      liftIO demark
       liftIO $ putStrLn "pipe terminated"
-      --demark
+      liftIO demark
       return ()
     _       -> cap
 
