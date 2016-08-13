@@ -17,8 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
 
-  other-modules  :     Utils
-                    ,  Core
+  other-modules  :     Core
+                    ,  ConduitUtils
 
   build-depends:       base >= 4.7 && < 5
                      , mtl

@@ -34,13 +34,15 @@ data FileError = FileDoesNotExist    String
                deriving (Show)
 
 {-----------------------------------------------------------------------------
-   II. File system monad transformer
+   II. Monad Transformer describing common functions needed
+       to interact with file systems
 ------------------------------------------------------------------------------}
 
 -- * A file operation monad transformer
 -- * `FileOps`eration is a stateful computation keeping track of state `s`
 type FileOpS m s = (MonadState s m , MonadIO m           , 
-                    MonadResource m, MonadError Message m)  
+                    MonadResource m, MonadError Message m,
+                    MonadBaseControl IO m                )  
 
 -- * A File Operation with trivial state `()`
 type FileOp  m   = FileOpS m ()

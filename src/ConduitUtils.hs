@@ -49,9 +49,10 @@ err :: FileOp m => m ()
 err = runConduit $ sourceFile "" =$= logData =$= cap
 
 -- * trivially: make a sourceFile output "" if file not found
-sourceFileE :: (MonadBaseControl IO m, Exception e) => FilePath -> Source m ByteString
+sourceFileE :: (FileOpS m s, Exception e)
+            => FilePath -> Source m ByteString
 sourceFileE f = catchC (sourceFile f) 
-                :(\(e :: SomeException) -> yield mempty)
+                (\(e :: SomeException) -> yield mempty)
 
 
 -- * now stream all files and print 
@@ -60,11 +61,9 @@ baz :: FileOpS m s => Conduit i m o
 baz = undefined
 
 
-
 {-----------------------------------------------------------------------------
    Conduit Utility Functions
 ------------------------------------------------------------------------------}
-
 
 -- * open zip file and unzip
 
@@ -73,15 +72,19 @@ logNum :: (Show i, FileOpS m Int) => Conduit i m i
 logNum = awaitForever $ \xs -> do
                 lift tick
                 n <- lift get
-                demark   >> ping n
+                --demark   >> 
+                log_ n
                 yield xs >> logNum
-                  where ping n = liftIO . putStrLn $ "file number " ++ show n
+                  where 
+                    log_ n = liftIO . putStrLn 
+                           $ "file number " ++ show n
 
 
 -- * Print actual data `xs` to console
 logData :: (Show i, FileOpS m s) => Conduit i m i
 logData = awaitForever $ \xs -> do
-                demark   >> (liftIO . putStrLn . show $ xs)
+                --demark   >> 
+                (liftIO . putStrLn . show $ xs)
                 yield xs >> logData
 
 
@@ -91,9 +94,9 @@ cap = do
   mx <- await
   case mx of
     Nothing -> do
-      demark
+      --demark
       liftIO $ putStrLn "pipe terminated"
-      demark
+      --demark
       return ()
     _       -> cap
 
