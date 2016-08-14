@@ -112,7 +112,7 @@ logNum :: (Show i, FileOpS m Int) => Conduit i m i
 logNum = awaitForever $ \xs -> do
                 lift . modify $ succ
                 n <- lift get
-                liftIO demark
+                liftIO banner
                 log_ n
                 yield xs
                 logNum
@@ -124,7 +124,7 @@ logNum = awaitForever $ \xs -> do
 -- * Print actual data `xs` to console
 logData :: (Show i, FileOpS m s) => Conduit i m i
 logData = awaitForever $ \xs -> do
-                liftIO demark
+                liftIO banner
                 liftIO . putStrLn . show $ xs
                 yield xs
                 logData
@@ -136,9 +136,9 @@ cap = do
   mx <- await
   case mx of
     Nothing -> do
-      liftIO demark
+      liftIO banner
       liftIO $ putStrLn "pipe terminated"
-      liftIO demark
+      liftIO banner
       return ()
     _       -> cap
 

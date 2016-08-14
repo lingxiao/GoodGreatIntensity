@@ -67,8 +67,8 @@ run m = runS m ()
 
 -- * When logging to console, `demark` the
 -- * messages with "============="
-demark :: IO ()
-demark = putStrLn $ foldr (++) mempty 
+banner :: IO ()
+banner = putStrLn $ foldr (++) mempty 
                   $ (const "-") <$> [1..50] 
 
 
