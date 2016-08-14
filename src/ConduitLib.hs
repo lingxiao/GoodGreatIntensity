@@ -47,7 +47,8 @@ untarAll p e1 e2 =  p `traverseAll` e1
                 =$= cap
 
 {-----------------------------------------------------------------------------
-   Conduit sources
+W21`1234567O90P=[\]=\
+][POIUYDFSAZsources
 ------------------------------------------------------------------------------}
 
 -- * Shallow traversal of all files in path `p` with extension `e`
