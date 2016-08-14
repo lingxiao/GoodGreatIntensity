@@ -1,0 +1,45 @@
+{-# LANGUAGE ConstraintKinds, FlexibleContexts, RankNTypes, OverloadedStrings #-}
+{-# LANGUAGE UndecidableInstances, ScopedTypeVariables, AllowAmbiguousTypes   #-}
+-----------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+-- | 
+-- | Module  : Counting occurences of items in data
+-- | Author  : Xiao Ling
+-- | Date    : 8/12/2016
+-- |             
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+module CountNgram where
+
+import Core
+import ConduitLib
+
+{-----------------------------------------------------------------------------
+   Paths
+------------------------------------------------------------------------------}
+
+path  = path2 ++ "sample1.txt"
+path' = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/src/"
+path2 = "/Users/lingxiao/Documents/NLP/Code/Papers/dummydata/txt/"
+
+path2gm :: FilePath
+path2gm = "/Users/lingxiao/Documents/NLP/Code/Papers/output/2gms.txt"
+path3gm = "/Users/lingxiao/Documents/NLP/Code/Papers/output/3gms.txt"
+
+{-----------------------------------------------------------------------------
+   Play
+------------------------------------------------------------------------------}
+
+pip1 :: FileOpS m s => m Int
+pip1 =  runConduit $ path2 `traverseAll` ".txt"
+    =$= mapMC (\p -> liftIO $ fmap (length . B.lines) $ B.readFile p)
+    =$= foldlC (+) 0
+
+
+-- * Count the number of lines in file at path `p`
+-- * If file path invalid, output 0 for empty file
+countLine :: FileOpS m s => FilePath -> m ()
+countLine p =   runConduit $ sourceFileE p 
+            =$= numLines =$= logi =$= cap
+
