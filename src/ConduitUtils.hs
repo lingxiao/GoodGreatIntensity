@@ -12,20 +12,17 @@
 
 module ConduitUtils where
 
-import Control.Exception.Base
+import System.FilePath.Posix        (takeExtension       )
+
 import Control.Monad.State  
-import Control.Monad.Except         (MonadError      , ExceptT   , 
-                                     runExceptT      , catchError)
-import Control.Monad.IO.Class       (MonadIO         , liftIO    )
-import Control.Monad.Trans.Resource (MonadResource   , ResourceT , 
-                                     MonadBaseControl, runResourceT)
+import Control.Monad.IO.Class       (MonadIO, liftIO     )
+import Control.Exception.Base       (SomeException       )
 
-import Control.Exception.Base       (SomeException)
-
-import Data.ByteString              (ByteString          )
+import Conduit                      (mapM_C)
 import Data.Conduit hiding          ((=$), ($=), ($$)    )  
 import Data.Conduit.Binary          (sourceFile, sinkFile)
 import Data.Conduit.Filesystem      (sourceDirectory     )
+import Data.ByteString              (ByteString          )
 
 import Core
 
@@ -35,6 +32,7 @@ import Core
 
 path  = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/src/sample.txt"
 path' = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/src/"
+path2 = "/Users/lingxiao/Documents/NLP/Code/Papers/dummydata/txt/"
 
 -- * open one file
 foo :: FileOpS m Int => m ()
@@ -56,9 +54,30 @@ err2 = runConduit $ sourceFileE "" =$= logData =$= cap
 -- * now shallow traverse all files and open, if file does not exist then 
 -- * then output empty bytestring
 
+-- * where you left off: so now you need to 
+-- * just go ahead and make a function that counts specific occurences 
+-- * of something and ouput its count
+baz :: FileOpS m Int => m ()
+baz = runConduit $ sourceDirectory path2 =$= 
+      mapM_C (\p -> liftIO $ print . show . length $ p)
 
 
+--baz = runConduit $ sourceDirectory path2 =$= logNum =$= logData =$= cap
+      -- =$= mapM_C (\p -> print . show $ p )
 
+-- sourceDirectory "." =$= mapMC (\path -> liftIO $ fmap B.length $ B.readFile path)
+
+
+{-
+
+Data.ByteString as B
+
+runResourceT $  sourceDirectory "." 
+             $$ filterC (\path -> 
+             takeExtension path == ".txt") 
+             =$= mapMC (\path -> 
+             liftIO $ fmap B.length $ B.readFile path) =$= foldlC (+) 0
+-}
 
 {-----------------------------------------------------------------------------
    Conduit Utilities

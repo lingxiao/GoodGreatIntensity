@@ -47,7 +47,6 @@ type FileOpS m s = (MonadState s m , MonadIO m           ,
 -- * A File Operation with trivial state `()`
 type FileOp  m   = FileOpS m ()
 
-
 {-----------------------------------------------------------------------------
    III. Operations over `FileOpS`
 ------------------------------------------------------------------------------}

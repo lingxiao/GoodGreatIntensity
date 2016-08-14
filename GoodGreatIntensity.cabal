@@ -28,6 +28,8 @@ library
                      , text
                      , conduit
                      , conduit-extra 
+                     , conduit-combinators
+                     , filepath
                      , resourcet
                      , transformers
                      , bytestring
