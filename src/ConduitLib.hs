@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
--- | Module  : A library of conduit functions forming a poor man's DSL 
+-- | Module  : A library of conduit functions, forming a poor man's DSL 
 -- | Author  : Xiao Ling
 -- | Date    : 8/12/2016
 -- |             
@@ -47,8 +47,7 @@ untarAll p e1 e2 =  p `traverseAll` e1
                 =$= cap
 
 {-----------------------------------------------------------------------------
-W21`1234567O90P=[\]=\
-][POIUYDFSAZsources
+  Conduit sources
 ------------------------------------------------------------------------------}
 
 -- * Shallow traversal of all files in path `p` with extension `e`

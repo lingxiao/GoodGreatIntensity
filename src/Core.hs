@@ -18,7 +18,6 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Resource
 
 
-
 {-----------------------------------------------------------------------------
    I. Monad Transformer describing common functions needed
        to interact with file systems
