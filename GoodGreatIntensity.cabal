@@ -24,7 +24,6 @@ library
   build-depends:       base >= 4.7 && < 5
                      , mtl
                      , zlib
-                     , base
                      , text
                      , conduit
                      , conduit-extra 
@@ -33,8 +32,10 @@ library
                      , resourcet
                      , transformers
                      , bytestring
-                     , resourcet
                      , directory
+                     , attoparsec
+
+                     , time
 
   default-language:    Haskell2010
 
@@ -63,6 +64,7 @@ test-suite GoodGreatIntensity-test
                      , bytestring
                      , resourcet
                      , directory
+                     , attoparsec
 
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010

@@ -25,10 +25,10 @@ import Data.Conduit
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
 
-import Codec.Compression.GZip   (decompress          )
-import Data.Conduit.Binary      (sourceFile, sinkFile)
 import Data.Conduit.Filesystem  (sourceDirectory     )
+import Data.Conduit.Binary      (sourceFile, sinkFile)
 import Data.ByteString          (ByteString, readFile)
+import Codec.Compression.GZip   (decompress          )
 import qualified Data.ByteString.Char8 as B
 
 import qualified Data.ByteString.Lazy as L
@@ -66,6 +66,8 @@ sourceFileE f = catchC (sourceFile f)
    Conduit pipes
 ------------------------------------------------------------------------------}
 
+-- * TODO: swap out the L.readFile for something more safe
+
 -- * open zip file found at path `p`
 -- * and untar it, save it in the same directory with extension `ext`
 -- * yield the untared file `f` downstream with its filepath
@@ -78,7 +80,7 @@ untarSaveAs ext = awaitForever $ \p -> do
   liftIO banner
   liftIO . print $ "untar and save file: " ++ name
   
-  f <- liftIO $ decompress <$> L.readFile p
+  f <- liftIO $ decompress <$> L.readFile p   
 
   liftIO . flip L.writeFile f $ takeDirectory p ++ "/" ++ name ++ ext
 

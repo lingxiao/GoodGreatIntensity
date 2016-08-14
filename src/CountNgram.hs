@@ -13,12 +13,60 @@
 module CountNgram where
 
 import Prelude hiding   (readFile)
-import GHC.Word         (Word8   )
 
 import Data.ByteString.Lazy
 import Data.Attoparsec.ByteString.Lazy
 
+-- * mock up import, to be deleted
+import GHC.Word         (Word8)
+
+
+-- * tutorial imports to be deleted
+import Data.Time
+import Data.Word
+import Data.Attoparsec.ByteString.Char8
+import Control.Applicative
+import qualified Data.ByteString as B
+
+
 import Core
+
+{-----------------------------------------------------------------------------
+   An attoparsec tutorial
+------------------------------------------------------------------------------}
+
+data IP = IP Word8 Word8 Word8 Word8 
+    deriving Show
+
+data Product = Mouse | Keyboard | Monitor | Speakers 
+    deriving (Show)
+
+data LogEntry = LE { entryTime    :: LocalTime
+                   , entryIP      :: IP 
+                   , entryProduct :: Product
+                   }
+
+type Log = [LogEntry]                   
+
+
+
+-- * parse IP 
+
+parseIP :: Parser IP
+parseIP = do
+  d1 <- decimal
+  char '.'
+  d2 <- decimal
+  char '.'
+  d3 <- decimal
+  char '.'
+  d4 <- decimal
+  return $ IP d1 d2 d3 d4
+
+
+
+
+
 
 
 {-----------------------------------------------------------------------------
