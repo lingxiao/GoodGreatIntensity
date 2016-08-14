@@ -39,12 +39,6 @@ import Core
    Conduit routines
 ------------------------------------------------------------------------------}
 
-pathtxt, pathzip, path :: FilePath
-pathtxt = "/Users/lingxiao/Documents/NLP/Code/Papers/dummydata/txt/"
-pathzip = "/Users/lingxiao/Documents/NLP/Code/Papers/dummydata/zip/"
-path    = pathzip ++ "2gm-0026.gz"
-
-
 -- * Untar all files with extension `e1` found at directory `p`
 -- * and save them in the same directory with extension `e2 
 untarAll :: FileOpS m s => FilePath -> String -> String -> m ()
@@ -67,7 +61,6 @@ traverseAll p e =   sourceDirectory p
 sourceFileE :: FileOpS m s => FilePath -> Source m ByteString
 sourceFileE f = catchC (sourceFile f) 
                 (\(e :: SomeException) -> yield mempty)
-
 
 {-----------------------------------------------------------------------------
    Conduit pipes
@@ -134,7 +127,6 @@ idc = awaitForever $ \xs -> yield xs >> idc
 {-----------------------------------------------------------------------------
    Conduit Sinks
 ------------------------------------------------------------------------------}
-
 
 -- * `cap` a conduit pipeline 
 cap :: FileOpS m s => Consumer i m ()

@@ -13,10 +13,6 @@
 module CountNgram where
 
 import Data.Conduit
-import Data.Conduit.Filesystem      (sourceDirectory     )
-import Conduit hiding               (sourceDirectory     ,
-                                     sourceFile          )
-
 
 import Core
 import ConduitLib
