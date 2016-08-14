@@ -12,17 +12,20 @@
 
 module ConduitUtils where
 
-import System.FilePath.Posix        (takeExtension       )
+import Prelude hiding               (readFile            )
+import System.FilePath.Posix        
 
 import Control.Monad.State  
 import Control.Monad.IO.Class       (MonadIO, liftIO     )
 import Control.Exception.Base       (SomeException       )
 
-import Conduit                      (mapM_C)
-import Data.Conduit hiding          ((=$), ($=), ($$)    )  
+import Conduit                      (mapM_C, filterC     ,
+                                     foldlC, foldC       )
+import Data.Conduit hiding          ((=$), ($=),         )
 import Data.Conduit.Binary          (sourceFile, sinkFile)
 import Data.Conduit.Filesystem      (sourceDirectory     )
-import Data.ByteString              (ByteString          )
+import Data.ByteString              (ByteString, readFile)
+import qualified Data.ByteString.Char8 as B
 
 import Core
 
@@ -61,12 +64,15 @@ baz :: FileOpS m Int => m ()
 baz = runConduit $ sourceDirectory path2 =$= 
       mapM_C (\p -> liftIO $ print . show . length $ p)
 
+countLines :: FileOpS m s => FilePath -> m ()
+countLines p = do
+  xs <- liftIO $ readFile p
+  liftIO . print . show . length . B.lines $ xs
+  return ()
 
---baz = runConduit $ sourceDirectory path2 =$= logNum =$= logData =$= cap
-      -- =$= mapM_C (\p -> print . show $ p )
+
 
 -- sourceDirectory "." =$= mapMC (\path -> liftIO $ fmap B.length $ B.readFile path)
-
 
 {-
 
@@ -84,6 +90,13 @@ runResourceT $  sourceDirectory "."
 ------------------------------------------------------------------------------}
 
 -- * open zip file and unzip
+
+
+-- * Shallow traversal of all files in path `p` with extension `e`
+-- * If path invalid or extension invalid, pipe terminates
+sourceDirExt :: FileOpS m s => FilePath -> String -> Source m FilePath
+sourceDirExt p e =   sourceDirectory (takeDirectory p) 
+                 =$= filterC (\p -> takeExtension p == e)
 
 -- * if no file exists at `FilePath` `f`, then
 -- * output empty ByteString
@@ -136,74 +149,6 @@ idc = awaitForever $ \xs -> yield xs >> idc
 
 
 
-
-
-
-
-
-
-
-
-
-
-{-
-
-
-{-----------------------------------------------------------------------------
-    II. Compuations type over file systems
-------------------------------------------------------------------------------}
-
-
--- * Run a FileOpS `m` with some user specified state `s`
-run :: Monad m => 
-       StateT s (ExceptT Message m) a -> s -> m (Either Message a)
-run m = runExceptT . evalStateT m
-
--- * Run a FileOp `m` with trivial state ()
--- * Use this when we do not need to keep a state
-run' :: Monad m => StateT () (ExceptT Message m) a -> m (Either Message a)
-run' m = run m ()
-
-{-----------------------------------------------------------------------------
-    III. Primitive `FileOpS` operations
-------------------------------------------------------------------------------}
-
-{-----------------------------------------------------------------------------
-    IV. Primitive Operations over file systems
-------------------------------------------------------------------------------}
-
-path = "/Users/lingxiao/Documents/NLP/Code/Papers/GoodGreatIntensity/src/sample.txt"
-
--- * read file using conduit's sourceFile
--- * if filepath invalid then throw error
---openFile :: FileOp m => m ()
---openFile = don
-    --f <- liftIO $ sourceFile path
-    --return ()
-
--- * Open up a zip file from source and unzip
-openZip :: FileOp m => m ()
-openZip = undefined
-
-
-saveFile :: FileOp m => m ()
-saveFile = undefined
-
-
---traverse :: FileOpS s m => Bool -> FilePath -> Producer m FilePath
---traverse = undefined
-
-openF :: FileOpS Int m => m ()
-openF = do
-   f <- liftIO $ readFile path
-   tick
-   liftIO $ print f
-   return ()
-
-
-
-
--}
 
 
 

@@ -40,9 +40,8 @@ data FileError = FileDoesNotExist    String
 
 -- * A file operation monad transformer
 -- * `FileOps`eration is a stateful computation keeping track of state `s`
-type FileOpS m s = (MonadState s m , MonadIO m           , 
-                    MonadResource m, MonadError Message m,
-                    MonadBaseControl IO m                )  
+type FileOpS m s = (MonadState s m , MonadIO m            , 
+                    MonadResource m, MonadBaseControl IO m)
 
 -- * A File Operation with trivial state `()`
 type FileOp  m   = FileOpS m ()
@@ -53,17 +52,16 @@ type FileOp  m   = FileOpS m ()
 
 -- * Run a FileOpS `m` with some user specified state `s`
 runS :: (Monad m, MonadBaseControl IO m) 
-      => ResourceT (StateT s (ExceptT Message m)) a 
+      => ResourceT (StateT s m) a 
       -> s 
-      -> m (Either Message a)
-runS m s = runExceptT (evalStateT (runResourceT m) s)
-
+      -> m a
+runS m s = evalStateT (runResourceT m) s
 
 -- * Run a FileOp `m` with trivial state ()
 -- * Use this when we do not need to keep a state
 run :: (Monad m, MonadBaseControl IO m) 
-    => ResourceT (StateT () (ExceptT Message m)) a 
-    -> m (Either Message a)
+    => ResourceT (StateT () m) a 
+    -> m a
 run m = runS m ()
 
 
