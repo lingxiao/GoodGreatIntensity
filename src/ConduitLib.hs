@@ -67,6 +67,7 @@ sourceFileE f = catchC (sourceFile f)
 ------------------------------------------------------------------------------}
 
 -- * TODO: swap out the L.readFile for something more safe
+-- *       what about   L.writeFile ?
 
 -- * open zip file found at path `p`
 -- * and untar it, save it in the same directory with extension `ext`
@@ -91,23 +92,23 @@ untarSaveAs ext = awaitForever $ \p -> do
 -- * for each new file encountered, increment the counter
 logNum :: (Show i, FileOpS m Int) => Conduit i m i
 logNum = awaitForever $ \xs -> do
-                lift . modify $ succ
-                n <- lift get
-                liftIO banner
-                log_ n
-                yield xs
-                logNum
-                  where 
-                    log_ n = liftIO . putStrLn 
-                           $ "file number " ++ show n
+            lift . modify $ succ
+            n <- lift get
+            liftIO banner
+            log_ n
+            yield xs
+            logNum
+              where 
+                log_ n = liftIO . putStrLn 
+                       $ "file number " ++ show n
 
 -- * log input `i` to console
 logi :: (Show i, FileOpS m s) => Conduit i m i
 logi = awaitForever $ \xs -> do
-                liftIO banner
-                liftIO . putStrLn . show $ xs
-                yield xs
-                logi
+          liftIO banner
+          liftIO . putStrLn . show $ xs
+          yield xs
+          logi
 
 -- * log message `xs` 
 logm :: FileOpS m s => String -> Conduit i m i

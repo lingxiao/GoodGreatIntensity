@@ -12,10 +12,10 @@
 
 module CountNgram where
 
-import Prelude hiding   (readFile)
+import Prelude hiding (takeWhile, words)
 
-import Data.ByteString.Lazy
-import Data.Attoparsec.ByteString.Lazy
+--import Data.ByteString.Lazy
+--import Data.Attoparsec.ByteString.Lazy
 
 -- * mock up import, to be deleted
 import GHC.Word         (Word8)
@@ -24,9 +24,11 @@ import GHC.Word         (Word8)
 -- * tutorial imports to be deleted
 import Data.Time
 import Data.Word
-import Data.Attoparsec.ByteString.Char8
-import Control.Applicative
-import qualified Data.ByteString as B
+-- import Data.Attoparsec.ByteString.Char8
+
+import Data.Attoparsec.ByteString
+import Data.ByteString.Char8
+--import qualified Data.ByteString.Char8 as C
 
 
 import Core
@@ -48,22 +50,37 @@ data LogEntry = LE { entryTime    :: LocalTime
 
 type Log = [LogEntry]                   
 
+s1,s2,s3,s4,s5, s6:: ByteString
+s1 = pack "hello world"
+s2 = pack "world hello world"
+s3 = pack "world hello hello"
+s4 = pack "world world"
+s5 = pack "hello\n345"
+s6 = pack "hello\t120\nadele\t49292"
+
+
+w1, w2 :: Word8
+w1 = read "hello"
+w2 = read "world"
+
+p1 :: Parser ByteString
+p1 = takeTill (\w -> w /= (read "hello" :: Word8))
+
+-- * curent problem: bytestring is wrong datatype
+-- * use text
 
 
 -- * parse IP 
-
-parseIP :: Parser IP
-parseIP = do
-  d1 <- decimal
-  char '.'
-  d2 <- decimal
-  char '.'
-  d3 <- decimal
-  char '.'
-  d4 <- decimal
-  return $ IP d1 d2 d3 d4
-
-
+--parseIP :: Parser IP
+--parseIP = do
+--  d1 <- decimal
+--  char '.'
+--  d2 <- decimal
+--  char '.'
+--  d3 <- decimal
+--  char '.'
+--  d4 <- decimal
+--  return $ IP d1 d2 d3 d4
 
 
 
@@ -71,7 +88,6 @@ parseIP = do
 
 {-----------------------------------------------------------------------------
    Now you need to open a file and count stuff
-------------------------------------------------------------------------------}
 
 -- * for first iteration, don't use conduit, just regular IO
 pShort, p1gm, p2gm, p5gm :: FilePath
@@ -98,6 +114,9 @@ cnt w bs = undefined
 
 -- * we need to retrieve the line where the vocab is found
 -- * make this air tight so we can swap it with attoparsec later
+
+------------------------------------------------------------------------------}
+
 
 
 
