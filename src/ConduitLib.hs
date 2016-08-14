@@ -47,7 +47,7 @@ untarAll p e1 e2 =  p `traverseAll` e1
                 =$= cap
 
 {-----------------------------------------------------------------------------
-   Conduit file sources
+   Conduit sources
 ------------------------------------------------------------------------------}
 
 -- * Shallow traversal of all files in path `p` with extension `e`
@@ -125,7 +125,7 @@ idc = awaitForever $ \xs -> yield xs >> idc
 
 
 {-----------------------------------------------------------------------------
-   Conduit Sinks
+   Conduit sinks
 ------------------------------------------------------------------------------}
 
 -- * `cap` a conduit pipeline 

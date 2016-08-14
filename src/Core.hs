@@ -20,21 +20,7 @@ import Control.Monad.Trans.Resource
 
 
 {-----------------------------------------------------------------------------
-    I. System Messages
-------------------------------------------------------------------------------}
-
-data Message   = Success
-               | FE FileError
-               | UnknownError
-               deriving (Show)
-
-data FileError = FileDoesNotExist    String
-               | NonExistentInputDir String
-               | NonExistentOutDir   String
-               deriving (Show)
-
-{-----------------------------------------------------------------------------
-   II. Monad Transformer describing common functions needed
+   I. Monad Transformer describing common functions needed
        to interact with file systems
 ------------------------------------------------------------------------------}
 
@@ -47,7 +33,7 @@ type FileOpS m s = (MonadState s m , MonadIO m            ,
 type FileOp  m   = FileOpS m ()
 
 {-----------------------------------------------------------------------------
-   III. Operations over `FileOpS`
+   II. Operations over `FileOpS`
 ------------------------------------------------------------------------------}
 
 -- * Run a FileOpS `m` with some user specified state `s`
