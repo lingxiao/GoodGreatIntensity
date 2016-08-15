@@ -17,6 +17,9 @@ import Control.Monad.Except
 import Control.Monad.IO.Class     
 import Control.Monad.Trans.Resource
 
+import Data.Attoparsec.Text.Lazy
+import qualified Data.Text.Lazy as L (Text, pack)
+
 
 {-----------------------------------------------------------------------------
    I. Monad Transformer describing common functions needed
@@ -55,6 +58,54 @@ run m = run' m ()
 banner :: IO ()
 banner = putStrLn $ foldr (++) mempty 
                   $ (const "-") <$> [1..50] 
+
+
+{-----------------------------------------------------------------------------
+   III. Phrase Pattern       
+------------------------------------------------------------------------------}
+
+
+-- * these should be parsers
+-- * you run this on a Text and it gives you all occurences of
+-- * of the pattern you want
+
+type Pattern = Parser (String, Int)
+
+-- * Given a stream of text `ts` and some pattern,
+-- * find `p` in `ts`
+infixr 9 <**
+(<**) :: Pattern -> L.Text -> Maybe (String, Int)
+p <** ts = case parse p ts of
+  Done _ r -> Just r
+  _        -> Nothing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

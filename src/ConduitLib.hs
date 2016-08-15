@@ -70,8 +70,9 @@ sourceFileE f = catchC (sourceFile f)
 -- * open zip file found at path `p`
 -- * and untar it, save it in the same directory with extension `ext`
 -- * yield the untared file `f` downstream with its filepath
-untarSaveAs :: FileOpS m s => String 
-             -> Conduit FilePath m (FilePath, L.ByteString)
+untarSaveAs :: FileOpS m s
+            => String 
+            -> Conduit FilePath m (FilePath, L.ByteString)
 untarSaveAs ext = awaitForever $ \p -> do
 
   let name = dropExtension . takeFileName $ p

@@ -3,41 +3,34 @@
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
--- | Module  : A library of attoparsec parsers
+-- | Module  : Parsers to crawl google ngram corpus
 -- | Author  : Xiao Ling
 -- | Date    : 8/14/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module ParserLib where
+module NgramParser.hs where
 
-import Prelude hiding (takeWhile)
 
+import Control.Monad
 import Control.Applicative
 
-import Data.Char
-import Data.Text hiding (takeWhile, foldr)
-import qualified Data.Text.Lazy as L (Text, pack)
 import Data.Attoparsec.Text.Lazy
 import Data.Attoparsec.Combinator
+import Data.Text hiding (foldr)
+import qualified Data.Text.Lazy as L (Text, pack)
 
 import Core
 
 {-----------------------------------------------------------------------------
-   Attoparsec routines specific for this application
+   Patterns used in scoring expression
 ------------------------------------------------------------------------------}
 
--- * search file `f` for word `w` and output its frequency
-search :: L.Text -> String -> Maybe (String, Int)
-search f w = case parse (occur w) f of
-    Done _ r   -> Just r
-    _          -> Nothing
-
----- * discard all text until word `w` occurs, and find its only field `n`
-occur :: String -> Parser (String, Int)
-occur w = do
-    pUntil w
+-- * search for first occurence of `w` and output its count
+cnt :: String -> Pattern
+cnt w = do
+    pUntil w 
     string . pack $ w
     string "\t"
     n <- natural 
@@ -45,8 +38,11 @@ occur w = do
     return (w, read n)
 
 
+
+
+
 {-----------------------------------------------------------------------------
-   Attoparsec combinators 
+   Parser utils 
 ------------------------------------------------------------------------------}
 
 -- * Parse a natural number
@@ -55,7 +51,33 @@ natural = many1' digit
 
 -- * skip over all words in Text stream until the word we want
 pUntil :: String -> Parser String 
-pUntil = manyTill anyChar . lookAhead . string . pack
+pUntil = manyTill anyChar . lookAhead . string . pack 
+
+notSpace :: Parser Char
+notSpace = notChar ' '
+
+
+{-----------------------------------------------------------------------------
+   adhoc tests
+------------------------------------------------------------------------------}
+
+-- * TODO: also need a parser that 
+-- * will match the Psw and Psw patterns!!
+
+-- * should succed
+t1 = L.pack "hello\t999\nworld\t\900"
+t2 = L.pack "world\t\900\nhello\t999\n"
+
+-- * should fail
+t3 = L.pack "world\t\900\nhello world\t999\n"
+t4 = L.pack "hello world\t999\nworld\t\900"
+t5 = L.pack "world hello\t999\nworld\t\900"
+
+w1 :: Pattern
+w1 = cnt "hello"    
+
+
+
 
 
 

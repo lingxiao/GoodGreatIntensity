@@ -19,7 +19,8 @@ library
 
   other-modules  :     Core
                     ,  ConduitLib
-                    ,  ParserLib
+                    ,  NgramParser.hs
+                    ,  Count
 
   build-depends:       base >= 4.7 && < 5
                      , mtl
