@@ -64,7 +64,6 @@ sourceFileE f = catchC (sourceFile f)
    Conduit pipes
 ------------------------------------------------------------------------------}
 
-
 -- * TODO: swap out the L.readFile for something more safe
 -- *       what about   L.writeFile ?
 
