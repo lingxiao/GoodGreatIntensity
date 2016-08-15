@@ -58,7 +58,6 @@ s4 = pack "world world"
 s5 = pack "hello\n345"
 s6 = pack "hello\t120\nadele\t49292"
 
-
 w1, w2 :: Word8
 w1 = read "hello"
 w2 = read "world"

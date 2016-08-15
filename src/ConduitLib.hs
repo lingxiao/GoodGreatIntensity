@@ -25,12 +25,10 @@ import Data.Conduit
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
 
+import Codec.Compression.GZip   (decompress          )
 import Data.Conduit.Filesystem  (sourceDirectory     )
 import Data.Conduit.Binary      (sourceFile, sinkFile)
-import Data.ByteString          (ByteString, readFile)
-import Codec.Compression.GZip   (decompress          )
-import qualified Data.ByteString.Char8 as B
-
+import Data.ByteString          (ByteString          )
 import qualified Data.ByteString.Lazy as L
 
 import Core
@@ -43,7 +41,7 @@ import Core
 -- * and save them in the same directory with extension `e2 
 untarAll :: FileOpS m s => FilePath -> String -> String -> m ()
 untarAll p e1 e2 =  p `traverseAll` e1
-                $$  untarSaveAs ".txt"
+                $$  untarSaveAs e2
                 =$= cap
 
 {-----------------------------------------------------------------------------
@@ -65,6 +63,7 @@ sourceFileE f = catchC (sourceFile f)
 {-----------------------------------------------------------------------------
    Conduit pipes
 ------------------------------------------------------------------------------}
+
 
 -- * TODO: swap out the L.readFile for something more safe
 -- *       what about   L.writeFile ?
@@ -115,16 +114,6 @@ logm :: FileOpS m s => String -> Conduit i m i
 logm xs = awaitForever $ \f -> do
   liftIO . putStrLn $ xs
   yield f
-
--- * count the number of lines in file `f`
-countLines :: FileOpS m s => Conduit ByteString m Int
-countLines = awaitForever $ \f -> yield (length . B.lines $ f)
-
-
--- * identity
-idc :: Monad m => Conduit i m i 
-idc = awaitForever $ \xs -> yield xs >> idc
-
 
 
 {-----------------------------------------------------------------------------
