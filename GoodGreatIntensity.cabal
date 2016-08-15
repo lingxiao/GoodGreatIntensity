@@ -35,8 +35,6 @@ library
                      , directory
                      , attoparsec
 
-                     , time
-
   default-language:    Haskell2010
 
 executable GoodGreatIntensity-exe
