@@ -23,13 +23,13 @@ import Control.Exception.Base   (SomeException       )
 
 import Codec.Compression.GZip   (decompress          )
 
+import Data.List.Split          (chunksOf)
+import Data.ByteString          (ByteString          )
 import Data.Conduit 
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
-import Data.List.Split          (chunksOf)
 import Data.Conduit.Filesystem  (sourceDirectory     )
 import Data.Conduit.Binary      (sourceFile, sinkFile)
-import Data.ByteString          (ByteString          )
 import Data.Text.Lazy.IO        (readFile , writeFile)
 import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Lazy as L
@@ -101,8 +101,8 @@ untarSaveAs ext = awaitForever $ \p -> do
   yield (p, f)
 
 
--- * Shard .txt file found at path `p` into `size`ed pieces and save
--- * in output directory `o`
+-- * Shard all file with extension `ext` found at path `p` into 
+-- * `size`ed pieces and save in output directory `o`
 shardFile :: FileOpS m s 
           => String 
           -> FilePath 
