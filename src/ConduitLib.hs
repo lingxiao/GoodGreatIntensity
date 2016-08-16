@@ -12,7 +12,7 @@
 
 module ConduitLib where
 
-import Prelude hiding           (readFile            )
+import Prelude hiding           (readFile, writeFile )
 import System.FilePath
 import System.Directory
 
@@ -21,14 +21,17 @@ import Control.Monad.State
 import Control.Monad.IO.Class   (MonadIO, liftIO     )
 import Control.Exception.Base   (SomeException       )
 
+import Codec.Compression.GZip   (decompress          )
+
 import Data.Conduit 
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
-
-import Codec.Compression.GZip   (decompress          )
+import Data.List.Split          (chunksOf)
 import Data.Conduit.Filesystem  (sourceDirectory     )
 import Data.Conduit.Binary      (sourceFile, sinkFile)
 import Data.ByteString          (ByteString          )
+import Data.Text.Lazy.IO        (readFile , writeFile)
+import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Lazy as L
 
 import Core
@@ -42,7 +45,18 @@ import Core
 untarAll :: FileOpS m s => FilePath -> String -> String -> m ()
 untarAll p e1 e2 =  p `traverseAll` e1
                 $$  untarSaveAs e2
+                =$= logm "untarred all files!"
                 =$= cap
+
+
+-- * Shard all files with `ext` found at directory `p`
+-- * into chunks of 100000 lines each
+-- * and save in output directory `o`
+shardAll :: FileOpS m s => String -> FilePath -> FilePath -> m ()
+shardAll ext p o =  p `traverseAll` ext
+            $$  shardFile ext o 100000
+            =$= logm "Sharded all files!"
+            =$= cap                
 
 {-----------------------------------------------------------------------------
   Conduit sources
@@ -87,6 +101,37 @@ untarSaveAs ext = awaitForever $ \p -> do
   yield (p, f)
 
 
+-- * Shard .txt file found at path `p` into `size`ed pieces and save
+-- * in output directory `o`
+shardFile :: FileOpS m s 
+          => String 
+          -> FilePath 
+          -> Int 
+          -> Conduit FilePath m ()
+shardFile ext o size = awaitForever $ \p -> do
+    
+    let name = dropExtension . takeFileName $ p
+    let dir  = takeExtension p
+
+    f <- liftIO $ readFile p
+    let ts  = LT.splitOn (LT.pack "\n") f
+    let ts' = LT.unlines <$> chunksOf size ts
+
+    liftIO $ foldM 
+           (\n t -> do
+                let name' = name ++ show n ++ ext
+                let path  = o    ++ name'
+
+                banner 
+                print $ "saving file: " ++ path
+
+                writeFile path t
+                return $ n + 1
+
+            ) 0 ts'
+
+    return ()
+
 -- * Log the current index of file `mxs` encountered
 -- * for each new file encountered, increment the counter
 logNum :: (Show i, FileOpS m Int) => Conduit i m i
@@ -112,7 +157,9 @@ logi = awaitForever $ \xs -> do
 -- * log message `xs` 
 logm :: FileOpS m s => String -> Conduit i m i
 logm xs = awaitForever $ \f -> do
+  liftIO banner
   liftIO . putStrLn $ xs
+  liftIO banner
   yield f
 
 

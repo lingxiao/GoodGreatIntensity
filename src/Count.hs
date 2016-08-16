@@ -17,6 +17,7 @@ import Prelude hiding           (readFile, writeFile )
 
 import System.FilePath
 import Control.Monad.IO.Class   (MonadIO, liftIO     )
+import Control.Monad
 
 import Data.Conduit 
 import Conduit hiding           (sourceDirectory     ,
@@ -41,6 +42,12 @@ p2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/"
 p3 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/3gms/"
 p4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gms/"
 p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms/"
+
+p2o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gmsnew/"
+p3o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/3gmsnew/"
+p4o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gmsnew/"
+p5o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsnew/"
+
 
 {-----------------------------------------------------------------------------
    Counting 
@@ -72,12 +79,17 @@ cntW w = awaitForever $ \p -> do
 -- * use this to sanity check that only one
 -- * of the docs should have what you're looking for
 foo :: FileOpS m s => FilePath -> String -> m ()
-foo p w = p `traverseAll` ".txt"
-    $$  cntW w
-    =$= cap 
+foo p w = logm "searching through corpus"
+       $$ p `traverseAll` ".txt"
+      =$= cntW w
+      =$= cap 
 
 
-
+mainShard :: IO ()
+mainShard = do
+    run $ shardAll ".txt" p3 p3o
+    run $ shardAll ".txt" p4 p4o
+    run $ shardAll ".txt" p5 p5o
 
 
 
