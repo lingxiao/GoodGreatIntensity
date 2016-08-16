@@ -23,7 +23,7 @@ import Control.Exception.Base   (SomeException       )
 
 import Codec.Compression.GZip   (decompress          )
 
-import Data.List.Split          (chunksOf)
+import Data.List.Split          (chunksOf            )
 import Data.ByteString          (ByteString          )
 import Data.Conduit 
 import Conduit hiding           (sourceDirectory     ,
@@ -54,9 +54,9 @@ untarAll p e1 e2 =  p `traverseAll` e1
 -- * and save in output directory `o`
 shardAll :: FileOpS m s => String -> FilePath -> FilePath -> m ()
 shardAll ext p o =  p `traverseAll` ext
-            $$  shardFile ext o 100000
-            =$= logm "Sharded all files!"
-            =$= cap                
+                $$  shardFile ext o 100000
+                =$= logm "Sharded all files!"
+                =$= cap                
 
 {-----------------------------------------------------------------------------
   Conduit sources
