@@ -64,11 +64,8 @@ banner = putStrLn $ foldr (++) mempty
    III. Phrase Pattern       
 ------------------------------------------------------------------------------}
 
-
--- * these should be parsers
--- * you run this on a Text and it gives you all occurences of
--- * of the pattern you want
-
+-- * A pattern is a parser that outputs the pattern found and 
+-- * its frequence of occurence in the google ngram corpora
 type Pattern = Parser (String, Int)
 
 -- * Given a stream of text `ts` and some pattern,
@@ -78,8 +75,6 @@ infixr 9 <**
 p <** ts = case parse p ts of
   Done _ r -> Just r
   _        -> Nothing
-
-
 
 
 

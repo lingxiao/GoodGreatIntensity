@@ -13,7 +13,7 @@
 module Count where
 
 
-import Prelude hiding           (readFile            )
+import Prelude hiding           (readFile, writeFile )
 
 import System.FilePath
 import Control.Monad.IO.Class   (MonadIO, liftIO     )
@@ -27,9 +27,13 @@ import Data.Conduit.Binary      (sourceFile, sinkFile)
 import Data.Text.Lazy.IO        
 
 
+import Data.List.Split
+import qualified Data.Text.Lazy as L
+
+
 import Core
 import ConduitLib
-import ParserLib
+import NgramParser
 
 
 p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms/"
@@ -42,24 +46,25 @@ p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms/"
    Counting 
 ------------------------------------------------------------------------------}
 
--- * Count the number of occurences of string `xs`
+-- * Problem: case and stuff
+-- * Count the number of occurences of string `w`
 cntW :: FileOpS m s 
      => String 
      -> Conduit FilePath m Int
 
-cntW xs = awaitForever $ \p -> do
+cntW w = awaitForever $ \p -> do
 
     let name = dropExtension . takeFileName $ p
 
-    f <- liftIO . readFile $ p
+    ts <- liftIO . readFile $ p
 
-    case search f xs of
-        Nothing     -> logger xs name 0 >> yield 0
-        Just (_, n) -> logger xs name n >> yield n
+    case (cnt w) <** ts of
+        Nothing     -> logger w name 0 >> yield 0
+        Just (_, n) -> logger w name n >> yield n
 
-        where logger xs name n = do
+        where logger w name n = do
               liftIO $ banner 
-              liftIO . print $ xs
+              liftIO . print $ w
                     ++ " occurs " ++ show n
                     ++ " times in document " ++ name
 
@@ -67,12 +72,9 @@ cntW xs = awaitForever $ \p -> do
 -- * use this to sanity check that only one
 -- * of the docs should have what you're looking for
 foo :: FileOpS m s => FilePath -> String -> m ()
-foo p xs = p `traverseAll` ".txt"
-    $$  cntW xs
+foo p w = p `traverseAll` ".txt"
+    $$  cntW w
     =$= cap 
-
-
-
 
 
 
