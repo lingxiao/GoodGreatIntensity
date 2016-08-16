@@ -31,15 +31,6 @@ import Core
 cnt :: String -> Pattern
 cnt w = vocabn w <|> vocab1 w
 
-cnt' :: String -> Pattern
-cnt' w = do
-    pUntil w
-    string . pack $ w
-    string "\t"
-    n <- natural 
-    string "\n"
-    return (w, read n)
-
 -- butnot :: Pattern -> Pattern -> Pattern
 -- butnot p1 p2 = do
 --  w1 <- p1
