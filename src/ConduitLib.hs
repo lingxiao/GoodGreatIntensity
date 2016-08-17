@@ -12,10 +12,10 @@
 
 module ConduitLib where
 
-import Prelude hiding           (readFile, writeFile )
+import Prelude hiding           (readFile, writeFile , 
+                                 lines               )
 import System.FilePath
 import System.Directory
-
 
 import Control.Monad.State  
 import Control.Monad.IO.Class   (MonadIO, liftIO     )
@@ -23,13 +23,17 @@ import Control.Exception.Base   (SomeException       )
 
 import Codec.Compression.GZip   (decompress          )
 
-import Data.List.Split          (chunksOf            )
-import Data.ByteString          (ByteString          )
 import Data.Conduit 
+import Data.Conduit.Text
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
 import Data.Conduit.Filesystem  (sourceDirectory     )
 import Data.Conduit.Binary      (sourceFile, sinkFile)
+
+
+import Data.Text hiding         (lines, chunksOf     )
+import Data.List.Split          (chunksOf            )
+import Data.ByteString          (ByteString          )
 import Data.Text.Lazy.IO        (readFile , writeFile)
 import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Lazy as L
@@ -78,10 +82,16 @@ sourceFileE f = catchC (sourceFile f)
    Conduit pipes
 ------------------------------------------------------------------------------}
 
+-- * Awaits bytestring and convert to list of text,
+-- * splitting on token char
+linesOn :: FileOpS m s => String -> Conduit ByteString m [Text]
+linesOn tok = decode utf8 =$= lines =$= mapC (splitOn . pack $ tok)
+
+
 -- * TODO: swap out the L.readFile for something more safe
 -- *       what about   L.writeFile ?
 
--- * open zip file found at path `p`
+-- * open .gz file with found at path `p`
 -- * and untar it, save it in the same directory with extension `ext`
 -- * yield the untared file `f` downstream with its filepath
 untarSaveAs :: FileOpS m s
@@ -168,7 +178,7 @@ logm xs = awaitForever $ \f -> do
 ------------------------------------------------------------------------------}
 
 -- * `cap` a conduit pipeline 
-cap :: FileOpS m s => Consumer i m ()
+cap :: MonadIO m => Consumer i m ()
 cap = do
   mx <- await
   case mx of

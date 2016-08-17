@@ -12,6 +12,7 @@
 
 module NgramParser where
 
+import Prelude hiding (concat)
 
 import Control.Monad
 import Control.Applicative
@@ -23,22 +24,46 @@ import qualified Data.Text.Lazy as L (Text, pack)
 
 import Core
 
+
+-- * TODO: consider depricating this, since it's
+-- * no longer needed since we have streaming abstraction
+
+
 {-----------------------------------------------------------------------------
-   Patterns used in scoring expression
+   Play with patterns here:
 ------------------------------------------------------------------------------}
 
 -- * search for first occurence of `w` from `vocab.txt` and output its count
 cnt :: String -> Pattern
 cnt w = vocabn w <|> vocab1 w
 
+-- * hard wire one parser
 -- butnot :: Pattern -> Pattern -> Pattern
 -- butnot p1 p2 = do
 --  w1 <- p1
 --  return (w1, 0)
 
+butNot :: Parser String
+butNot = cat <$> string "good" <*> string " but not great"
+
+
+
+
+-- * see if there's a way to represent this as a regular expression
+{-
+    p1 = "* (,) but not *"
+-}
+
+cat :: Text -> Text -> String
+cat t1 t2 = unpack t1 ++ unpack t2
+
+
+--aLine :: Parser String
+
 {-----------------------------------------------------------------------------
    Parser utils 
 ------------------------------------------------------------------------------}
+
 
 -- * Parse for word `w` in google 1gram vocab.txt
 -- * file that appears in in the 1st line: "w\t..."

@@ -13,7 +13,8 @@
 module Count where
 
 
-import Prelude hiding           (readFile, writeFile )
+import Prelude hiding           (readFile, writeFile ,
+                                 lines   ,           )
 
 import System.FilePath
 import Control.Monad.IO.Class   (MonadIO, liftIO     )
@@ -27,27 +28,19 @@ import Data.Conduit.Filesystem  (sourceDirectory     )
 import Data.Conduit.Binary      (sourceFile, sinkFile)
 import Data.Text.Lazy.IO        
 
-
-import Data.List.Split
+-- import Data.List.Split
 import qualified Data.Text.Lazy as L
+
+
+-- * new stuff, need to move into ngram parse
+import Data.Text hiding          (lines)
+import Data.Conduit.Text
+import Data.Conduit.List
 
 
 import Core
 import ConduitLib
 import NgramParser
-
-
-p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms/"
-p2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/"
-p3 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/3gms/"
-p4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gms/"
-p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms/"
-
-p2o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gmsnew/"
-p3o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/3gmsnew/"
-p4o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gmsnew/"
-p5o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsnew/"
-
 
 {-----------------------------------------------------------------------------
    Counting 
@@ -76,12 +69,14 @@ cntW w = awaitForever $ \p -> do
                     ++ " times in document " ++ name
 
 
+-- openByteString >> convertToText >> lines >> mapMaybe splitAndParse
+
+
 -- * use this to sanity check that only one
 -- * of the docs should have what you're looking for
 foo :: FileOpS m s => FilePath -> String -> m ()
-foo p w = logm "searching through corpus"
-       $$ p `traverseAll` ".txt"
-      =$= cntW w
+foo p w = p `traverseAll` ".txt"
+      $$  cntW w
       =$= cap 
 
 
@@ -90,6 +85,19 @@ mainShard = do
     run $ shardAll ".txt" p3 p3o
     run $ shardAll ".txt" p4 p4o
     run $ shardAll ".txt" p5 p5o
+
+p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms/"
+p2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/"
+p3 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/3gms/"
+p4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gms/"
+p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms/"
+
+p2o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gmsnew/"
+p3o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/3gmsnew/"
+p4o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gmsnew/"
+p5o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsnew/"
+
+
 
 
 
