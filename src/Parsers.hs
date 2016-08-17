@@ -12,9 +12,11 @@
 
 module Parsers where
 
+import Prelude hiding   (concat, takeWhile)
 import Control.Monad
 import Control.Applicative
 
+import Data.Char
 import Data.Attoparsec.Text
 import Data.Attoparsec.Combinator
 import Data.Text hiding (foldr)
@@ -24,24 +26,37 @@ import Data.Text hiding (foldr)
    Run Parser
 ------------------------------------------------------------------------------}
 
-infixr 9 <**
+infixr 8 <**
 (<**) :: Parser a -> Text -> Maybe a
 p <** t = case parse p t of
     Done _ r -> Just r
     _        -> Nothing
 
-
-mParseOnly :: Parser a -> Text -> Maybe a
-mParseOnly p t = case parseOnly p t of
-  Right r -> Just r
-  _       -> Nothing  
-
 {-----------------------------------------------------------------------------
    Application specific parsers
 ------------------------------------------------------------------------------}
 
+-- * parse sentence of form "w (,) but not s"
+butNot :: String -> String -> Parser Text
+butNot w s = pattern1 "but not" pw ps
+  where [pw, ps] = (string . pack) <$> [w,s]
 
+-- * parse sentence of form "* (,) but not *""
+butNot' :: Parser Text
+butNot' = pattern1 "but not" star star
 
+{-----------------------------------------------------------------------------
+   5-gram patterns
+------------------------------------------------------------------------------}
+
+pattern1' :: String -> Parser Text -> Parser Text -> Parser Text
+pattern1' r pu pv = undefined  
+
+-- * spaces might be an issue here
+-- * Pattern of form:   u r v
+pattern1 :: String -> Parser Text -> Parser Text -> Parser Text
+pattern1 r pu pv =  (\w c xs _ s -> concat [w, " ", c, " ", xs, " ", s])
+                <$> pu <*> commaS <*> (string . pack $ r) <*> spaces1 <*> pv
 
 
 {-----------------------------------------------------------------------------
@@ -63,6 +78,10 @@ spaces1 = tok " " <$> many1' space
 spaces :: Parser Text
 spaces = tok " " <$> many' space
 
+-- * parses any word and outputs "*"
+star :: Parser Text
+star = tok "*" <$> anyWord
+
 {-----------------------------------------------------------------------------
   Utility
 ------------------------------------------------------------------------------}
@@ -70,12 +89,14 @@ spaces = tok " " <$> many' space
 tok :: String -> a -> Text
 tok t = const . pack $ t
 
--- * parse punctuation `p` either followed by zero or more spaces
+-- * parse punctuation `p` either followed by *zero* or more spaces
 -- * output "[p] "
 punct :: Char -> Parser Text
-punct p = (\_ -> tok $ [p] ++ " ") <$> (char p) <*> spaces
+punct p = (\_ -> tok $ p : " ") <$> char p <*> spaces
 
-
+-- * parses any consequitive sequence of alphabet
+anyWord :: Parser Text
+anyWord = takeWhile1 isAlpha
 
 
 

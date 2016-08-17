@@ -29,9 +29,17 @@ main = do
               $ [ tspaces
                 , tcomma
                 , tcommaS
+                , tanyWord
 
+                , tbutnot
                 ]
     return ()
+
+
+pOnly :: Parser a -> Text -> Maybe a
+pOnly p t = case parseOnly p t of
+  Right r -> Just r
+  _       -> Nothing  
 
 
 {-----------------------------------------------------------------------------
@@ -40,25 +48,37 @@ main = do
 
 tspaces :: Test
 tspaces = "spaces" 
-        ~: TestList [ mParseOnly spaces (pack ""   ) ~?= (Just . pack $ " ")
-                    , mParseOnly spaces (pack "   ") ~?= (Just . pack $ " ")
-                    , mParseOnly spaces (pack "hel") ~?= (Just . pack $ " ") 
+        ~: TestList [ pOnly spaces (pack ""   ) ~?= (Just . pack $ " ")
+                    , pOnly spaces (pack "   ") ~?= (Just . pack $ " ")
+                    , pOnly spaces (pack "hel") ~?= (Just . pack $ " ") 
                     ]
 
 tcomma :: Test
 tcomma = "comma" 
-       ~: TestList [ mParseOnly comma (pack ", foo") ~?= (Just . pack $ ", ")
-                   , mParseOnly comma (pack ",foo" ) ~?= (Just . pack $ ", ")
-                   , mParseOnly comma (pack ",   foo")  
-                                                     ~?= (Just . pack $ ", ")
-                   , mParseOnly comma (pack "world") ~?=  Nothing
+       ~: TestList [ pOnly comma (pack ", foo"  ) ~?= (Just . pack $ ", ")
+                   , pOnly comma (pack ",foo"   ) ~?= (Just . pack $ ", ")
+                   , pOnly comma (pack ",   foo") ~?= (Just . pack $ ", ")
+                   , pOnly comma (pack "world"  ) ~?=  Nothing
                    ]
 
 tcommaS :: Test
 tcommaS = let tok = pack "(,)" in "comma or space" 
-        ~: TestList [ commaS <** pack ", foo" ~?= Just tok
-                    , commaS <** pack " foo"  ~?= Just tok
-                    , commaS <** pack "foo"   ~?= Nothing
+        ~: TestList [ pOnly commaS (pack ", foo") ~?= Just tok
+                    , pOnly commaS (pack " foo" ) ~?= Just tok
+                    , pOnly commaS (pack "foo"  ) ~?= Nothing
+                    ]
+
+
+tanyWord :: Test
+tanyWord = "anyWord"
+        ~: TestList [ pOnly anyWord (pack "hello"      ) ~?= (Just . pack $ "hello")
+                    , pOnly anyWord (pack "hello world") ~?= (Just . pack $ "hello")
+                    , pOnly anyWord (pack "h"          ) ~?= (Just . pack $ "h"    )
+                    , pOnly anyWord (pack "!"          ) ~?= Nothing
+                    , pOnly anyWord (pack "9"          ) ~?= Nothing
+                    , pOnly anyWord (pack "!hello"     ) ~?= Nothing
+                    , pOnly anyWord (pack ""           ) ~?= Nothing
+                    , pOnly anyWord (pack "    "       ) ~?= Nothing
                     ]
 
 
@@ -67,7 +87,15 @@ tcommaS = let tok = pack "(,)" in "comma or space"
 ------------------------------------------------------------------------------}
 
 
-
+tbutnot :: Test
+tbutnot =  let o = Just . pack $ "good (,) but not great"
+        in "but not"
+        ~: TestList [ "good" `butNot` "great" <** (pack "good but not great"   ) ~?= o
+                    , "good" `butNot` "great" <** (pack "good, but not great"  ) ~?= o
+                    , "good" `butNot` "great" <** (pack "good,   but not great") ~?= o
+                    , "good" `butNot` "great" <** (pack "foo but not bar"      ) ~?= Nothing
+                    , "good" `butNot` "great" <** (pack "foo,  but not bar"    ) ~?= Nothing
+                    ]
 
 
 -- * patterns to be tested
