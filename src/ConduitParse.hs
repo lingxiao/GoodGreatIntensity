@@ -14,10 +14,11 @@ module ConduitParse where
 
 
 import Prelude hiding           (readFile, writeFile ,
-                                 lines   ,           )
+                                 lines   , filter    )
 
-import Data.Text hiding         (lines)
+import Data.Text hiding         (lines   , filter    )
 import Data.ByteString          (ByteString, readFile)
+import Data.Conduit.List
 import Data.Conduit.Binary      (sourceFile, sinkFile)
 import Data.Conduit.Text
 import Conduit hiding           (sourceDirectory     ,
@@ -38,22 +39,41 @@ ps, ps1 :: FilePath
 ps  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/short/"
 ps1 = ps ++ "1gm.txt"
 
+p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms/"
+p2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/"
+p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
+
+
 -- * just consider opening a file in bytestring,
 -- * and then 
 
+-- * Judge Lozano 169
 
---foo :: FileOpS m s => m ()
+bar :: FileOpS m s => m ()
+bar =   runConduit 
+    $   p2 `traverseAll` ".txt"
+    =$= openFile
+    =$= linesOn "\t"
+    =$= filter (\x -> Prelude.length x == 2)
+    =$= mapC (\[w,n] -> [unpack w, unpack n])
+    =$= filter (\[w,n] -> w == "Caribbean Prints")
+    =$= awaitForever (\[w, n]-> do
+           liftIO banner
+           liftIO . print . show $ [w,n]
+      )
+
+
+
+
 foo :: FileOpS m s => m ()
 foo =  runConduit 
     $  sourceFile ps1
    =$= linesOn "\t"
+   =$= filter (\[w,n] -> w == pack "swimsjuit")
    =$= awaitForever (\[w,n] -> do
-            liftIO . print $ w)
+             liftIO . print $ w
+       )
 
-
-
---bar =  ps `traverseAll` ".txt"
-    --$$ awaitForever (\p -> )
 
 
 

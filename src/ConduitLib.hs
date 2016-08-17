@@ -33,10 +33,10 @@ import Data.Conduit.Binary      (sourceFile, sinkFile)
 
 import Data.Text hiding         (lines, chunksOf     )
 import Data.List.Split          (chunksOf            )
-import Data.ByteString          (ByteString          )
 import Data.Text.Lazy.IO        (readFile , writeFile)
 import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString as B
 
 import Core
 
@@ -74,7 +74,7 @@ traverseAll p e =   sourceDirectory p
 
 -- * if no file exists at `FilePath` `f`, then
 -- * output empty ByteString
-sourceFileE :: FileOpS m s => FilePath -> Source m ByteString
+sourceFileE :: FileOpS m s => FilePath -> Source m B.ByteString
 sourceFileE f = catchC (sourceFile f) 
                 (\(e :: SomeException) -> yield mempty)
 
@@ -82,14 +82,23 @@ sourceFileE f = catchC (sourceFile f)
    Conduit pipes
 ------------------------------------------------------------------------------}
 
+-- * TODO : make exception handling here
+-- * awaits a file path and opens as bytestring
+openFile :: (Monad m, MonadIO m) 
+         => Conduit FilePath m B.ByteString
+openFile = awaitForever $ \p -> do
+           f <- liftIO $ B.readFile p
+           yield f
+
+
 -- * Awaits bytestring and convert to list of text,
 -- * splitting on token char
-linesOn :: FileOpS m s => String -> Conduit ByteString m [Text]
+linesOn :: FileOpS m s => String -> Conduit B.ByteString m [Text]
 linesOn tok = decode utf8 =$= lines =$= mapC (splitOn . pack $ tok)
 
 
 -- * TODO: swap out the L.readFile for something more safe
--- *       what about   L.writeFile ?
+-- *       Break this one down into source, pipe, and sink
 
 -- * open .gz file with found at path `p`
 -- * and untar it, save it in the same directory with extension `ext`

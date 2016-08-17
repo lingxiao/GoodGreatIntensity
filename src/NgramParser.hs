@@ -48,7 +48,6 @@ butNot = cat <$> string "good" <*> string " but not great"
 
 
 
-
 -- * see if there's a way to represent this as a regular expression
 {-
     p1 = "* (,) but not *"
