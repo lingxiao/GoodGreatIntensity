@@ -37,14 +37,15 @@ import Data.Text hiding          (lines)
 import Data.Conduit.Text
 import Data.Conduit.List
 
+{-----------------------------------------------------------------------------
+
 
 import Core
 import ConduitLib
-import NgramParser
 
-{-----------------------------------------------------------------------------
+
+-- * This whole thing is about to be refactored
    Counting 
-------------------------------------------------------------------------------}
 
 -- * Problem: case and stuff
 -- * Count the number of occurences of string `w`
@@ -98,6 +99,7 @@ p4o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gmsnew/"
 p5o = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsnew/"
 
 
+------------------------------------------------------------------------------}
 
 
 

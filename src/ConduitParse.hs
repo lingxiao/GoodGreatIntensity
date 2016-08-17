@@ -32,6 +32,8 @@ import ConduitLib
    redo using conduit
 
    openByteString >> convertToText >> lines >> mapMaybe splitAndParse
+
+   NOTE: This whole thing will be factored away
 ------------------------------------------------------------------------------}
 
 
@@ -47,22 +49,21 @@ p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
 -- * just consider opening a file in bytestring,
 -- * and then 
 
--- * Judge Lozano 169
-
+-- * where you left off: so you have a version working
+-- *                     now you need to actually parse the first item 
+-- *                     also consider how you would traverse all documents
+-- *                     for all occurences of the pattern
 bar :: FileOpS m s => m ()
 bar =   runConduit 
-    $   p2 `traverseAll` ".txt"
+    $   p `traverseAll` ".txt"
     =$= openFile
     =$= linesOn "\t"
-    =$= filter (\x -> Prelude.length x == 2)
-    =$= mapC (\[w,n] -> [unpack w, unpack n])
-    =$= filter (\[w,n] -> w == "Caribbean Prints")
+    =$= filter       (\x     -> Prelude.length x == 2  )
+    =$= mapC         (\[w,n] -> [unpack w, unpack n]   )
+    =$= filter       (\[w,n] -> w == "Caribbean Prints")  -- * replace with parser
     =$= awaitForever (\[w, n]-> do
            liftIO banner
-           liftIO . print . show $ [w,n]
-      )
-
-
+           liftIO . print $ w)
 
 
 foo :: FileOpS m s => m ()

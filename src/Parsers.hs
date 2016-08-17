@@ -10,19 +10,88 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module NgramParser where
-
-import Prelude hiding (concat)
+module Parsers where
 
 import Control.Monad
 import Control.Applicative
 
-import Data.Attoparsec.Text.Lazy
+import Data.Attoparsec.Text
 import Data.Attoparsec.Combinator
 import Data.Text hiding (foldr)
-import qualified Data.Text.Lazy as L (Text, pack)
 
-import Core
+
+{-----------------------------------------------------------------------------
+   Run Parser
+------------------------------------------------------------------------------}
+
+infixr 9 <**
+(<**) :: Parser a -> Text -> Maybe a
+p <** t = case parse p t of
+    Done _ r -> Just r
+    _        -> Nothing
+
+
+mParseOnly :: Parser a -> Text -> Maybe a
+mParseOnly p t = case parseOnly p t of
+  Right r -> Just r
+  _       -> Nothing  
+
+{-----------------------------------------------------------------------------
+   Application specific parsers
+------------------------------------------------------------------------------}
+
+
+{-----------------------------------------------------------------------------
+   Basic parsers
+------------------------------------------------------------------------------}
+
+comma :: Parser Text
+comma = punct ','
+
+-- * next char could either be a comma or zero or more spaces
+commaS :: Parser Text
+commaS = (const . pack $ "(,)") <$> (comma <|> spaces)
+
+-- * parse zero or more spaces and ouput one space
+spaces :: Parser Text
+spaces = (const . pack $ " ") <$> many' space
+
+
+{-----------------------------------------------------------------------------
+  Utility
+------------------------------------------------------------------------------}
+
+-- * parse punctuation `p` either followed by zero or more spaces
+-- * output "[p] "
+punct :: Char -> Parser Text
+punct p = (\_ _ -> pack $ [p] ++ " ") <$> (char p) <*> spaces
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- * TODO: consider depricating this, since it's
@@ -31,7 +100,6 @@ import Core
 
 {-----------------------------------------------------------------------------
    Play with patterns here:
-------------------------------------------------------------------------------}
 
 -- * search for first occurence of `w` from `vocab.txt` and output its count
 cnt :: String -> Pattern
@@ -116,6 +184,7 @@ t7 = L.pack "world hello\t999\nworld\t\900"
 w1 :: Pattern
 w1 = cnt "hello"    
 
+------------------------------------------------------------------------------}
 
 
 
