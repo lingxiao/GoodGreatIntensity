@@ -35,15 +35,7 @@ main = do
 
 
 {-----------------------------------------------------------------------------
-    Test cases found in paper
-
-    tintersperse :: Test
-    tintersperse = "intersperse" ~:
-    TestList [ intersperse ',' ""      ~?= "", 
-         intersperse ',' "a"     ~?= "a", 
-         intersperse ',' "abcde" ~?= "a,b,c,d,e" ]  
-
-
+    Basic parsers
 ------------------------------------------------------------------------------}
 
 tspaces :: Test
@@ -69,6 +61,10 @@ tcommaS = let tok = pack "(,)" in "comma or space"
                     , commaS <** pack "foo"   ~?= Nothing
                     ]
 
+
+{-----------------------------------------------------------------------------
+    Application specific parsers
+------------------------------------------------------------------------------}
 
 
 

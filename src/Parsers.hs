@@ -41,6 +41,9 @@ mParseOnly p t = case parseOnly p t of
 ------------------------------------------------------------------------------}
 
 
+
+
+
 {-----------------------------------------------------------------------------
    Basic parsers
 ------------------------------------------------------------------------------}
@@ -50,21 +53,27 @@ comma = punct ','
 
 -- * next char could either be a comma or zero or more spaces
 commaS :: Parser Text
-commaS = (const . pack $ "(,)") <$> (comma <|> spaces)
+commaS = tok "(,)" <$> (comma <|> spaces1)
+
+-- * parse one or more spaces and ouput one space
+spaces1 :: Parser Text
+spaces1 = tok " " <$> many1' space
 
 -- * parse zero or more spaces and ouput one space
 spaces :: Parser Text
-spaces = (const . pack $ " ") <$> many' space
-
+spaces = tok " " <$> many' space
 
 {-----------------------------------------------------------------------------
   Utility
 ------------------------------------------------------------------------------}
 
+tok :: String -> a -> Text
+tok t = const . pack $ t
+
 -- * parse punctuation `p` either followed by zero or more spaces
 -- * output "[p] "
 punct :: Char -> Parser Text
-punct p = (\_ _ -> pack $ [p] ++ " ") <$> (char p) <*> spaces
+punct p = (\_ -> tok $ [p] ++ " ") <$> (char p) <*> spaces
 
 
 
