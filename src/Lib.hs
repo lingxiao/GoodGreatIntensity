@@ -12,5 +12,6 @@
 module Lib where
 
 import Core
-import ConduitLib
+import Conduits
+import Parsers
 
