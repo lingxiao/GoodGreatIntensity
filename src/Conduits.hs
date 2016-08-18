@@ -177,7 +177,7 @@ logi = awaitForever $ \xs -> do
 logm :: FileOpS m s => String -> Conduit i m i
 logm xs = awaitForever $ \f -> do
   liftIO banner
-  liftIO . putStrLn $ xs
+  liftIO . print $ xs
   liftIO banner
   yield f
 

@@ -38,30 +38,40 @@ p <+> q = (\u v -> concat [u, pack " ", v]) <$> p <*> q
 
 
 {-----------------------------------------------------------------------------
-   Weak-Strong pattens
+   Weak-Strong patterns
 ------------------------------------------------------------------------------}
 
 --    w (,) but not s
 butNot :: String -> String -> Parser Text
-butNot w s = word w <+> comma' <+> but_ <+> not_ <+> word s
+butNot w s      = word w <+> butNot_ <+> word s
 
 --     * (,) but not *
 butNot' :: Parser Text  
-butNot' = star <+> comma' <+> but_ <+> not_ <+> star
+butNot'         = star <+> butNot_ <+> star
 
 
 althoughNot :: String -> String -> Parser Text
-althoughNot w s = word w <+> comma' <+> although_ <+> not_ <+> word s
+althoughNot w s = word w <+> althoughNot_ <+> word s
 
 althoughNot' :: Parser Text
-althoughNot' = star <+> comma' <+> although_ <+> not_ <+> star
+althoughNot'    = star <+> althoughNot_ <+> star
 
+
+{-----------------------------------------------------------------------------
+   Relationships
+------------------------------------------------------------------------------}
+
+butNot_       = comma' <+> but_           <+> not_
+althoughNot_  = comma' <+> although_      <+> not_
+thoughNot_    = comma' <+> though_        <+> not_
+andorEven_    = comma' <+> (and_ <|> or_) <+> even_
+andorAlmost_  = comma' <+> (and_ <|> or_) <+> almost_
 
 {-----------------------------------------------------------------------------
    words
 ------------------------------------------------------------------------------}
 
-comma, but_, not_, if_, or_
+comma, but_, not_, if_, or_, almost,
      , although_, only_, just_, still_  :: Parser Text
 comma     = word ","
 but_      = word "but"
@@ -72,6 +82,9 @@ although_ = word "although"
 only_     = word "only"
 just_     = word "just"
 still_    = word "still"
+almost_   = word "almost"
+
+
 
 -- * parses any word and outputs "*"
 star :: Parser Text
@@ -109,6 +122,7 @@ spaces = tok " " <$> many' space
 tok :: String -> a -> Text
 tok t = const . pack $ t
 
+-- * word "hello" <* lookahead (noneOf ['A'..'z'])
 
 
 

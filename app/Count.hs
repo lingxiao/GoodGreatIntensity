@@ -26,8 +26,8 @@ import Parsers
 import Conduits
 
 
--- * Right now: open all files and search for "good (,) but not great"
-p = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/short/"
+p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG/"
+p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms/"
 
 bar :: FileOpS m s => m ()
 bar =   runConduit 
@@ -35,16 +35,16 @@ bar =   runConduit
     =$= openFile
     =$= linesOn "\t"
     =$= filter       (\x     -> Prelude.length x == 2)
-    =$= filter       (\[w,n] -> case word "Belica" <** w of
+    =$= logi
+    =$= filter       (\[w,n] -> case "good" `butNot` "great" <** w of
                                     Just _ -> True
                                     _      -> False
                      )
     =$= awaitForever (\[w,n] -> do
            liftIO banner
-           liftIO . print $ w)
-
-
-
+           liftIO . print $ "filtered value: "
+           liftIO . print $ [w,n])
+    =$= cap
 
 
 {-----------------------------------------------------------------------------
