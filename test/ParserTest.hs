@@ -32,7 +32,7 @@ main = do
                 , tword
 
                 , tcomma
-                , tcommaS
+                , tcomma'
                 , tbut
 
                 , tbutnot
@@ -99,12 +99,12 @@ tcomma = "comma"
                    ]
 
 
-tcommaS :: Test
-tcommaS = "commaS" 
-       ~: TestList [ pOnly commaS (pack ","  ) ~?= justP "(,)"
-                   , pOnly commaS (pack "  ,") ~?= justP "(,)"
-                   , pOnly commaS (pack " ")   ~?= justP "(,)"
-                   , pOnly commaS (pack "h"  ) ~?= Nothing
+tcomma' :: Test
+tcomma' = "comma'" 
+       ~: TestList [ pOnly comma' (pack ","  ) ~?= justP "(,)"
+                   , pOnly comma' (pack "  ,") ~?= justP "(,)"
+                   , pOnly comma' (pack " ")   ~?= justP "(,)"
+                   , pOnly comma' (pack "h"  ) ~?= Nothing
                    ]
 
 

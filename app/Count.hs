@@ -34,11 +34,11 @@ bar =   runConduit
     $   p `traverseAll` ".txt"
     =$= openFile
     =$= linesOn "\t"
-    =$= filter       (\x     -> Prelude.length x == 2  )
+    =$= filter       (\x     -> Prelude.length x == 2)
     =$= filter       (\[w,n] -> case word "Belica" <** w of
                                     Just _ -> True
                                     _      -> False
-      )
+                     )
     =$= awaitForever (\[w,n] -> do
            liftIO banner
            liftIO . print $ w)

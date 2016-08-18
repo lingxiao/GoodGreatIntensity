@@ -23,7 +23,7 @@ import Data.Text hiding (foldr)
 
 
 {-----------------------------------------------------------------------------
-   Run Parser
+   Run Parser and Parser Combinator
 ------------------------------------------------------------------------------}
 
 infixr 8 <**
@@ -32,27 +32,29 @@ p <** t = case parse p t of
     Done _ r -> Just r
     _        -> Nothing
 
+infixr 9 <+>
+(<+>) :: Parser Text -> Parser Text -> Parser Text
+p <+> q = (\u v -> concat [u, pack " ", v]) <$> p <*> q
+
+
 {-----------------------------------------------------------------------------
-   Application specific parsers
+   Weak-Strong pattens
 ------------------------------------------------------------------------------}
 
 --    w (,) but not s
 butNot :: String -> String -> Parser Text
-butNot w s = out (w ++ " (,) but not " ++ s)
-           $ word w *> commaS *> but_ *> not_ *> word s
+butNot w s = word w <+> comma' <+> but_ <+> not_ <+> word s
 
 --     * (,) but not *
 butNot' :: Parser Text  
-butNot' = out "* (,) but not *"
-        $ star *> commaS *> but_ *> not_ *> star
+butNot' = star <+> comma' <+> but_ <+> not_ <+> star
+
 
 althoughNot :: String -> String -> Parser Text
-althoughNot w s = out (w ++ " (,) although not " ++ s)
-                $ word w *> commaS *> although_ *> not_ *> word s
+althoughNot w s = word w <+> comma' <+> although_ <+> not_ <+> word s
 
 althoughNot' :: Parser Text
-althoughNot' = out ("* (,) although not *")
-             $ star *> commaS *> although_ *> not_ *> star
+althoughNot' = star <+> comma' <+> although_ <+> not_ <+> star
 
 
 {-----------------------------------------------------------------------------
@@ -77,8 +79,8 @@ star = tok "*" <$> anyWord
 
 -- * next char could either be a comma or 
 -- * one or more spaces
-commaS :: Parser Text
-commaS = tok "(,)" <$> (comma <|> spaces1)
+comma' :: Parser Text
+comma' = tok "(,)" <$> (comma <|> spaces1)
 
 {-----------------------------------------------------------------------------
    Basic parsers
@@ -106,9 +108,6 @@ spaces = tok " " <$> many' space
 
 tok :: String -> a -> Text
 tok t = const . pack $ t
-
-out :: String -> Parser a -> Parser Text
-out xs = fmap (\_ -> pack xs)
 
 
 
