@@ -61,6 +61,8 @@ althoughNot'    = star <+> althoughNot_ <+> star
    Relationships
 ------------------------------------------------------------------------------}
 
+butNot_ , althoughNot_, thoughNot_ , andorEven_
+        , andorAlmost_ :: Parser Text 
 butNot_       = comma' <+> but_           <+> not_
 althoughNot_  = comma' <+> although_      <+> not_
 thoughNot_    = comma' <+> though_        <+> not_
@@ -71,15 +73,18 @@ andorAlmost_  = comma' <+> (and_ <|> or_) <+> almost_
    words
 ------------------------------------------------------------------------------}
 
-comma, but_, not_, if_, or_, almost,
-     , although_, only_, just_, still_  :: Parser Text
+comma, but_, not_, and_, if_, or_, almost_, even_
+     , although_, though_, only_, just_, still_  :: Parser Text
 comma     = word ","
 but_      = word "but"
+and_      = word "and"
 not_      = word "not"
 if_       = word "if"
 or_       = word "or"
 although_ = word "although"
+though_   = word "though"
 only_     = word "only"
+even_     = word "even"
 just_     = word "just"
 still_    = word "still"
 almost_   = word "almost"
