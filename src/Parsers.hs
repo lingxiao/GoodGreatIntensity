@@ -36,39 +36,53 @@ p <** t = case parse p t of
    Application specific parsers
 ------------------------------------------------------------------------------}
 
--- * parse sentence of form "w (,) but not s"
+--    w (,) but not s
 butNot :: String -> String -> Parser Text
-butNot w s = pattern1 "but not" pw ps
-  where [pw, ps] = (string . pack) <$> [w,s]
+butNot w s = out (w ++ " (,) but not " ++ s)
+           $ word w *> commaS *> but_ *> not_ *> word s
 
--- * parse sentence of form "* (,) but not *""
-butNot' :: Parser Text
-butNot' = pattern1 "but not" star star
+--     * (,) but not *
+butNot' :: Parser Text  
+butNot' = out "* (,) but not *"
+        $ star *> commaS *> but_ *> not_ *> star
 
 {-----------------------------------------------------------------------------
-   5-gram patterns
+   Lexicon
 ------------------------------------------------------------------------------}
 
-pattern1' :: String -> Parser Text -> Parser Text -> Parser Text
-pattern1' r pu pv = undefined  
 
--- * spaces might be an issue here
--- * Pattern of form:   u r v
-pattern1 :: String -> Parser Text -> Parser Text -> Parser Text
-pattern1 r pu pv =  (\w c xs _ s -> concat [w, " ", c, " ", xs, " ", s])
-                <$> pu <*> commaS <*> (string . pack $ r) <*> spaces1 <*> pv
+comma     = word ","
+but_      = word "but"
+not_      = word "not"
+if_       = word "if"
+or_       = word "or"
+although  = word "although"
+only_     = word "only"
+just_     = word "just"
+still_    = word "still"
+
+
+-- * parses any word and outputs "*"
+star :: Parser Text
+star = tok "*" <$> anyWord
+
+-- * next char could either be a comma or 
+-- * one or more spaces
+commaS :: Parser Text
+commaS = tok "(,)" <$> (comma <|> spaces1)
 
 
 {-----------------------------------------------------------------------------
    Basic parsers
 ------------------------------------------------------------------------------}
 
-comma :: Parser Text
-comma = punct ','
+-- * parse some string `w` with 0 or more spaces infront
+word :: String -> Parser Text
+word w = spaces *> string (pack w)
 
--- * next char could either be a comma or zero or more spaces
-commaS :: Parser Text
-commaS = tok "(,)" <$> (comma <|> spaces1)
+-- * parse any alphabetical string with 0 or more spaces infront
+anyWord :: Parser Text
+anyWord = spaces *> takeWhile1 isAlpha
 
 -- * parse one or more spaces and ouput one space
 spaces1 :: Parser Text
@@ -78,9 +92,6 @@ spaces1 = tok " " <$> many1' space
 spaces :: Parser Text
 spaces = tok " " <$> many' space
 
--- * parses any word and outputs "*"
-star :: Parser Text
-star = tok "*" <$> anyWord
 
 {-----------------------------------------------------------------------------
   Utility
@@ -89,16 +100,14 @@ star = tok "*" <$> anyWord
 tok :: String -> a -> Text
 tok t = const . pack $ t
 
--- * parse punctuation `p` either followed by *zero* or more spaces
--- * output "[p] "
-punct :: Char -> Parser Text
-punct p = (\_ -> tok $ p : " ") <$> char p <*> spaces
-
--- * parses any consequitive sequence of alphabet
-anyWord :: Parser Text
-anyWord = takeWhile1 isAlpha
+out :: String -> Parser a -> Parser Text
+out xs = fmap (\_ -> pack xs)
 
 
+--butNot :: String -> String -> Parser Text
+--butNot w s = (\_ -> pack $ w ++ " (,) but not " ++ s)
+--         <$> (w' *> commaS *> but_ *> not_ *> s')
+--  where [w', s'] = word <$> [w,s]
 
 
 
@@ -108,113 +117,6 @@ anyWord = takeWhile1 isAlpha
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- * TODO: consider depricating this, since it's
--- * no longer needed since we have streaming abstraction
-
-
-{-----------------------------------------------------------------------------
-   Play with patterns here:
-
--- * search for first occurence of `w` from `vocab.txt` and output its count
-cnt :: String -> Pattern
-cnt w = vocabn w <|> vocab1 w
-
--- * hard wire one parser
--- butnot :: Pattern -> Pattern -> Pattern
--- butnot p1 p2 = do
---  w1 <- p1
---  return (w1, 0)
-
-butNot :: Parser String
-butNot = cat <$> string "good" <*> string " but not great"
-
-
-
--- * see if there's a way to represent this as a regular expression
-{-
-    p1 = "* (,) but not *"
--}
-
-cat :: Text -> Text -> String
-cat t1 t2 = unpack t1 ++ unpack t2
-
-
---aLine :: Parser String
-
-{-----------------------------------------------------------------------------
-   Parser utils 
-------------------------------------------------------------------------------}
-
-
--- * Parse for word `w` in google 1gram vocab.txt
--- * file that appears in in the 1st line: "w\t..."
-vocab1 :: String -> Pattern
-vocab1 w = do
-  string . pack $ w ++ "\t"
-  n <- natural
-  string "\n"
-  return (w, read n)
-
--- * Parse for word `w` in google 1gram vocab.txt
--- * file that appears in some nth line:task  "...\nw\t..."
-vocabn :: String -> Pattern
-vocabn w = do
-    manyTill anyChar . try . string . pack $ "\n" ++ w ++ "\t"
-    n <- natural
-    string "\n"
-    return (w, read n)
-
-
--- * Parse a natural number
-natural :: Parser String
-natural = many1' digit
-
--- * skip over all words in Text stream until the word we want
-pUntil :: String -> Parser String 
-pUntil = manyTill anyChar . lookAhead . string . pack 
-
-notSpace :: Parser Char
-notSpace = notChar ' '
-
-
-{-----------------------------------------------------------------------------
-   adhoc tests
-------------------------------------------------------------------------------}
-
--- * TODO: also need a parser that 
--- * will match the Psw and Psw patterns!!
-
--- * should succed
-t1 = L.pack "hello\t999\nworld\t\900"
-t2 = L.pack "world\t\900\nhello\t999\n"
-
--- * should fail
-t3 = L.pack "world\t\900\nhello world\t999\n"
-t4 = L.pack "hello world\t999\nworld\t\900"
-t5 = L.pack "ahello\t999\nworld\t\900"
-t6 = L.pack "ahello world\t999\nworld\t\900"
-t7 = L.pack "world hello\t999\nworld\t\900"
-
-w1 :: Pattern
-w1 = cnt "hello"    
-
-------------------------------------------------------------------------------}
 
 
 

@@ -27,11 +27,15 @@ main :: IO ()
 main = do
     runTestTT . TestList 
               $ [ tspaces
-                , tcomma
-                , tcommaS
+                , tspaces1
                 , tanyWord
 
+                , tcomma
+                , tcommaS
+                , tbut
+
                 , tbutnot
+                , tbutnot'
                 ]
     return ()
 
@@ -41,6 +45,8 @@ pOnly p t = case parseOnly p t of
   Right r -> Just r
   _       -> Nothing  
 
+justP :: String -> Maybe Text
+justP = Just . pack
 
 {-----------------------------------------------------------------------------
     Basic parsers
@@ -48,53 +54,81 @@ pOnly p t = case parseOnly p t of
 
 tspaces :: Test
 tspaces = "spaces" 
-        ~: TestList [ pOnly spaces (pack ""   ) ~?= (Just . pack $ " ")
-                    , pOnly spaces (pack "   ") ~?= (Just . pack $ " ")
-                    , pOnly spaces (pack "hel") ~?= (Just . pack $ " ") 
+        ~: TestList [ pOnly spaces (pack ""   ) ~?= justP " "
+                    , pOnly spaces (pack "   ") ~?= justP " "
+                    , pOnly spaces (pack "hel") ~?= justP " "
                     ]
 
-tcomma :: Test
-tcomma = "comma" 
-       ~: TestList [ pOnly comma (pack ", foo"  ) ~?= (Just . pack $ ", ")
-                   , pOnly comma (pack ",foo"   ) ~?= (Just . pack $ ", ")
-                   , pOnly comma (pack ",   foo") ~?= (Just . pack $ ", ")
-                   , pOnly comma (pack "world"  ) ~?=  Nothing
-                   ]
-
-tcommaS :: Test
-tcommaS = let tok = pack "(,)" in "comma or space" 
-        ~: TestList [ pOnly commaS (pack ", foo") ~?= Just tok
-                    , pOnly commaS (pack " foo" ) ~?= Just tok
-                    , pOnly commaS (pack "foo"  ) ~?= Nothing
+tspaces1 :: Test
+tspaces1 = "spaces1" 
+        ~: TestList [ pOnly spaces1 (pack ""   ) ~?= Nothing
+                    , pOnly spaces1 (pack "   ") ~?= justP " "
+                    , pOnly spaces1 (pack "hel") ~?= Nothing
                     ]
-
 
 tanyWord :: Test
 tanyWord = "anyWord"
-        ~: TestList [ pOnly anyWord (pack "hello"      ) ~?= (Just . pack $ "hello")
-                    , pOnly anyWord (pack "hello world") ~?= (Just . pack $ "hello")
-                    , pOnly anyWord (pack "h"          ) ~?= (Just . pack $ "h"    )
+        ~: TestList [ pOnly anyWord (pack "hello"      ) ~?= justP "hello"
+                    , pOnly anyWord (pack "hello world") ~?= justP "hello"
+                    , pOnly anyWord (pack "h"          ) ~?= justP "h"    
                     , pOnly anyWord (pack "!"          ) ~?= Nothing
                     , pOnly anyWord (pack "9"          ) ~?= Nothing
-                    , pOnly anyWord (pack "!hello"     ) ~?= Nothing
                     , pOnly anyWord (pack ""           ) ~?= Nothing
                     , pOnly anyWord (pack "    "       ) ~?= Nothing
                     ]
+
+{-----------------------------------------------------------------------------
+    Lexicon
+------------------------------------------------------------------------------}
+
+tcomma :: Test
+tcomma = "comma" 
+       ~: TestList [ pOnly comma (pack ","  ) ~?= justP ","
+                   , pOnly comma (pack "  ,") ~?= justP ","
+                   , pOnly comma (pack "h"  ) ~?= Nothing
+                   ]
+
+
+tcommaS :: Test
+tcommaS = "commaS" 
+       ~: TestList [ pOnly commaS (pack ","  ) ~?= justP "(,)"
+                   , pOnly commaS (pack "  ,") ~?= justP "(,)"
+                   , pOnly commaS (pack " ")   ~?= justP "(,)"
+                   , pOnly commaS (pack "h"  ) ~?= Nothing
+                   ]
+
+
+tbut :: Test
+tbut = "but_"
+     ~: TestList [ but_ <** (pack "but"  )  ~?= justP "but"
+                 , but_ <** (pack "  but")  ~?= justP "but"
+                 , but_ <** (pack "  bbut") ~?= Nothing
+                 ]
 
 
 {-----------------------------------------------------------------------------
     Application specific parsers
 ------------------------------------------------------------------------------}
 
-
 tbutnot :: Test
-tbutnot =  let o = Just . pack $ "good (,) but not great"
+tbutnot =  let o = justP $ "good (,) but not great"
         in "but not"
         ~: TestList [ "good" `butNot` "great" <** (pack "good but not great"   ) ~?= o
                     , "good" `butNot` "great" <** (pack "good, but not great"  ) ~?= o
-                    , "good" `butNot` "great" <** (pack "good,   but not great") ~?= o
+                    , "good" `butNot` "great" <** (pack "good ,  but not great") ~?= o
                     , "good" `butNot` "great" <** (pack "foo but not bar"      ) ~?= Nothing
                     , "good" `butNot` "great" <** (pack "foo,  but not bar"    ) ~?= Nothing
+                    ]
+
+
+tbutnot' :: Test
+tbutnot' =  let o = justP $ "* (,) but not *"
+        in "but not"
+        ~: TestList [ pOnly butNot' (pack "foo but not bar" ) ~?= o
+                    , pOnly butNot' (pack "goo but not gre" ) ~?= o
+                    , pOnly butNot' (pack "foo, but not bar") ~?= o
+                    , pOnly butNot' (pack "foo but yes bar" ) ~?= Nothing
+
                     ]
 
 
