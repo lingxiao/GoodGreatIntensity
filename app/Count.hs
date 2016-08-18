@@ -12,8 +12,36 @@
 
 module Count where
 
+import Prelude hiding (filter)
+
+import Control.Monad.IO.Class 
+
+import Data.Conduit 
+import Data.Conduit.Text
+import Data.Conduit.List
 
 
+import Core
+import Parsers
+import Conduits
+
+
+-- * Right now: open all files and search for "good (,) but not great"
+p = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/short/"
+
+bar :: FileOpS m s => m ()
+bar =   runConduit 
+    $   p `traverseAll` ".txt"
+    =$= openFile
+    =$= linesOn "\t"
+    =$= filter       (\x     -> Prelude.length x == 2  )
+    =$= filter       (\[w,n] -> case word "Belica" <** w of
+                                    Just _ -> True
+                                    _      -> False
+      )
+    =$= awaitForever (\[w,n] -> do
+           liftIO banner
+           liftIO . print $ w)
 
 
 

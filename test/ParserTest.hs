@@ -29,6 +29,7 @@ main = do
               $ [ tspaces
                 , tspaces1
                 , tanyWord
+                , tword
 
                 , tcomma
                 , tcommaS
@@ -67,6 +68,14 @@ tspaces1 = "spaces1"
                     , pOnly spaces1 (pack "hel") ~?= Nothing
                     ]
 
+
+tword :: Test
+tword = "word"                    
+      ~: TestList [ word "hello" <** (pack "hello" ) ~?= justP "hello"
+                  , word "hello" <** (pack "foo"   ) ~?= Nothing
+                  , word "hello" <** (pack "helloo") ~?= Nothing
+                  ]
+
 tanyWord :: Test
 tanyWord = "anyWord"
         ~: TestList [ pOnly anyWord (pack "hello"      ) ~?= justP "hello"
@@ -79,7 +88,7 @@ tanyWord = "anyWord"
                     ]
 
 {-----------------------------------------------------------------------------
-    Lexicon
+    words
 ------------------------------------------------------------------------------}
 
 tcomma :: Test

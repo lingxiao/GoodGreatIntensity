@@ -56,10 +56,11 @@ althoughNot' = out ("* (,) although not *")
 
 
 {-----------------------------------------------------------------------------
-   Lexicon
+   words
 ------------------------------------------------------------------------------}
 
-
+comma, but_, not_, if_, or_
+     , although_, only_, just_, still_  :: Parser Text
 comma     = word ","
 but_      = word "but"
 not_      = word "not"
@@ -70,7 +71,6 @@ only_     = word "only"
 just_     = word "just"
 still_    = word "still"
 
-
 -- * parses any word and outputs "*"
 star :: Parser Text
 star = tok "*" <$> anyWord
@@ -79,7 +79,6 @@ star = tok "*" <$> anyWord
 -- * one or more spaces
 commaS :: Parser Text
 commaS = tok "(,)" <$> (comma <|> spaces1)
-
 
 {-----------------------------------------------------------------------------
    Basic parsers
@@ -101,7 +100,6 @@ spaces1 = tok " " <$> many1' space
 spaces :: Parser Text
 spaces = tok " " <$> many' space
 
-
 {-----------------------------------------------------------------------------
   Utility
 ------------------------------------------------------------------------------}
@@ -111,22 +109,6 @@ tok t = const . pack $ t
 
 out :: String -> Parser a -> Parser Text
 out xs = fmap (\_ -> pack xs)
-
-
---butNot :: String -> String -> Parser Text
---butNot w s = (\_ -> pack $ w ++ " (,) but not " ++ s)
---         <$> (w' *> commaS *> but_ *> not_ *> s')
---  where [w', s'] = word <$> [w,s]
-
-
-
-
-
-
-
-
-
-
 
 
 
