@@ -36,6 +36,7 @@ main = do
 
                 , tbutnot
                 , tbutnot'
+                , talthoughnot
                 ]
     return ()
 
@@ -129,6 +130,17 @@ tbutnot' =  let o = justP $ "* (,) but not *"
                     , pOnly butNot' (pack "foo, but not bar") ~?= o
                     , pOnly butNot' (pack "foo but yes bar" ) ~?= Nothing
 
+                    ]
+
+
+talthoughnot :: Test
+talthoughnot =  let o = justP $ "good (,) although not great"
+        in "but not"
+        ~: TestList [ "good" `althoughNot` "great" <** (pack "good although not great"   ) ~?= o
+                    , "good" `althoughNot` "great" <** (pack "good, although not great"  ) ~?= o
+                    , "good" `althoughNot` "great" <** (pack "good ,  although not great") ~?= o
+                    , "good" `althoughNot` "great" <** (pack "foo although not bar"      ) ~?= Nothing
+                    , "good" `althoughNot` "great" <** (pack "foo,  although not bar"    ) ~?= Nothing
                     ]
 
 

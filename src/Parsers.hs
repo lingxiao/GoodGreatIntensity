@@ -46,6 +46,15 @@ butNot' :: Parser Text
 butNot' = out "* (,) but not *"
         $ star *> commaS *> but_ *> not_ *> star
 
+althoughNot :: String -> String -> Parser Text
+althoughNot w s = out (w ++ " (,) although not " ++ s)
+                $ word w *> commaS *> although_ *> not_ *> word s
+
+althoughNot' :: Parser Text
+althoughNot' = out ("* (,) although not *")
+             $ star *> commaS *> although_ *> not_ *> star
+
+
 {-----------------------------------------------------------------------------
    Lexicon
 ------------------------------------------------------------------------------}
@@ -56,7 +65,7 @@ but_      = word "but"
 not_      = word "not"
 if_       = word "if"
 or_       = word "or"
-although  = word "although"
+although_ = word "although"
 only_     = word "only"
 just_     = word "just"
 still_    = word "still"

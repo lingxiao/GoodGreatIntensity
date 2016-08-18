@@ -5,13 +5,21 @@
 -- | 
 -- | Module  : Collect statistics
 -- | Author  : Xiao Ling
--- | Date    : 8/15/2016
+-- | Date    : 8/17/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
 module Count where
 
+
+
+
+
+
+
+
+{-----------------------------------------------------------------------------
 
 import Prelude hiding           (readFile, writeFile ,
                                  lines   ,           )
@@ -31,17 +39,62 @@ import Data.Text.Lazy.IO
 -- import Data.List.Split
 import qualified Data.Text.Lazy as L
 
-
 -- * new stuff, need to move into ngram parse
 import Data.Text hiding          (lines)
 import Data.Conduit.Text
 import Data.Conduit.List
 
+
+
+   redo using conduit
+
+   openByteString >> convertToText >> lines >> mapMaybe splitAndParse
+
+   NOTE: This whole thing will be factored away
+
+
+ps, ps1 :: FilePath
+ps  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/short/"
+ps1 = ps ++ "1gm.txt"
+
+p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms/"
+p2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/2gms/"
+p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/"
+
+
+-- * just consider opening a file in bytestring,
+-- * and then 
+
+-- * where you left off: so you have a version working
+-- *                     now you need to actually parse the first item 
+-- *                     also consider how you would traverse all documents
+-- *                     for all occurences of the pattern
+bar :: FileOpS m s => m ()
+bar =   runConduit 
+    $   p `traverseAll` ".txt"
+    =$= openFile
+    =$= linesOn "\t"
+    =$= filter       (\x     -> Prelude.length x == 2  )
+    =$= mapC         (\[w,n] -> [unpack w, unpack n]   )
+    =$= filter       (\[w,n] -> w == "Caribbean Prints")  -- * replace with parser
+    =$= awaitForever (\[w, n]-> do
+           liftIO banner
+           liftIO . print $ w)
+
+
+foo :: FileOpS m s => m ()
+foo =  runConduit 
+    $  sourceFile ps1
+   =$= linesOn "\t"
+   =$= filter (\[w,n] -> w == pack "swimsjuit")
+   =$= awaitForever (\[w,n] -> do
+             liftIO . print $ w
+       )
+------------------------------------------------------------------------------}
+
+
+
 {-----------------------------------------------------------------------------
-
-
-import Core
-import ConduitLib
 
 
 -- * This whole thing is about to be refactored
