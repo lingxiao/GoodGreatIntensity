@@ -35,18 +35,18 @@ type FileOp  m   = FileOpS m ()
 ------------------------------------------------------------------------------}
 
 -- * Run a FileOpS `m` with some user specified state `s`
-run' :: (Monad m, MonadBaseControl IO m) 
+eval :: (Monad m, MonadBaseControl IO m) 
       => ResourceT (StateT s m) a 
       -> s 
-      -> m a
-run' m s = evalStateT (runResourceT m) s
+      -> m (a,s)
+eval m s = runStateT (runResourceT m) s
 
 -- * Run a FileOp `m` with trivial state ()
 -- * Use this when we do not need to keep a state
 run :: (Monad m, MonadBaseControl IO m) 
     => ResourceT (StateT () m) a 
     -> m a
-run m = run' m ()
+run m = evalStateT (runResourceT m) ()
 
 
 -- * When logging to console, `demark` the

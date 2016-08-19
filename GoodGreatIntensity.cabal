@@ -19,6 +19,7 @@ library
 
   other-modules  :     Core
                     ,  Parsers
+                    ,  Patterns
                     ,  Conduits
                     ,  Preprocess
 
@@ -43,6 +44,9 @@ library
 executable GoodGreatIntensity-exe
   hs-source-dirs:      app
   main-is:             Main.hs
+
+  other-modules  :     Count
+
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , GoodGreatIntensity
