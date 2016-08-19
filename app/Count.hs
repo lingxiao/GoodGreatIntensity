@@ -20,11 +20,14 @@ import Data.Conduit
 import Data.Conduit.Text
 import Data.Conduit.List
 
+import Data.Attoparsec.Combinator
 
 import Core
 import Parsers
 import Conduits
 
+main :: IO ()
+main = run bar
 
 p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG/"
 p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms/"
@@ -36,18 +39,22 @@ bar =   runConduit
     =$= linesOn "\t"
     =$= filter       (\x     -> Prelude.length x == 2)
     =$= logi
-    =$= filter       (\[w,n] -> case "good" `butNot` "great" <** w of
-                                    Just _ -> True
-                                    _      -> False
-                     )
     =$= awaitForever (\[w,n] -> do
            liftIO banner
-           liftIO . print $ "filtered value: "
-           liftIO . print $ [w,n])
+           let p = "good" `butNot` "great"
+           liftIO . print $ parseOnly p w
+        )
     =$= cap
 
 
 {-----------------------------------------------------------------------------
+
+  =$= filter       (\[w,n] -> case "good" `butNot` "great" <** w of
+                                    Just _ -> True
+                                    _      -> False
+                     )
+
+
 
 import Prelude hiding           (readFile, writeFile ,
                                  lines   ,           )

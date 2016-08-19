@@ -21,11 +21,13 @@ import Data.Attoparsec.Text
 import Data.Attoparsec.Combinator
 import Data.Text hiding (foldr)
 
+import Preprocess
 
 {-----------------------------------------------------------------------------
-   Run Parser and Parser Combinator
+   Run parser, and a parser combinator
 ------------------------------------------------------------------------------}
 
+-- * Preprocess text `t` and parse with `p`
 infixr 8 <**
 (<**) :: Parser a -> Text -> Maybe a
 p <** t = case parse p t of
@@ -41,13 +43,15 @@ p <+> q = (\u v -> concat [u, pack " ", v]) <$> p <*> q
    Weak-Strong patterns
 ------------------------------------------------------------------------------}
 
+-- * TODO: need to consider what comes afterward, comma, space ect
+
 --    w (,) but not s
 butNot :: String -> String -> Parser Text
-butNot w s      = word w <+> butNot_ <+> word s
+butNot w s = word w <+> butNot_ <+> word s
 
 --     * (,) but not *
 butNot' :: Parser Text  
-butNot'         = star <+> butNot_ <+> star
+butNot' = star <+> butNot_ <+> star
 
 
 althoughNot :: String -> String -> Parser Text
@@ -96,7 +100,7 @@ star :: Parser Text
 star = tok "*" <$> anyWord
 
 -- * next char could either be a comma or 
--- * one or more spaces
+-- * one or more spacesW
 comma' :: Parser Text
 comma' = tok "(,)" <$> (comma <|> spaces1)
 
@@ -104,6 +108,7 @@ comma' = tok "(,)" <$> (comma <|> spaces1)
    Basic parsers
 ------------------------------------------------------------------------------}
 
+-- * TODO: word "hello" will match "hellooooo"
 -- * parse some string `w` with 0 or more spaces infront
 word :: String -> Parser Text
 word w = spaces *> string (pack w)

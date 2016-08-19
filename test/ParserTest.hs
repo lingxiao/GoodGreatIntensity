@@ -122,12 +122,13 @@ tbut = "but_"
 
 tbutnot :: Test
 tbutnot =  let o = justP $ "good (,) but not great"
+        in  let p = "good" `butNot` "great" 
         in "but not"
-        ~: TestList [ "good" `butNot` "great" <** (pack "good but not great"   ) ~?= o
-                    , "good" `butNot` "great" <** (pack "good, but not great"  ) ~?= o
-                    , "good" `butNot` "great" <** (pack "good ,  but not great") ~?= o
-                    , "good" `butNot` "great" <** (pack "foo but not bar"      ) ~?= Nothing
-                    , "good" `butNot` "great" <** (pack "foo,  but not bar"    ) ~?= Nothing
+        ~: TestList [ p <** (pack "good but not great"   ) ~?= o
+                    , p <** (pack "good, but not great"  ) ~?= o
+                    , p <** (pack "good ,  but not great") ~?= o
+                    , p <** (pack "foo but not bar"      ) ~?= Nothing
+                    , p <** (pack "foo,  but not bar"    ) ~?= Nothing
                     ]
 
 
@@ -151,53 +152,6 @@ talthoughnot =  let o = justP $ "good (,) although not great"
                     , "good" `althoughNot` "great" <** (pack "foo although not bar"      ) ~?= Nothing
                     , "good" `althoughNot` "great" <** (pack "foo,  although not bar"    ) ~?= Nothing
                     ]
-
-
--- * patterns to be tested
-t11 = pack "good and even great"
-t12 = pack "good, and even great"
-t13 = pack "aead, and even adfeafee"
-t14 = pack "good or even great"
-t15 = pack "good, or even great"
-t16 = pack "aead, or even adfeafee"
-
-t21 = pack "not only good but great"
-t22 = pack "not only aereeds but afdf"
-
-
-t31 = pack "not great just good"
-t32 = pack "not great, just good"
-t33 = pack "afda great just adfdfadf"
-t34 = pack "afda great, just adfdfadf"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
