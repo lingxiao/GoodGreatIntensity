@@ -29,27 +29,13 @@ import Patterns
 import Conduits
 import Preprocess
 
-{-----------------------------------------------------------------------------
-   Main
-------------------------------------------------------------------------------}
-
-ps = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG/"
-
-foo :: IO ()
-foo = do
-    (n, xs) <- eval pCnt []
-    writeResult "goodButNotGreat.txt" n xs
-
-pCnt :: FileOpS m [(Text, Int)] => m Int
-pCnt = cnt ps $ "good" `butNot` "great"
-
 
 {-----------------------------------------------------------------------------
   Conduit routines
 ------------------------------------------------------------------------------}
 
-cnt :: FileOpS m [(Text, Int)] => FilePath -> Parser Text -> m Int
-cnt f p =    runConduit 
+cnt :: FileOpS m [(Text, Int)] => Parser Text -> FilePath -> m Int
+cnt p f  =    runConduit 
          $   streamLines f
          =$= countOccur p
 
@@ -82,6 +68,8 @@ countOccur p =  filterC (\(w,_) -> if p <** w == Nothing then False else True)
   utils
 ------------------------------------------------------------------------------}
 
+-- * write result named `name` to local directory,
+-- * resutl is total count `n` and incidences occured `xs`
 writeResult :: String -> Int -> [(Text,Int)] -> IO ()
 writeResult name n ts = do
     o <- S.openFile name S.WriteMode
@@ -89,7 +77,7 @@ writeResult name n ts = do
     S.hPutStrLn o mark
     S.hPutStrLn o $ "total: " ++ show n
     S.hPutStrLn o mark
-    mapM (\(w,n) -> S.hPutStrLn o $ unpack w ++ show n) ts
+    mapM (\(w,n) -> S.hPutStrLn o $ unpack w ++ "     " ++ show n) ts
     S.hClose o
     return ()
         where mark = foldr (++) mempty $ (const "-") <$> [1..50] 
