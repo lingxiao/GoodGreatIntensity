@@ -28,8 +28,10 @@ import Count
 
 main :: IO ()
 main = do
-    (n, xs) <- eval . cnt p1r $ word "good"
-    writeResult "good.txt" n xs
+    -- (n, xs) <- eval . cnt p1r $ word "good"
+
+    (n, xs) <- eval . cnt ps $ "good" `butNot` "great"
+    writeResult "good_but_not_great.txt" n xs
 
 
 {-----------------------------------------------------------------------------
@@ -41,7 +43,7 @@ p1r = "/nlp/data/xiao/Ngrams/data/1gms"
 
 
 -- * local
-p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG"
+ps = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG"
 p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms"
 p4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gms"
 p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms"

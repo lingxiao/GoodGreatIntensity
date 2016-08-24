@@ -45,8 +45,14 @@ p <+> q = (\u v -> concat [u, pack " ", v]) <$> p <*> q
 
 -- * TODO: word "hello" will match "hellooooo"
 -- * parse some string `w` with 0 or more spaces infront
+
+-- * TODO: need to consume as many `term` as possible
+-- * and make sure what comes immedateily after the term is
+-- * not an alphabetical item
+
+
 word :: String -> Parser Text
-word w = spaces *> string (pack w) <* lookAhead term
+word w = spaces *> string (pack w) <* lookAhead term 
   where term = (const ()) <$> notAlphaNum <|> endOfInput
 
 -- * parse any alphabetical string with 0 or more spaces infront

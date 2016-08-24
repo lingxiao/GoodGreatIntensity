@@ -66,16 +66,24 @@ tspaces1 = "spaces1"
                     ]
 
 
+p = word "hello" :: Parser Text
+
 tword :: Test
 tword =  let p = word  "hello"
       in let o = justP "hello"
       in "word"                    
-      ~: TestList [ p <** (pack "hello" ) ~?= o
-                  , p <** (pack "hello!") ~?= o
-                  , p <** (pack "hello ") ~?= o
-                  , p <** (pack "foo"   ) ~?= Nothing
-                  , p <** (pack "hello1") ~?= Nothing
-                  , p <** (pack "helloo") ~?= Nothing
+      ~: TestList [ p <** (pack "hello"  ) ~?= o
+                  , p <** (pack "hello!" ) ~?= o
+                  , p <** (pack "hello " ) ~?= o
+                  , p <** (pack "foo"    ) ~?= Nothing
+                  , p <** (pack "hello1" ) ~?= Nothing
+                  , p <** (pack "helloo" ) ~?= Nothing
+
+                  -- * TODO: fix these edge cases
+                  , p <** (pack "hello..."    ) ~?= o
+                  , p <** (pack "hello.f"     ) ~?= Nothing
+                  , p <** (pack "hello......f") ~?= Nothing
+                  , p <** (pack "hello-/hello") ~?= Nothing
                   ]
 
 tanyWord :: Test
