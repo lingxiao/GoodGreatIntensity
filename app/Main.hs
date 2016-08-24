@@ -28,23 +28,20 @@ import Count
 
 main :: IO ()
 main = do
-    pws1 p5
+    (n, xs) <- eval (cnt (word "good") p1)
+    writeResult "good.txt" n xs
 
 
 {-----------------------------------------------------------------------------
-  queries
+  Paths
 ------------------------------------------------------------------------------}
 
--- * weak strong pattern 1
-pws1 :: FilePath -> IO ()
-pws1 f = do
-    let p = cnt ("good" `butNot` "great")
-    (n, xs) <- eval (p f) []
-    writeResult "goodButNotGreat.txt" n xs 
+-- * remote
 
 
 
-p = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG"
+-- * local
+p  = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gmsG"
 p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/5gms"
 p4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/4gms"
 p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/Ngrams/data/1gms"

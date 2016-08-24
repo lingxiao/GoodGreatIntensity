@@ -31,14 +31,16 @@ import Preprocess
 
 
 {-----------------------------------------------------------------------------
-  Conduit routines
+  Main application function
 ------------------------------------------------------------------------------}
 
+-- * cnt occurences of pattern `p` in files found in `f`
 cnt :: FileOpS m [(Text, Int)] => Parser Text -> FilePath -> m Int
-cnt p f  =    runConduit 
-         $   streamLines f
-         =$= countOccur p
+cnt p f  = streamLines f $$ countOccur p
 
+{-----------------------------------------------------------------------------
+  Conduit routines
+------------------------------------------------------------------------------}
 
 -- * open all ".txt" files found at path `p` and stream them as lines
 -- * preprocess each line 
@@ -51,6 +53,7 @@ streamLines p =  p `traverseAll` ".txt"
 
        
 -- * search for pattern `p` and sum all of its occurences
+-- * save occurences in local state
 countOccur :: FileOpS m [(Text, Int)]
            => Parser Text 
            -> Consumer (Text, Int) m Int
@@ -69,7 +72,7 @@ countOccur p =  filterC (\(w,_) -> if p <** w == Nothing then False else True)
 ------------------------------------------------------------------------------}
 
 -- * write result named `name` to local directory,
--- * resutl is total count `n` and incidences occured `xs`
+-- * result is total count `n` and incidences occured `xs`
 writeResult :: String -> Int -> [(Text,Int)] -> IO ()
 writeResult name n ts = do
     o <- S.openFile name S.WriteMode
