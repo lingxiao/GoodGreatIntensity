@@ -35,8 +35,8 @@ import Preprocess
 ------------------------------------------------------------------------------}
 
 -- * cnt occurences of pattern `p` in files found in `f`
-cnt :: FileOpS m [(Text, Int)] => Parser Text -> FilePath -> m Int
-cnt p f  = streamLines f $$ countOccur p
+cnt :: FileOpS m [(Text, Int)] => FilePath -> Parser Text -> m Int
+cnt f p  = streamLines f $$ countOccur p
 
 {-----------------------------------------------------------------------------
   Conduit routines

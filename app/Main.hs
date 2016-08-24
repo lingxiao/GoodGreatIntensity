@@ -28,7 +28,7 @@ import Count
 
 main :: IO ()
 main = do
-    (n, xs) <- eval $ cnt (word "good") p1r
+    (n, xs) <- eval . cnt p1r $ word "good"
     writeResult "good.txt" n xs
 
 

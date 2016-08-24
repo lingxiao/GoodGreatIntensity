@@ -47,7 +47,7 @@ p <+> q = (\u v -> concat [u, pack " ", v]) <$> p <*> q
 -- * parse some string `w` with 0 or more spaces infront
 word :: String -> Parser Text
 word w = spaces *> string (pack w) <* lookAhead term
-  where term = (const ()) <$> notAlphaNum <|>  endOfInput
+  where term = (const ()) <$> notAlphaNum <|> endOfInput
 
 -- * parse any alphabetical string with 0 or more spaces infront
 anyWord :: Parser Text

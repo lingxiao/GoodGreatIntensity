@@ -35,18 +35,28 @@ type FileOp  m   = FileOpS m ()
 ------------------------------------------------------------------------------}
 
 -- * Run a FileOpS `m` with some user specified state `s`
-eval :: (Monad m, MonadBaseControl IO m, Monoid s) 
+eval :: ( Monad m
+        , MonadBaseControl IO m
+        , Monoid s
+        ) 
       => ResourceT (StateT s m) a 
       -> m (a,s)
 eval m = runStateT (runResourceT m) mempty
 
 -- * Run a FileOp `m` with trivial state ()
--- * Use this when we do not need to keep a state
-run :: (Monad m, MonadBaseControl IO m) 
+-- * Use this when we do not need to keep a 
+-- * meaninful state
+run :: ( Monad m
+       , MonadBaseControl IO m
+       ) 
     => ResourceT (StateT () m) a 
     -> m a
 run m = evalStateT (runResourceT m) ()
 
+
+{-----------------------------------------------------------------------------
+   III. Utility operations
+------------------------------------------------------------------------------}
 
 -- * When logging to console, `demark` the
 -- * messages with "============="
