@@ -100,15 +100,17 @@ tword =  let p = word  "hello"
                   , p <** (pack "hello1" ) ~?= Nothing
                   , p <** (pack "helloo" ) ~?= Nothing
 
-                  -- * TODO: fix these edge cases
                   , p <** (pack "hello..."    ) ~?= o
                   , p <** (pack "hello.f"     ) ~?= Nothing
                   , p <** (pack "hello......f") ~?= Nothing
                   , p <** (pack "hello-/hello") ~?= Nothing
+                  , p <** (pack "hello'ol"    ) ~?= Nothing
+                  , p <** (pack "hello.com"   ) ~?= Nothing
                   ]
 
 tanyWord :: Test
-tanyWord = "anyWord"
+tanyWord = let o = justP "hello" 
+        in "anyWord"
         ~: TestList [ anyWord <** (pack "hello"      ) ~?= justP "hello"
                     , anyWord <** (pack "hello world") ~?= justP "hello"
                     , anyWord <** (pack "h"          ) ~?= justP "h"    
@@ -116,6 +118,13 @@ tanyWord = "anyWord"
                     , anyWord <** (pack "9"          ) ~?= Nothing
                     , anyWord <** (pack ""           ) ~?= Nothing
                     , anyWord <** (pack "    "       ) ~?= Nothing
+
+                    , anyWord <** (pack "hello..."    ) ~?= o
+                    , anyWord <** (pack "hello.f"     ) ~?= Nothing
+                    , anyWord <** (pack "hello......f") ~?= Nothing
+                    , anyWord <** (pack "hello-/hello") ~?= Nothing
+                    , anyWord <** (pack "hello'ol"    ) ~?= Nothing
+                    , anyWord <** (pack "hello.com"   ) ~?= Nothing
                     ]
 
 {-----------------------------------------------------------------------------

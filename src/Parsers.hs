@@ -58,13 +58,13 @@ eow =   lookAhead
     $   pack 
     <$> many' notAlphaDigitSpace <* (const () <$> space <|> endOfInput)
 
+
 word :: String -> Parser Text
 word w = spaces *> string (pack w) <* eow
 
-
 -- * parse any alphabetical string with 0 or more spaces infront
 anyWord :: Parser Text
-anyWord = spaces *> takeWhile1 isAlpha
+anyWord = spaces *> takeWhile1 isAlpha <* eow
 
 
 {-----------------------------------------------------------------------------
