@@ -111,20 +111,20 @@ tword =  let p = word  "hello"
 tanyWord :: Test
 tanyWord = let o = justP "hello" 
         in "anyWord"
-        ~: TestList [ anyWord <** (pack "hello"      ) ~?= justP "hello"
-                    , anyWord <** (pack "hello world") ~?= justP "hello"
+        ~: TestList [ anyWord <** (pack "hello"      ) ~?= o
+                    , anyWord <** (pack "hello world") ~?= o
                     , anyWord <** (pack "h"          ) ~?= justP "h"    
                     , anyWord <** (pack "!"          ) ~?= Nothing
                     , anyWord <** (pack "9"          ) ~?= Nothing
                     , anyWord <** (pack ""           ) ~?= Nothing
                     , anyWord <** (pack "    "       ) ~?= Nothing
 
-                    , anyWord <** (pack "hello..."    ) ~?= o
-                    , anyWord <** (pack "hello.f"     ) ~?= Nothing
-                    , anyWord <** (pack "hello......f") ~?= Nothing
-                    , anyWord <** (pack "hello-/hello") ~?= Nothing
-                    , anyWord <** (pack "hello'ol"    ) ~?= Nothing
-                    , anyWord <** (pack "hello.com"   ) ~?= Nothing
+                    , anyWord <** (pack "hello..."   ) ~?= o
+                    , anyWord <** (pack "helo.f"     ) ~?= Nothing
+                    , anyWord <** (pack "hello.....f") ~?= Nothing
+                    , anyWord <** (pack "helo-/hello") ~?= Nothing
+                    , anyWord <** (pack "hello'ol"   ) ~?= Nothing
+                    , anyWord <** (pack "helo.com"   ) ~?= Nothing
                     ]
 
 {-----------------------------------------------------------------------------
