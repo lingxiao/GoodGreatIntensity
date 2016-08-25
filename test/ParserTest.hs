@@ -29,8 +29,10 @@ main = do
     runTestTT . TestList 
               $ [ tspaces
                 , tspaces1
-                , tanyWord
+                , tNotAlphaDigitSpace
+                , teow
                 , tword
+                , tanyWord
 
                 , tcomma
                 , tcomma'
@@ -66,7 +68,26 @@ tspaces1 = "spaces1"
                     ]
 
 
-p = word "hello" :: Parser Text
+tNotAlphaDigitSpace :: Test
+tNotAlphaDigitSpace = "notAlphaDigitSpace"
+     ~: TestList [ notAlphaDigitSpace <** (pack ".") ~?= Just '.'
+                 , notAlphaDigitSpace <** (pack " ") ~?= Nothing
+                 , notAlphaDigitSpace <** (pack "1") ~?= Nothing
+                 , notAlphaDigitSpace <** (pack "h") ~?= Nothing
+     ]
+
+
+teow :: Test
+teow = "eow"
+    ~: TestList [ eow <** (pack "..."  ) ~?= justP "..."
+                , eow <** (pack ".. "  ) ~?= justP ".."
+                , eow <** (pack ".. hi") ~?= justP ".."
+
+                , eow <** (pack "..1"  ) ~?= Nothing
+                , eow <** (pack ".h" )   ~?= Nothing
+                , eow <** (pack "..h")   ~?= Nothing
+    ]
+
 
 tword :: Test
 tword =  let p = word  "hello"

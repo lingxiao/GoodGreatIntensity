@@ -28,10 +28,11 @@ import Count
 
 main :: IO ()
 main = do
-    -- (n, xs) <- eval . cnt p1r $ word "good"
+     (n, xs) <- eval . cnt p1 $ word "great"
+     writeResult "great.txt" n xs
 
-    (n, xs) <- eval . cnt ps $ "good" `butNot` "great"
-    writeResult "good_but_not_great.txt" n xs
+    --(n, xs) <- eval . cnt ps $ "good" `butNot` "great"
+    --writeResult "good_but_not_great.txt" n xs
 
 
 {-----------------------------------------------------------------------------

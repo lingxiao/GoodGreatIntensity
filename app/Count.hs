@@ -57,7 +57,8 @@ streamLines p =  p `traverseAll` ".txt"
 countOccur :: FileOpS m [(Text, Int)]
            => Parser Text 
            -> Consumer (Text, Int) m Int
-countOccur p =  filterC (\(w,_) -> if p <** w == Nothing then False else True)
+countOccur p =  filterC (\(w,_) -> if p <** w == Nothing then False 
+                                                          else True)
             =$= logi
             =$= awaitForever (\t -> do
                     ts <- lift get
