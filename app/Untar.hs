@@ -29,9 +29,7 @@ import Conduits
 untarAll :: FileOpS m s => FilePath -> String -> String -> m ()
 untarAll p e1 e2 =  p `traverseAll` e1
                 $$  untarSaveAs e2
-                =$= logm "untarred all files!"
                 =$= cap
-
 
 
 -- * Shard all files with `ext` found at directory `p`

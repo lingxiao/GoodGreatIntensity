@@ -29,35 +29,51 @@ import Count
 ------------------------------------------------------------------------------}
 
 main :: IO ()
-main = do
-    -- * untar all files
-    run $ untarAll p1r ".gz" ".txt"
-    run $ untarAll p2r ".gz" ".txt"
-    run $ untarAll p3r ".gz" ".txt"
-    --run $ untarAll p4 ".gz" ".txt"
-    --run $ untarAll p5 ".gz" ".txt"
-
-    -- * count all occurences and save output to this directory
+main = undefined
 
 
+-- * given weak word `good` and strong word `great`
+-- * query all counts and save to this directory
+query :: String -> String -> IO ()
+query good great = do
+    (n, xs) <- eval . cnt p1 $ word good
+    writeResult (good ++ ".txt") n xs
+
+    (n, xs) <- eval . cnt p1 $ word great
+    writeResult (great ++ ".txt") n xs
+
+    -- * weak-strong patterns
+    (n, xs) <- eval . cnt p4 $ good `butNot` great
+    writeResult (good ++ "_but_not_" ++ great ++ "_4gms.txt") n xs
 
 
-    --(n, xs) <- eval . cnt p1 $ word "great"
-    --writeResult "great.txt" n xs
 
-    --(n, xs) <- eval . cnt ps $ "good" `butNot` "great"
-    --writeResult "good_but_not_great.txt" n xs
+
+    -- * strong-weak patterns
+
+
+{-----------------------------------------------------------------------------
+  routines
+------------------------------------------------------------------------------}
+
+untar :: IO ()
+untar = do
+    run $ untarAll p1 ".gz" ".txt"
+    run $ untarAll p2 ".gz" ".txt"
+    run $ untarAll p3 ".gz" ".txt"
+    run $ untarAll p4 ".gz" ".txt"
+    run $ untarAll p5 ".gz" ".txt"
 
 {-----------------------------------------------------------------------------
   Paths
 ------------------------------------------------------------------------------}
 
 -- * remote
-p1r = "/nlp/data/xiao/LDC2006T13/data/1gms"
-p2r = "/nlp/data/xiao/LDC2006T13/data/2gms"
-p3r = "/nlp/data/xiao/LDC2006T13/data/3gms"
-p4r = "/nlp/data/xiao/LDC2006T13/data/4gms"
-p5r = "/nlp/data/xiao/LDC2006T13/data/5gms"
+p1r = "/nlp/data/xiao/ngram/data/1gms"
+p2r = "/nlp/data/xiao/ngram/data/2gms"
+p3r = "/nlp/data/xiao/ngram/data/3gms"
+p4r = "/nlp/data/xiao/ngram/data/4gms"
+p5r = "/nlp/data/xiao/ngram/data/5gms"
 
 -- * local
 p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
