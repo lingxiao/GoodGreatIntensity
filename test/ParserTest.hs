@@ -106,6 +106,7 @@ tword =  let p = word  "hello"
                   , p <** (pack "hello-/hello") ~?= Nothing
                   , p <** (pack "hello'ol"    ) ~?= Nothing
                   , p <** (pack "hello.com"   ) ~?= Nothing
+                  , p <** (pack "hello.kw.net") ~?= Nothing
                   ]
 
 tanyWord :: Test
@@ -113,18 +114,19 @@ tanyWord = let o = justP "hello"
         in "anyWord"
         ~: TestList [ anyWord <** (pack "hello"      ) ~?= o
                     , anyWord <** (pack "hello world") ~?= o
+                    , anyWord <** (pack "hello..."   ) ~?= o
                     , anyWord <** (pack "h"          ) ~?= justP "h"    
+
                     , anyWord <** (pack "!"          ) ~?= Nothing
                     , anyWord <** (pack "9"          ) ~?= Nothing
                     , anyWord <** (pack ""           ) ~?= Nothing
                     , anyWord <** (pack "    "       ) ~?= Nothing
 
-                    , anyWord <** (pack "hello..."   ) ~?= o
-                    , anyWord <** (pack "helo.f"     ) ~?= Nothing
-                    , anyWord <** (pack "hello.....f") ~?= Nothing
-                    , anyWord <** (pack "helo-/hello") ~?= Nothing
-                    , anyWord <** (pack "hello'ol"   ) ~?= Nothing
-                    , anyWord <** (pack "helo.com"   ) ~?= Nothing
+                    , anyWord <** (pack "good.f"     ) ~?= Nothing
+                    , anyWord <** (pack "good.....f" ) ~?= Nothing
+                    , anyWord <** (pack "good-/good" ) ~?= Nothing
+                    , anyWord <** (pack "good'ol"    ) ~?= Nothing
+                    , anyWord <** (pack "good.com"   ) ~?= Nothing
                     ]
 
 {-----------------------------------------------------------------------------
@@ -167,11 +169,12 @@ tbutnot :: Test
 tbutnot =  let o = justP $ "good (,) but not great"
         in let p = "good" `butNot` "great" 
         in "but not"
-        ~: TestList [ p <** (pack "good but not great"   ) ~?= o
-                    , p <** (pack "good, but not great"  ) ~?= o
-                    , p <** (pack "good ,  but not great") ~?= o
-                    , p <** (pack "foo but not bar"      ) ~?= Nothing
-                    , p <** (pack "foo,  but not bar"    ) ~?= Nothing
+        ~: TestList [ p <** (pack "good but not great"        ) ~?= o
+                    , p <** (pack "good, but not great"       ) ~?= o
+                    , p <** (pack "good ,  but not great"     ) ~?= o
+                    , p <** (pack "good but not great comment") ~?= o
+                    , p <** (pack "foo but not bar"           ) ~?= Nothing
+                    , p <** (pack "foo,  but not bar"         ) ~?= Nothing
                     ]
 
 

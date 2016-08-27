@@ -43,7 +43,7 @@ cnt f p  = streamLines f $$ countOccur p
 ------------------------------------------------------------------------------}
 
 -- * open all ".txt" files found at path `p` and stream them as lines
--- * preprocess each line 
+-- * preprocess each line by casefolding and stripping of whitespace
 streamLines :: FileOpS m s => FilePath -> Source m (Text, Int)
 streamLines p =  p `traverseAll` ".txt"
              =$= openFile
