@@ -18,16 +18,28 @@ import Data.Conduit
 import Core
 import Conduits
 
+{-----------------------------------------------------------------------------
+   untar all files
+
+untarAll :: IO ()
+untarAll = do
+    run $ untar p1 ".gz" ".txt"
+    run $ untar p2 ".gz" ".txt"
+    run $ untar p3 ".gz" ".txt"
+    run $ untar p4 ".gz" ".txt"
+    run $ untar p5 ".gz" ".txt"
+------------------------------------------------------------------------------}
+
 
 {-----------------------------------------------------------------------------
    top level routines
 ------------------------------------------------------------------------------}
 
--- * @Use: run $ untarAll "/path/to/file" ".gz" ".txt"
+-- * @Use: run $ untar "/path/to/file" ".gz" ".txt"
 -- * Untar all files with extension `e1` found at directory `p`
 -- * and save them in the same directory with extension `e2` 
-untarAll :: FileOpS m s => FilePath -> String -> String -> m ()
-untarAll p e1 e2 =  [p] `sourceDirectories` e1
+untar :: FileOpS m s => FilePath -> String -> String -> m ()
+untar p e1 e2 =  [p] `sourceDirectories` e1
                 $$  untarSaveAs e2
                 =$= cap
 
