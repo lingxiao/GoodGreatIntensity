@@ -180,7 +180,7 @@ tbutnot =  let o = justP $ "good (,) but not great"
 
 tbutnot' :: Test
 tbutnot' =  let o = justP $ "* (,) but not *"
-        in "but not"
+        in "* but not * "
         ~: TestList [ butNot' <** (pack "foo but not bar" ) ~?= o
                     , butNot' <** (pack "goo but not gre" ) ~?= o
                     , butNot' <** (pack "foo, but not bar") ~?= o
@@ -192,7 +192,7 @@ tbutnot' =  let o = justP $ "* (,) but not *"
 talthoughnot :: Test
 talthoughnot =  let o = justP $ "good (,) although not great"
              in let p = "good" `althoughNot` "great"
-             in "but not"
+             in "although not"
         ~: TestList [ p <** (pack "good although not great"   ) ~?= o
                     , p <** (pack "good, although not great"  ) ~?= o
                     , p <** (pack "good ,  although not great") ~?= o

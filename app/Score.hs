@@ -57,13 +57,15 @@ w1 = sumcnt p_weakStrong
 w2 :: [FilePath] -> Adjective -> Adjective -> IO Total
 w2 fs = flip (sumcnt p_weakStrong fs)
 
-
 s1 :: [FilePath] -> Adjective -> Adjective -> IO Total
 s1 = sumcnt p_strongWeak
 
 s2 :: [FilePath] -> Adjective -> Adjective -> IO Total
 s2 fs = flip (sumcnt p_weakStrong fs)
 
+
+--p1 :: [FilePath] -> IO Total
+--p1 = 
 
 
 
@@ -85,7 +87,6 @@ cnt f a1 a2 (name, relation) = do
   (n,xs) <- query f $ a1 `relation` a2
   writeResult (name a1 a2 ++ "_" ++ takeFileName f ++ ".txt") n xs
   return n
-
 
 {-----------------------------------------------------------------------------
   Conduit routines
