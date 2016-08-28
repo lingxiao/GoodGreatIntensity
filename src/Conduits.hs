@@ -44,11 +44,12 @@ import Core
   Conduit sources
 ------------------------------------------------------------------------------}
 
--- * Shallow traversal of all files in path `p` with extension `e`
+-- * Shallow traversal of all files in path `fs` with extension `e`
 -- * If path invalid or extension invalid, pipe terminates
-traverseAll :: FileOpS m s => FilePath -> String -> Source m FilePath
-traverseAll p e =   sourceDirectory p
+sourceDirectories :: FileOpS m s => [FilePath] -> String -> Source m FilePath
+sourceDirectories fs e =  mapM_ sourceDirectory fs
                =$= filterC (\p -> takeExtension p == e)
+
 
 -- * if no file exists at `FilePath` `f`, then
 -- * output empty ByteString
