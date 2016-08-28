@@ -23,35 +23,19 @@ import Preprocess
 
 import Untar
 import Score
+import Patterns
 
 {-----------------------------------------------------------------------------
   Main
 ------------------------------------------------------------------------------}
 
 main :: IO ()
-main = undefined
+main = do
+    cnt p4 "good" "great" (p_weakStrong !! 2)
+    cnt p5 "good" "great" (p_weakStrong !! 2)
 
-    --(n, xs) <- eval . cnt p4 $ "great" `althoughNot` "good"
-    --writeResult ("great" ++ "_although_not_" ++ "good" ++ "_4gms.txt") n xs
-
-    --(n, xs) <- eval . cnt p5 $ "great" `althoughNot` "good"
-    --writeResult ("great" ++ "_although_not_" ++ "good" ++ "_5gms.txt") n xs
-
-
--- * given weak word `good` and strong word `great`
--- * query all counts and save to this directory
---query :: String -> String -> IO ()
---query good great = do
---    (n, xs) <- eval . cnt p1 $ word good
---    writeResult (good ++ ".txt") n xs
-
---    (n, xs) <- eval . cnt p1 $ word great
---    writeResult (great ++ ".txt") n xs
-
---    -- * weak-strong patterns
---    (n, xs) <- eval . cnt p4 $ good `butNot` great
---    writeResult (good ++ "_but_not_" ++ great ++ "_4gms.txt") n xs
-
+    cnt p4 "great" "good" (p_weakStrong !! 2)
+    cnt p5 "great" "good" (p_weakStrong !! 2)
 
 
 

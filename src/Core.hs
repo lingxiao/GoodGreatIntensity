@@ -30,15 +30,15 @@ type FileOpS m s = (MonadState s m , MonadIO m            ,
 -- * A File Operation with trivial state `()`
 type FileOp  m   = FileOpS m ()
 
+-- * Result of `eval` a `FileOpS`
+type Op m        = (MonadBaseControl IO m, MonadThrow m, MonadIO m)
+
 {-----------------------------------------------------------------------------
    II. Operations over `FileOpS`
 ------------------------------------------------------------------------------}
 
 -- * Run a FileOpS `m` with some user specified state `s`
-eval :: ( Monad m
-        , MonadBaseControl IO m
-        , Monoid s
-        ) 
+eval :: (Op m, Monoid s)
       => ResourceT (StateT s m) a 
       -> m (a,s)
 eval m = runStateT (runResourceT m) mempty
@@ -46,9 +46,7 @@ eval m = runStateT (runResourceT m) mempty
 -- * Run a FileOp `m` with trivial state ()
 -- * Use this when we do not need to keep a 
 -- * meaninful state
-run :: ( Monad m
-       , MonadBaseControl IO m
-       ) 
+run :: ( MonadBaseControl IO m ) 
     => ResourceT (StateT () m) a 
     -> m a
 run m = evalStateT (runResourceT m) ()

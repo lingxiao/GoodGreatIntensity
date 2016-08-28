@@ -15,8 +15,10 @@ module Score where
 import Prelude hiding (filter)
 
 import qualified System.IO as S
+import System.FilePath.Posix
 import Control.Monad.State  
 import Control.Monad.IO.Class 
+import Control.Monad.Trans.Resource
 
 import Data.Conduit 
 import Conduit (mapC, scanlC, foldlC, filterC)
@@ -41,43 +43,59 @@ type Total       = Int
   Score 
 ------------------------------------------------------------------------------}
 
-p = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
-
---w1 :: FilePath -> String -> String -> Pws -> IO ()
---w1 f a1 a2 = mapM (\pattern -> cnt $ a1 `pattern` a2) 
-
-
---cnt :: Parser Text -> IO ()
---cnt = undefined
-
-{--
-
-w1 = go 
-
-
-go f a1 a2 = do
-  (name, pattern) <- pws
-  (n,xs)          <- cnt' f $ a1 `pattern` a2
-  writeResult (name a1 a2) n xs
-
-
-
---}
-
 
 {-----------------------------------------------------------------------------
-  Count occurences of `p` in file at path `f`
+  Score subroutines
 ------------------------------------------------------------------------------}
 
---cnt :: FileOpS m [Count] 
-    -- => FilePath -> Parser Text -> m Int
-cnt' :: FileOpS m [ParseResult] 
-    => FilePath -> Parser Text -> m (Total,[ParseResult])
-cnt' f p  = eval $ streamLines f $$ countOccur p
+p = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
+
+-- * unormalized value `w1`
+w1 :: [FilePath] -> Adjective -> Adjective -> IO Total
+w1 = sumcnt p_weakStrong
+
+w2 :: [FilePath] -> Adjective -> Adjective -> IO Total
+w2 fs = flip (sumcnt p_weakStrong fs)
+
+
+s1 :: [FilePath] -> Adjective -> Adjective -> IO Total
+s1 = sumcnt p_strongWeak
+
+s2 :: [FilePath] -> Adjective -> Adjective -> IO Total
+s2 fs = flip (sumcnt p_weakStrong fs)
+
+
+
+
+
+
+sumcnt :: (Name, [Pattern])
+      -> [FilePath] 
+      -> Adjective 
+      -> Adjective 
+      -> IO Total
+sumcnt (name, ps) fs a1 a2 = do
+  ns <- mapM (\p -> mapM (\f -> cnt f a1 a2 p) fs) ps
+  let m = sum . join $ ns
+  writeResult (name a1 a2 ++ ".txt") m []
+  return m
+
+cnt :: FilePath -> Adjective -> Adjective -> Pattern -> IO Total
+cnt f a1 a2 (name, relation) = do
+  (n,xs) <- query f $ a1 `relation` a2
+  writeResult (name a1 a2 ++ "_" ++ takeFileName f ++ ".txt") n xs
+  return n
+
 
 {-----------------------------------------------------------------------------
   Conduit routines
 ------------------------------------------------------------------------------}
+
+-- * `query` for occurences of `p` in all files found at path `f`
+query :: Op m 
+     => FilePath -> Parser Text -> m (Total,[ParseResult])
+query f p  = eval $ streamLines f $$ countOccur p
+
 
 -- * open all ".txt" files found at path `p` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
@@ -94,8 +112,9 @@ streamLines f =  f `traverseAll` ".txt"
 countOccur :: FileOpS m [ParseResult]
            => Parser Text 
            -> Consumer ParseResult m Int
-countOccur p =  filterC (\(w,_,_) -> if p <** w == Nothing then False 
-                                                          else True)
+countOccur p =  filterC (\(w,_,_) -> 
+                        if p <** w == Nothing then False 
+                                              else True)
             =$= logi
             =$= awaitForever (\t -> do
                     ts <- lift get
