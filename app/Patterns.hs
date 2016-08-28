@@ -10,23 +10,7 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Patterns (
-
-      Adjective
-    , Name
-    , Pattern
-    , WildPattern
-    , Pws
-    , Psw
-    , PwsStar
-    , PswStar
-
-    , p_weakStrong
-    , p_strongWeak
-    , p_weakStrongStar
-    , p_strongWeakStar
-
-    ) where
+module Patterns where
 
 import Prelude hiding   (concat, takeWhile)
 import Control.Monad
@@ -44,195 +28,103 @@ import Parsers
    Types
 ------------------------------------------------------------------------------}
 
-type Adjective    = String
+type Adjective = String
+type Name      = String
 
-type Name         = String -> String -> String
+type Pattern   = (Name, Parser Text)
 
-type Pattern      = (Name, Adjective -> Adjective -> Parser Text)
-type WildPattern  = (Name, Parser Text                    )
-
-type Pws          = (Name, [Pattern])
-type Psw          = (Name, [Pattern])
-
-type PwsStar      = (Name, [WildPattern])
-type PswStar      = (Name, [WildPattern])
+type Pws       = Adjective -> Adjective -> (Name, [Pattern])
+type Psw       = Adjective -> Adjective -> (Name, [Pattern])
 
 
 {-----------------------------------------------------------------------------
    Pattern Lists
+   TODO: factor all naming patterns into some new monad type 
+         wrapping parser
 ------------------------------------------------------------------------------}
+
+word' :: String -> Parser Text
+word' xs = if xs == "*" then star else word xs
 
 
 p_weakStrong :: Pws
-p_weakStrong     = (\u v -> "p_weakStrong_" ++ u ++ "_" ++ v
-                   , [ (\u v -> u ++ "_but_not_"     ++ v
-                   , butNot                                  )
-                   , (\u v -> u ++ "_although_not_"++ v
-                   , althoughNot                             )
-                   , (\u v -> u ++ "_though_not_"  ++ v
-                   , thoughNot                               )
-                   , (\u v -> u ++ "_andor_even_"  ++ v
-                   , andorEven                               )
-                   , (\u v -> u ++ "_andor_almost_"++ v  
-                   , andorAlmost                             )
-                   , (\u v -> "not_only_" ++ u ++ "_but_" ++ v
-                   , notOnly                                 )
-                   , (\u v -> "not_just_" ++ u ++ "_but_" ++ v
-                   , notJust                                 )
-                   ])
-
-p_weakStrongStar :: PwsStar
-p_weakStrongStar = (\u v -> "p_weakStrongStar_" ++ u ++ "_" ++ v
-                   , [ (\u v -> "star_but_not_star"
-                   , butNot'                                 )
-                   , (\u v -> "star_although_not_star"
-                   , althoughNot'                            )
-                   , (\u v -> "star_though_not_star"
-                   , thoughNot'                              )
-                   , (\u v -> "star_andor_even_star"
-                   , andorEven'                              )
-                   , (\u v -> "star_andor_almost_star"
-                   , andorAlmost'                            )
-                   , (\u v -> "not_only_star_but_star"
-                   , notOnly'                                )
-                   , (\u v -> "not_just_star_but_star"
-                   , notJust'                                )
-                   ])
-
+p_weakStrong = \u v -> 
+    ( "p_weakStrong_" ++ u ++ "_" ++ v
+    , [ (u ++ "_but_not_"      ++ v        , word' u `butNot`      word' v)
+      , (u ++ "_although_not_" ++ v        , word' u `althoughNot` word' v)
+      , (u ++ "_though_not_"   ++ v        , word' u `thoughNot`   word' v)
+      , (u ++ "_andor_even_"   ++ v        , word' u `andorEven`   word' v)
+      , (u ++ "_andor_almost_" ++ v        , word' u `andorAlmost` word' v)
+      , ("not_only_" ++ u ++ "_but_" ++ v  , word' u `notOnly`     word' v)
+      , ("not_just_" ++ u ++ "_but_" ++ v  , word' u `notJust`     word' v)
+      ]
+    )    
 
 
 p_strongWeak :: Psw
-p_strongWeak    =  (\u v -> "p_strongWeak_" ++ u ++ "_" ++ v
-                   , [ (\u v -> "not_" ++ u ++ "_just_" ++ v
-                   , notJust1                                      )
-                   , (\u v -> "not_" ++ u ++ "but_just_" ++ v
-                   , notButJust                                    )
-                   , (\u v -> "not_" ++ u ++ "_still_" ++ v
-                   , notStill                                      )
-                   , (\u v -> "not_" ++ u ++ "_but_still_" ++ v
-                   , notButStill                                   )
-                   , (\u v -> "not_" ++ u ++ "_although_still_" ++ v
-                   , notAlthoughStill                              )
-                   , (\u v -> "not_" ++ u ++ "_though_still_" ++ v
-                   , notThoughStill                                )
-                   , (\u v -> u ++ "_or_very_" ++ v
-                   , orVery                                        )
-                   ])
+p_strongWeak = \u v -> 
+    ("p_strongWeak_" ++ u ++ "_" ++ v
+    , [ ("not_" ++ u ++ "_just_"           ++ v    , word' u `notJust1`        word' v)
+      , ("not_" ++ u ++ "but_just_"        ++ v    , word' u `notButJust`      word' v)
+      , ("not_" ++ u ++ "_still_"          ++ v    , word' u `notStill`        word' v)      
+      , ("not_" ++ u ++ "_but_still_"      ++ v    , word' u `notButStill`     word' v)
+      , ("not_" ++ u ++ "_although_still_" ++ v    , word' u `notAlthoughStill`word' v)
+      , ("not_" ++ u ++ "_though_still_"   ++ v    , word' u `notThoughStill`  word' v)
+      , (u ++ "_or_very_" ++ v                     , word' u `orVery`          word' v)
+      ]
+    )
 
 
-p_strongWeakStar :: PswStar
-p_strongWeakStar = (\u v -> "p_strongWeakStar_" ++ u ++ "_" ++ v
-                   , [ (\u v -> "not_star_just_star"
-                   , notJust1'                                     )
-                   , (\u v -> "not_star_but_just_star"
-                   , notButJust'                                   )
-                   , (\u v -> "not_star_still_star"
-                   , notStill'                                     )
-                   , (\u v -> "not_star_but_still_star"
-                   , notButStill'                                  )
-                   , (\u v -> "not_star_although_still_star"
-                   , notAlthoughStill'                             )
-                   , (\u v -> "not_star_though_still_star"
-                   , notThoughStill'                               )
-                   , (\u v -> "star_or_very_star"
-                   , orVery'                                       )
-                   ])
 {-----------------------------------------------------------------------------
    Weak-strong patterns
 ------------------------------------------------------------------------------}
 
-
 --    w (,) but not s
-butNot :: Adjective -> Adjective -> Parser Text
-butNot w s      = word w <+> butNot_ <+> word s
+butNot :: Parser Text -> Parser Text -> Parser Text
+butNot w s      = w <+> butNot_ <+> s
 
-althoughNot :: Adjective -> Adjective -> Parser Text
-althoughNot w s = word w <+> althoughNot_ <+> word s
+althoughNot :: Parser Text -> Parser Text -> Parser Text
+althoughNot w s = w <+> althoughNot_ <+> s
 
-thoughNot :: Adjective -> Adjective -> Parser Text
-thoughNot w s   = word w <+> thoughNot_ <+> word s
+thoughNot :: Parser Text -> Parser Text -> Parser Text
+thoughNot w s   = w <+> thoughNot_ <+> s
 
-andorEven :: Adjective -> Adjective -> Parser Text
-andorEven w s   = word w <+> andorEven_ <+> word s
+andorEven :: Parser Text -> Parser Text -> Parser Text
+andorEven w s   = w <+> andorEven_ <+> s
 
-andorAlmost :: Adjective -> Adjective -> Parser Text
-andorAlmost w s = word w <+> andorAlmost_ <+> word s
+andorAlmost :: Parser Text -> Parser Text -> Parser Text
+andorAlmost w s = w <+> andorAlmost_ <+> s
 
-notOnly :: Adjective -> Adjective -> Parser Text
-notOnly w s     = not_ <+> only_ <+> word w <+> but_ <+> word s
+notOnly :: Parser Text -> Parser Text -> Parser Text
+notOnly w s     = not_ <+> only_ <+> w <+> but_ <+> s
 
-notJust :: Adjective -> Adjective -> Parser Text
-notJust w s     = not_ <+> just_ <+> word w <+> but_ <+> word s
-
---  * wildcard patterns
-butNot' :: Parser Text  
-butNot'      = star <+> butNot_ <+> star
-
-althoughNot' :: Parser Text
-althoughNot' = star <+> althoughNot_ <+> star
-
-thoughNot' :: Parser Text
-thoughNot'   = star   <+> thoughNot_ <+> star
-
-andorEven' :: Parser Text
-andorEven'   = star   <+> andorEven_ <+> star
-
-andorAlmost' :: Parser Text
-andorAlmost'  = star   <+> andorAlmost_ <+> star
-
-notOnly' :: Parser Text
-notOnly'      = not_ <+> only_ <+> star   <+> but_ <+> star
-
-notJust' :: Parser Text
-notJust'      = not_ <+> just_ <+> star   <+> but_ <+> star
+notJust :: Parser Text -> Parser Text -> Parser Text
+notJust w s     = not_ <+> just_ <+> w <+> but_ <+> s
 
 {-----------------------------------------------------------------------------
    Strong-weak patterns
 ------------------------------------------------------------------------------}
 
-notJust1 :: Adjective -> Adjective -> Parser Text
-notJust1 s w = not_ <+> word s <+> comma' <+> just_ <+> word w
+notJust1 :: Parser Text -> Parser Text -> Parser Text
+notJust1 s w = not_ <+> s <+> comma' <+> just_ <+> w
 
-notButJust :: Adjective -> Adjective -> Parser Text
-notButJust s w = not_ <+> word s <+> comma' <+> but_ <+> just_ <+> word w
+notButJust :: Parser Text -> Parser Text -> Parser Text
+notButJust s w = not_ <+> s <+> comma' <+> but_ <+> just_ <+> w
 
-notStill :: Adjective -> Adjective -> Parser Text
-notStill s w = not_ <+> word s <+> comma' <+> still_ <+> word w
+notStill :: Parser Text -> Parser Text -> Parser Text
+notStill s w = not_ <+> s <+> comma' <+> still_ <+> w
 
-notButStill :: Adjective -> Adjective -> Parser Text
-notButStill s w = not_ <+> word s <+> comma' <+> but_ <+> still_ <+> word w
+notButStill :: Parser Text -> Parser Text -> Parser Text
+notButStill s w = not_ <+> s <+> comma' <+> but_ <+> still_ <+> w
 
-notAlthoughStill :: Adjective -> Adjective -> Parser Text
-notAlthoughStill s w = not_ <+> word s <+> comma' <+> although_ <+> still_ <+> word w
+notAlthoughStill :: Parser Text -> Parser Text -> Parser Text
+notAlthoughStill s w = not_ <+> s <+> comma' <+> although_ <+> still_ <+> w
 
-notThoughStill :: Adjective -> Adjective -> Parser Text
-notThoughStill s w = not_ <+> word s <+> comma' <+> though_ <+> still_ <+> word w
+notThoughStill :: Parser Text -> Parser Text -> Parser Text
+notThoughStill s w = not_ <+> s <+> comma' <+> though_ <+> still_ <+> w
 
-orVery :: Adjective -> Adjective -> Parser Text
-orVery s w = word s <+> comma' <+> or_ <+>  very_ <+> word w
-
--- * wildcard patterns
-
-notJust1' :: Parser Text
-notJust1' = not_ <+> star <+> comma' <+> just_ <+> star
-
-notButJust' :: Parser Text
-notButJust' = not_ <+> star <+> comma' <+> but_ <+> just_ <+> star
-
-notStill' :: Parser Text
-notStill' = not_ <+> star <+> comma' <+> still_ <+> star
-
-notButStill' :: Parser Text
-notButStill' = not_ <+> star <+> comma' <+> but_ <+> still_ <+> star
-
-notAlthoughStill' :: Parser Text
-notAlthoughStill' = not_ <+> star <+> comma' <+> although_ <+> still_ <+> star
-
-notThoughStill' :: Parser Text
-notThoughStill' = not_ <+> star <+> comma' <+> though_ <+> still_ <+> star
-
-orVery' :: Parser Text
-orVery' = star <+> comma' <+> or_ <+>  very_ <+> star
+orVery :: Parser Text -> Parser Text -> Parser Text
+orVery s w = s <+> comma' <+> or_ <+>  very_ <+> w
 
 {-----------------------------------------------------------------------------
    Relationships

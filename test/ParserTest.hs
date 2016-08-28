@@ -18,7 +18,7 @@ import Data.Attoparsec.Text
 import Data.Attoparsec.Combinator
 
 import Parsers
-import Patterns
+
 
 {-----------------------------------------------------------------------------
    Run all tests
@@ -33,14 +33,6 @@ main = do
                 , teow
                 , tword
                 , tanyWord
-
-                , tcomma
-                , tcomma'
-                , tbut
-
-                , tbutnot
-                , tbutnot'
-                , talthoughnot
                 ]
     return ()
 
@@ -95,6 +87,7 @@ tword =  let p = word  "hello"
       in "word"                    
       ~: TestList [ p <** (pack "hello"  ) ~?= o
                   , p <** (pack "hello!" ) ~?= o
+                  , p <** (pack "  hello") ~?= o
                   , p <** (pack "hello " ) ~?= o
                   , p <** (pack "foo"    ) ~?= Nothing
                   , p <** (pack "hello1" ) ~?= Nothing
@@ -128,77 +121,4 @@ tanyWord = let o = justP "hello"
                     , anyWord <** (pack "good'ol"    ) ~?= Nothing
                     , anyWord <** (pack "good.com"   ) ~?= Nothing
                     ]
-
-{-----------------------------------------------------------------------------
-    words
-------------------------------------------------------------------------------}
-
-tcomma :: Test
-tcomma = "comma" 
-       ~: TestList [ comma <** (pack ","  ) ~?= justP ","
-                   , comma <** (pack "  ,") ~?= justP ","
-                   , comma <** (pack "h"  ) ~?= Nothing
-                   ]
-
-
-tcomma' :: Test
-tcomma' = let o = justP "(,)"
-       in "comma'" 
-       ~: TestList [ comma' <** (pack ","  ) ~?= o
-                   , comma' <** (pack "  ,") ~?= o
-                   , comma' <** (pack " ")   ~?= o
-                   , comma' <** (pack "h"  ) ~?= Nothing
-                   ]
-
-
-tbut :: Test
-tbut = let o = justP "but"
-    in "but_"
-     ~: TestList [ but_ <** (pack "but"  )  ~?= o
-                 , but_ <** (pack "  but")  ~?= o
-                 , but_ <** (pack "  bbut") ~?= Nothing
-                 ]
-
-
-
-{-----------------------------------------------------------------------------
-    Application specific parsers
-------------------------------------------------------------------------------}
-
-tbutnot :: Test
-tbutnot =  let o = justP $ "good (,) but not great"
-        in let p = "good" `butNot` "great" 
-        in "but not"
-        ~: TestList [ p <** (pack "good but not great"        ) ~?= o
-                    , p <** (pack "good, but not great"       ) ~?= o
-                    , p <** (pack "good ,  but not great"     ) ~?= o
-                    , p <** (pack "good but not great comment") ~?= o
-                    , p <** (pack "foo but not bar"           ) ~?= Nothing
-                    , p <** (pack "foo,  but not bar"         ) ~?= Nothing
-                    ]
-
-
-tbutnot' :: Test
-tbutnot' =  let o = justP $ "* (,) but not *"
-        in "* but not * "
-        ~: TestList [ butNot' <** (pack "foo but not bar" ) ~?= o
-                    , butNot' <** (pack "goo but not gre" ) ~?= o
-                    , butNot' <** (pack "foo, but not bar") ~?= o
-                    , butNot' <** (pack "foo but yes bar" ) ~?= Nothing
-
-                    ]
-
-
-talthoughnot :: Test
-talthoughnot =  let o = justP $ "good (,) although not great"
-             in let p = "good" `althoughNot` "great"
-             in "although not"
-        ~: TestList [ p <** (pack "good although not great"   ) ~?= o
-                    , p <** (pack "good, although not great"  ) ~?= o
-                    , p <** (pack "good ,  although not great") ~?= o
-                    , p <** (pack "foo although not bar"      ) ~?= Nothing
-                    , p <** (pack "foo,  although not bar"    ) ~?= Nothing
-                    ]
-
-
 

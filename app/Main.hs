@@ -30,14 +30,7 @@ import Patterns
 ------------------------------------------------------------------------------}
 
 main :: IO ()
-main = do
-    cnt p4 "good" "great" (p_weakStrong !! 2)
-    cnt p5 "good" "great" (p_weakStrong !! 2)
-
-    cnt p4 "great" "good" (p_weakStrong !! 2)
-    cnt p5 "great" "good" (p_weakStrong !! 2)
-
-
+main = undefined
 
 {-----------------------------------------------------------------------------
   routines
@@ -56,18 +49,18 @@ untar = do
 ------------------------------------------------------------------------------}
 
 -- * remote
-p1r = "/nlp/data/xiao/ngram/data/1gms"
-p2r = "/nlp/data/xiao/ngram/data/2gms"
-p3r = "/nlp/data/xiao/ngram/data/3gms"
-p4r = "/nlp/data/xiao/ngram/data/4gms"
-p5r = "/nlp/data/xiao/ngram/data/5gms"
+f1r = "/nlp/data/xiao/ngram/data/1gms"
+f2r = "/nlp/data/xiao/ngram/data/2gms"
+f3r = "/nlp/data/xiao/ngram/data/3gms"
+f4r = "/nlp/data/xiao/ngram/data/4gms"
+f5r = "/nlp/data/xiao/ngram/data/5gms"
 
 -- * local
-p1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
-p2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/2gms"
-p3 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/3gms"
-p4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
-p5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/5gms"
+f1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
+f2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/2gms"
+f3 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/3gms"
+f4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
+f5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/5gms"
 
 
 
