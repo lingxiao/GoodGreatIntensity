@@ -85,7 +85,6 @@ score a1 a2 = do
   let xs1 = "(" ++ show w1'' ++ " - " ++ show s1'' ++ ")"
   let xs2 = "(" ++ show w2'' ++ " - " ++ show s2'' ++ ")"
   let xs3 = show a1' ++ " * " ++ show a2'
-  let len = length xs3 + 10
 
   let eq = show score' ++ " = "
           ++ xs1 ++ " - " ++ xs2 ++ "  /  " ++ xs3
@@ -132,20 +131,31 @@ sumcnt (name, ps) = do
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query all `ngmp`ath for occurences of pattern
 cnt :: Pattern -> ReaderT Sys IO Total
-cnt p = go p ngm
+cnt p = querySave p ngm
 
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query `onegm` for occurences of pattern
 cntwd :: Pattern -> ReaderT Sys IO Total
-cntwd p = go p (\s -> [onegm s])
+cntwd p = querySave p (\s -> [onegm s])
 
 
-go :: Pattern -> (Sys -> [FilePath]) -> ReaderT Sys IO Total
-go (name, p) g = do
-  sys <- ask
+-- * `query` file, print results, and save results
+querySave :: Pattern -> (Sys -> [FilePath]) -> ReaderT Sys IO Total
+querySave (name, p) g = do
+  sys     <- ask
   let (outp, fs) = (out sys, g sys)
   (n, ts) <- query fs p
   liftIO $ writeResult (outp ++ "/" ++ name) n ts
+
+  liftIO $ print name
+  liftIO $ print "================================="
+  liftIO $ mapM (\(w,w',n) ->  print
+                  $  unpack w 
+                  ++ "     " 
+                  ++ unpack w' 
+                  ++ "     "
+                  ++ show n) ts
+    
   return n
 
 {-----------------------------------------------------------------------------
@@ -175,7 +185,7 @@ queryFile :: FileOpS m [ParseResult]
 queryFile p =  filterC (\(w,_,_) -> 
                         if p <** w == Nothing then False 
                                               else True)
-            =$= logi
+            -- * =$= logi
             =$= awaitForever (\t -> do
                     ts <- lift get
                     let ts' = t:ts

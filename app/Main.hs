@@ -36,8 +36,8 @@ sys = S "good_great" f1 [f4,f5]
 
 main :: IO ()
 main = do
-    createDirectory "good_great"
-    runReaderT (score "good" "great") sys
+    createDirectoryIfMissing False "good_great"
+    runReaderT (w1 "good" "great") sys
     return ()
 
 {-----------------------------------------------------------------------------
@@ -64,6 +64,7 @@ f4r = "/nlp/data/xiao/ngram/data/4gms"
 f5r = "/nlp/data/xiao/ngram/data/5gms"
 
 -- * local
+fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
 f1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
 f2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/2gms"
 f3 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/3gms"
