@@ -101,6 +101,7 @@ notOnly w s     = not_ <+> only_ <+> w <+> but_ <+> s
 notJust :: Parser Text -> Parser Text -> Parser Text
 notJust w s     = not_ <+> just_ <+> w <+> but_ <+> s
 
+
 {-----------------------------------------------------------------------------
    Strong-weak patterns
 ------------------------------------------------------------------------------}

@@ -35,7 +35,6 @@ import Conduits
 import Preprocess
 
 
-
 {-----------------------------------------------------------------------------
   Type
 ------------------------------------------------------------------------------}
@@ -44,16 +43,17 @@ type ParseResult = (Text,Text,Integer)
 type Total       = Integer
 type OutPath     = FilePath
 data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
-  deriving (Show)
+                       deriving (Show)
 
 {----------------------------------------------------------------------------
   Score 
 -----------------------------------------------------------------------------}
 
 
--- * TODO: this should be readerT instance  
-
-score :: (Show a, Fractional a) => Adjective -> Adjective -> ReaderT Sys IO a
+score :: (Show a, Fractional a) 
+      => Adjective 
+      -> Adjective 
+      -> ReaderT Sys IO a
 score a1 a2 = do
 
   -- * compute score
