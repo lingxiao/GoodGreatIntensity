@@ -22,7 +22,7 @@ import Conduits
 import Preprocess
 
 import Untar
-import Count
+import Score
 
 {-----------------------------------------------------------------------------
   Main
@@ -31,25 +31,28 @@ import Count
 main :: IO ()
 main = undefined
 
+    --(n, xs) <- eval . cnt p4 $ "great" `althoughNot` "good"
+    --writeResult ("great" ++ "_although_not_" ++ "good" ++ "_4gms.txt") n xs
+
+    --(n, xs) <- eval . cnt p5 $ "great" `althoughNot` "good"
+    --writeResult ("great" ++ "_although_not_" ++ "good" ++ "_5gms.txt") n xs
+
 
 -- * given weak word `good` and strong word `great`
 -- * query all counts and save to this directory
-query :: String -> String -> IO ()
-query good great = do
-    (n, xs) <- eval . cnt p1 $ word good
-    writeResult (good ++ ".txt") n xs
+--query :: String -> String -> IO ()
+--query good great = do
+--    (n, xs) <- eval . cnt p1 $ word good
+--    writeResult (good ++ ".txt") n xs
 
-    (n, xs) <- eval . cnt p1 $ word great
-    writeResult (great ++ ".txt") n xs
+--    (n, xs) <- eval . cnt p1 $ word great
+--    writeResult (great ++ ".txt") n xs
 
-    -- * weak-strong patterns
-    (n, xs) <- eval . cnt p4 $ good `butNot` great
-    writeResult (good ++ "_but_not_" ++ great ++ "_4gms.txt") n xs
-
-
+--    -- * weak-strong patterns
+--    (n, xs) <- eval . cnt p4 $ good `butNot` great
+--    writeResult (good ++ "_but_not_" ++ great ++ "_4gms.txt") n xs
 
 
-    -- * strong-weak patterns
 
 
 {-----------------------------------------------------------------------------

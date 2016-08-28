@@ -45,7 +45,9 @@ executable GoodGreatIntensity-exe
   hs-source-dirs:      app
   main-is:             Main.hs
 
-  other-modules  :     Count
+  other-modules  :     Score
+                     , Patterns
+                     , Untar
 
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base

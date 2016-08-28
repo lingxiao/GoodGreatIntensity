@@ -3,14 +3,14 @@
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
--- | Module  : Collect statistics
+-- | Module  : All functions used to find score
 -- | Author  : Xiao Ling
 -- | Date    : 8/17/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Count where
+module Score where
 
 import Prelude hiding (filter)
 
@@ -29,15 +29,51 @@ import Patterns
 import Conduits
 import Preprocess
 
-
 {-----------------------------------------------------------------------------
-  Main application function
+  Type
 ------------------------------------------------------------------------------}
 
--- * cnt occurences of pattern `p` in files found in `f`
-cnt :: FileOpS m [(Text, Text, Int)] 
-    => FilePath -> Parser Text -> m Int
-cnt f p  = streamLines f $$ countOccur p
+type ParseResult = (Text,Text,Int)
+type Total       = Int
+
+
+{-----------------------------------------------------------------------------
+  Score 
+------------------------------------------------------------------------------}
+
+p = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
+
+--w1 :: FilePath -> String -> String -> Pws -> IO ()
+--w1 f a1 a2 = mapM (\pattern -> cnt $ a1 `pattern` a2) 
+
+
+--cnt :: Parser Text -> IO ()
+--cnt = undefined
+
+{--
+
+w1 = go 
+
+
+go f a1 a2 = do
+  (name, pattern) <- pws
+  (n,xs)          <- cnt' f $ a1 `pattern` a2
+  writeResult (name a1 a2) n xs
+
+
+
+--}
+
+
+{-----------------------------------------------------------------------------
+  Count occurences of `p` in file at path `f`
+------------------------------------------------------------------------------}
+
+--cnt :: FileOpS m [Count] 
+    -- => FilePath -> Parser Text -> m Int
+cnt' :: FileOpS m [ParseResult] 
+    => FilePath -> Parser Text -> m (Total,[ParseResult])
+cnt' f p  = eval $ streamLines f $$ countOccur p
 
 {-----------------------------------------------------------------------------
   Conduit routines
@@ -45,8 +81,8 @@ cnt f p  = streamLines f $$ countOccur p
 
 -- * open all ".txt" files found at path `p` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
-streamLines :: FileOpS m s => FilePath -> Source m (Text, Text, Int)
-streamLines p =  p `traverseAll` ".txt"
+streamLines :: FileOpS m s => FilePath -> Source m ParseResult
+streamLines f =  f `traverseAll` ".txt"
              =$= openFile
              =$= linesOn "\t"
              =$= filterC (\x -> Prelude.length x == 2)
@@ -55,9 +91,9 @@ streamLines p =  p `traverseAll` ".txt"
        
 -- * search for pattern `p` and sum all of its occurences
 -- * save occurences in local state
-countOccur :: FileOpS m [(Text, Text, Int)]
+countOccur :: FileOpS m [ParseResult]
            => Parser Text 
-           -> Consumer (Text, Text, Int) m Int
+           -> Consumer ParseResult m Int
 countOccur p =  filterC (\(w,_,_) -> if p <** w == Nothing then False 
                                                           else True)
             =$= logi
@@ -70,12 +106,12 @@ countOccur p =  filterC (\(w,_,_) -> if p <** w == Nothing then False
             =$= foldlC  (\m (_,_,n) -> m + n) 0
 
 {-----------------------------------------------------------------------------
-  utils
+  Save file
 ------------------------------------------------------------------------------}
 
 -- * write result named `name` to local directory,
 -- * result is total count `n` and incidences occured `xs`
-writeResult :: String -> Int -> [(Text,Text,Int)] -> IO ()
+writeResult :: String -> Int -> [ParseResult] -> IO ()
 writeResult name n ts = do
     o <- S.openFile name S.WriteMode
     S.hPutStrLn o name

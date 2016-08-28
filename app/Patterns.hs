@@ -24,42 +24,56 @@ import Data.Text hiding (foldr)
 import Parsers
 
 {-----------------------------------------------------------------------------
-   Pattern Lists
+   Types
 ------------------------------------------------------------------------------}
 
-p_weakStrong :: [(String, String -> String -> Parser Text)]
-p_weakStrong = [ ("butNot"     , butNot     )
-               , ("althoughNot", althoughNot)
-               , ("thoughNot"  , thoughNot  )
-               , ("andorEven"  , andorEven  )
-               , ("andorAlmost", andorAlmost)
-               , ("notOnly"    , notOnly    )
-               , ("notJust"    , notJust    )
-               ]
+type Name         = String -> String -> String
+type Pattern      = (String, String -> String -> Parser Text)
+type WildPattern  = (String, Parser Text                    )
+
+type Pws          = [Pattern    ]
+type PwsStar      = [WildPattern]
 
 
-p_weakStrongStar :: [(String, Parser Text)]
-p_weakStrongStar = [ ("butNot"      , butNot'     )
-                   , ("althoughNot" , althoughNot')
-                   , ("thoughNot"   , thoughNot'  )
-                   , ("andorEven"   , andorEven'  )
-                   , ("andorAlmost" , andorAlmost')
-                   , ("notOnly"     , notOnly'    )
-                   , ("notJust"     , notJust'    )
+type Psw          = [Pattern    ]
+type PswStar      = [WildPattern]
+
+{-----------------------------------------------------------------------------
+   Pattern Lists
+
+p_weakStrong :: Pws
+p_weakStrong     = [ ("butNot"     , butNot                )
+                   , ("althoughNot", althoughNot           )
+                   , ("thoughNot"  , thoughNot             )
+                   , ("andorEven"  , andorEven             )
+                   , ("andorAlmost", andorAlmost           )
+                   , ("notOnly"    , notOnly               )
+                   , ("notJust"    , notJust               )
                    ]
 
-p_strongWeak :: [(String, String -> String -> Parser Text)]                   
-p_strongWeak = [ ("notJust1"        , notJust1        )
-               , ("notButJust"      , notButJust      )
-               , ("notStill"        , notStill        )
-               , ("notButStill"     , notButStill     )
-               , ("notAlthoughStill", notAlthoughStill)
-               , ("notThoughStill"  , notThoughStill  )
-               , ("orVery"          , orVery          )
-               ]
+
+p_weakStrongStar :: PwsStar
+p_weakStrongStar = [ ("butNot"      , butNot'              )
+                   , ("althoughNot" , althoughNot'         )
+                   , ("thoughNot"   , thoughNot'           )
+                   , ("andorEven"   , andorEven'           )
+                   , ("andorAlmost" , andorAlmost'         )
+                   , ("notOnly"     , notOnly'             )
+                   , ("notJust"     , notJust'             )
+                   ]
+
+p_strongWeak :: Psw
+p_strongWeak    =  [ ("notJust1"        , notJust1          )
+                   , ("notButJust"      , notButJust        )
+                   , ("notStill"        , notStill          )
+                   , ("notButStill"     , notButStill       )
+                   , ("notAlthoughStill", notAlthoughStill  )
+                   , ("notThoughStill"  , notThoughStill    )
+                   , ("orVery"          , orVery            )
+                   ]
 
 
-p_strongWeakStar :: [(String, Parser Text)]
+p_strongWeakStar :: PswStar
 p_strongWeakStar = [ ("notJust1"        , notJust1'        )
                    , ("notButJust"      , notButJust'      )
                    , ("notStill"        , notStill'        )
@@ -68,6 +82,8 @@ p_strongWeakStar = [ ("notJust1"        , notJust1'        )
                    , ("notThoughStill"  , notThoughStill'  )
                    , ("orVery"          , orVery'          )
                    ]
+------------------------------------------------------------------------------}
+                   
 
 {-----------------------------------------------------------------------------
    Weak-strong patterns
@@ -179,7 +195,7 @@ andorEven_    = comma' <+> (and_ <|> or_) <+> even_
 andorAlmost_  = comma' <+> (and_ <|> or_) <+> almost_
 
 {-----------------------------------------------------------------------------
-   Sords
+   Words
 ------------------------------------------------------------------------------}
 
 but_, not_, and_, if_, or_, almost_, even_
