@@ -13,7 +13,9 @@
 module Main where
 
 
+import System.Directory
 import Data.Text hiding (foldr)
+import Control.Monad.Trans.Reader
 
 import Core
 import Parsers
@@ -21,7 +23,7 @@ import Patterns
 import Conduits
 import Preprocess
 
-import Untar
+
 import Score
 import Patterns
 
@@ -29,20 +31,26 @@ import Patterns
   Main
 ------------------------------------------------------------------------------}
 
+sys :: Sys
+sys = S "good_great" f1 [f4,f5]
+
 main :: IO ()
-main = undefined
+main = do
+    createDirectory "good_great"
+    runReaderT (score "good" "great") sys
+    return ()
 
 {-----------------------------------------------------------------------------
   routines
 ------------------------------------------------------------------------------}
 
-untar :: IO ()
-untar = do
-    run $ untarAll p1 ".gz" ".txt"
-    run $ untarAll p2 ".gz" ".txt"
-    run $ untarAll p3 ".gz" ".txt"
-    run $ untarAll p4 ".gz" ".txt"
-    run $ untarAll p5 ".gz" ".txt"
+--untar :: IO ()
+--untar = do
+--    run $ untarAll p1 ".gz" ".txt"
+--    run $ untarAll p2 ".gz" ".txt"
+--    run $ untarAll p3 ".gz" ".txt"
+--    run $ untarAll p4 ".gz" ".txt"
+--    run $ untarAll p5 ".gz" ".txt"
 
 {-----------------------------------------------------------------------------
   Paths

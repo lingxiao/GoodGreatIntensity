@@ -1,0 +1,46 @@
+good.txt
+--------------------------------------------------
+total: 731722838
+--------------------------------------------------
+good''     good''     262
+good     goOD     339
+good'     good'     863
+good     GoOD     975
+good.     GOOD.     1161
+good     gooD     1212
+good     GOoD     1455
+good     GOOd     1467
+good     goOd     1944
+good     gOOD     2343
+good     gOod     3248
+good     gOOd     3396
+good     gOoD     3768
+good.     good.     4930
+good     GOod     6335
+good     GoOd     7819
+good     GooD     9460
+good.     Good.     31325
+good     GOOD     10154554
+good     Good     79613228
+good     good     276011335
+good.     good.     4930
+good''     good''     262
+good'     good'     863
+good     good     276011335
+good     gooD     1212
+good     goOd     1944
+good     goOD     339
+good     gOod     3248
+good     gOoD     3768
+good     gOOd     3396
+good     gOOD     2343
+good.     Good.     31325
+good     Good     79613228
+good     GooD     9460
+good     GoOd     7819
+good     GoOD     975
+good     GOod     6335
+good     GOoD     1455
+good     GOOd     1467
+good.     GOOD.     1161
+good     GOOD     10154554
