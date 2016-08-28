@@ -31,8 +31,9 @@ import Patterns
   Main
 ------------------------------------------------------------------------------}
 
-sys :: Sys
-sys = S "good_great" f1 [f4,f5]
+sys, sysr :: Sys
+sys  = S "good_great" f1  [f4,f5]
+sysr = S "good_great" f2r [f4r,f5r]
 
 main :: IO ()
 main = do
