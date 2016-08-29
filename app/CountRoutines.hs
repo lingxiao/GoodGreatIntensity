@@ -44,14 +44,18 @@ countWords = do
 
 
 -- * P1
-p1 :: IO ()
-p1 = runReaderT go sys >> return ()
-      where go = sumcnt $ p_weakStrong star star
+p1 :: IO Integer
+p1 = do
+      createDirectoryIfMissing False "Ps"
+      runReaderT go sys 
+            where go = sumcnt $ p_weakStrong star star
 
 -- * P2
-p2 :: IO ()
-p2 = runReaderT go sys >> return ()
-      where go = sumcnt $ p_strongWeak star star
+p2 :: IO Integer
+p2 = do
+      createDirectoryIfMissing False "Ps"
+      runReaderT go sys
+            where go = sumcnt $ p_strongWeak star star
 
 {-----------------------------------------------------------------------------
   words
@@ -118,7 +122,7 @@ twords = [ "good"
 ------------------------------------------------------------------------------}
 
 sys :: Sys
-sys = S "words" f1r [f4r,f5r]
+sys = S "Ps" f1r [f4r,f5r]
 
 -- * remote
 f1r, f4r, f5r :: FilePath
