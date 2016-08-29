@@ -38,7 +38,6 @@ countWords = do
       createDirectoryIfMissing False "words"
       mapM go testwords >> return ()
 
-
 {-----------------------------------------------------------------------------
   words
 ------------------------------------------------------------------------------}
@@ -46,7 +45,9 @@ countWords = do
 go :: String -> IO Integer
 go a = runReaderT (cntwd . word $ a) sys_words
 
-testwords = [ "better"
+testwords = [ "good"
+            , "bad"
+            , "better"
             , "best"
             , "acceptable"
             , "satisfactory"
@@ -54,6 +55,9 @@ testwords = [ "better"
             , "great"
             , "solid"
             , "superb"
+
+            , "wet"
+            , "dry"
             , "muddy"
             , "sticky"
             , "humid"
@@ -68,6 +72,7 @@ testwords = [ "better"
             , "soggy"
             , "rainy"
             , "waterlogged"
+
             , "evil"
             , "negative"
             , "mediocre"
@@ -77,10 +82,16 @@ testwords = [ "better"
             , "awful"
             , "worst"
             , "terrible"
+
+            , "sophisticated"
+            , "naif"
             , "innocent"
             , "simple"
             , "naive"
             , "childlike"
+
+            , "characteristic"
+            , "uncharacteristic"
             , "limited"
             , "special"
             , "peculiar"
