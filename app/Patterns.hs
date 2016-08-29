@@ -73,19 +73,19 @@ p_strongWeak = \u v ->
 
 --    w (,) but not s
 butNot :: Parser Text -> Parser Text -> Parser Text
-butNot w s      = w <+> butNot_ <+> s
+butNot w s      = w <+> comma' <+> but_ <+> not_ <+> s
 
 althoughNot :: Parser Text -> Parser Text -> Parser Text
-althoughNot w s = w <+> althoughNot_ <+> s
+althoughNot w s = w <+> comma' <+> although_ <+> not_ <+> s
 
 thoughNot :: Parser Text -> Parser Text -> Parser Text
-thoughNot w s   = w <+> thoughNot_ <+> s
+thoughNot w s   = w <+> comma' <+> though_  <+> not_ <+> s
 
 andorEven :: Parser Text -> Parser Text -> Parser Text
-andorEven w s   = w <+> andorEven_ <+> s
+andorEven w s   = w <+> comma' <+> (and_ <|> or_) <+> even_ <+> s
 
 andorAlmost :: Parser Text -> Parser Text -> Parser Text
-andorAlmost w s = w <+> andorAlmost_ <+> s
+andorAlmost w s = w <+> comma' <+> (and_ <|> or_) <+> almost_ <+> s
 
 notOnly :: Parser Text -> Parser Text -> Parser Text
 notOnly w s     = not_ <+> only_ <+> w <+> but_ <+> s
@@ -118,18 +118,6 @@ notThoughStill s w = not_ <+> s <+> comma' <+> though_ <+> still_ <+> w
 
 orVery :: Parser Text -> Parser Text -> Parser Text
 orVery s w = s <+> comma' <+> or_ <+>  very_ <+> w
-
-{-----------------------------------------------------------------------------
-   Relationships
-------------------------------------------------------------------------------}
-
-butNot_ , althoughNot_, thoughNot_ , andorEven_
-        , andorAlmost_ :: Parser Text 
-butNot_       = comma' <+> but_           <+> not_
-althoughNot_  = comma' <+> although_      <+> not_
-thoughNot_    = comma' <+> though_        <+> not_
-andorEven_    = comma' <+> (and_ <|> or_) <+> even_
-andorAlmost_  = comma' <+> (and_ <|> or_) <+> almost_
 
 {-----------------------------------------------------------------------------
    Words
