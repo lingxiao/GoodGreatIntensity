@@ -143,7 +143,7 @@ querySave p g = do
   (n, ts) <- query fs p
   liftIO $ writeResult (outp ++ "/" ++ name p) n ts
 
-  liftIO $ print $ name p
+  liftIO $ print $ name p ++ "  " ++ show n
   liftIO $ print "================================="
   liftIO $ mapM (\(w,w',n) ->  print
                   $  unpack w 
