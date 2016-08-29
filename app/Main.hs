@@ -32,7 +32,17 @@ import CountRoutines
   Main
 ------------------------------------------------------------------------------}
 
-
 main :: IO ()
-main = countStar
+main = undefined
 
+
+countp1 :: IO ()
+countp1 = do 
+    createDirectoryIfMissing False "Ps"
+    p1
+
+
+countp2 :: IO ()    
+countp2 = do
+    createDirectoryIfMissing False "Ps"
+    p2
