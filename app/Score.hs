@@ -49,7 +49,6 @@ data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
   Score 
 -----------------------------------------------------------------------------}
 
--- * TODO: an error here create p_weakStrong_great_great
 score :: (Show a, Fractional a) 
       => Adjective 
       -> Adjective 
@@ -61,7 +60,7 @@ score a1 a2 = do
   p2' <- fromInteger <$> sumcnt (p_strongWeak "*" "*")
 
   w1' <- fromInteger <$> w1 a1 a2
-  w2' <- fromInteger <$> w2 a2 a2
+  w2' <- fromInteger <$> w2 a1 a2
   
   s1' <- fromInteger <$> s1 a1 a2
   s2' <- fromInteger <$> s2 a1 a2
@@ -72,11 +71,11 @@ score a1 a2 = do
   let s2'' = s2' / p2'
 
 
-  a1' <- fromInteger <$> (cntwd $ word a1)
-  a2' <- fromInteger <$> (cntwd $ word a2)
+  na1 <- fromInteger <$> (cntwd $ word a1)
+  na2 <- fromInteger <$> (cntwd $ word a2)
 
   let top = (w1'' - s1'') - (w2'' - s2')
-  let bot = a1' * a2'
+  let bot = na1 * na2
 
   let score' = top / bot
 
@@ -84,7 +83,7 @@ score a1 a2 = do
   sys <- ask
   let xs1 = "(" ++ show w1'' ++ " - " ++ show s1'' ++ ")"
   let xs2 = "(" ++ show w2'' ++ " - " ++ show s2'' ++ ")"
-  let xs3 = show a1' ++ " * " ++ show a2'
+  let xs3 = show na1 ++ " * " ++ show na2
 
   let eq = show score' ++ " = "
           ++ xs1 ++ " - " ++ xs2 ++ "  /  " ++ xs3
