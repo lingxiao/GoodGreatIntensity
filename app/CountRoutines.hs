@@ -38,23 +38,26 @@ import Patterns
 countWords :: IO ()
 countWords = do
       createDirectoryIfMissing False "words"
-      mapM go testwords >> return ()
+      mapM go twords >> return ()
             where go a = runReaderT (cntwd . word $ a) sys
 
 
--- * P1 and P2
-countStar :: IO ()
-countStar = runReaderT go sys >> return ()
-      where go = do
-            sumcnt $ p_weakStrong star star
-            sumcnt $ p_strongWeak star star
+-- * P1
+p1 :: IO ()
+p1 = runReaderT go sys >> return ()
+      where go = sumcnt $ p_weakStrong star star
 
+-- * P2
+p2 :: IO ()
+p2 = runReaderT go sys >> return ()
+      where go = sumcnt $ p_strongWeak star star
 
 {-----------------------------------------------------------------------------
   words
 ------------------------------------------------------------------------------}
 
-testwords = [ "good"
+
+twords = [ "good"
             , "bad"
             , "better"
             , "best"
