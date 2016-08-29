@@ -36,32 +36,35 @@ import Patterns
 ------------------------------------------------------------------------------}
 
 -- * count frequency of all words. from paper: cnt(ai)
-countWords :: IO ()
+countWords :: IO [Integer]
 countWords = do
       createDirectoryIfMissing False "words"
-      mapM go twords >> return ()
-            where go a = runReaderT (cntwd . word $ a) sys
+      mapM go twords
+            where go a = runReaderT (cntwd . word $ a) 
+                       $ S "words" f1r []
 
 
 -- * P1 from paper: Σ_{p_i ∈ Pws} cnt(p_i)
 p1 :: IO Integer
 p1 = do
-      createDirectoryIfMissing False "Ps"
-      runReaderT go sys 
+      createDirectoryIfMissing False "P1"
+      runReaderT go $ S "P1" f1r [f4r,f5r]
             where go = sumcnt $ p_weakStrong star star
 
 -- * P2 from paper: Σ_{p_i ∈ Psw} cnt(p_i)
 p2 :: IO Integer
 p2 = do
-      createDirectoryIfMissing False "Ps"
-      runReaderT go sys
+      createDirectoryIfMissing False "P2"
+      runReaderT go $ S "P2" f1r [f4r,f5r]
             where go = sumcnt $ p_strongWeak star star
+
 
 {-----------------------------------------------------------------------------
   words
 ------------------------------------------------------------------------------}
 
-
+-- * TODO: move these into a .txt file
+-- * TODO: a sane output input directory structure
 twords = [ "good"
             , "bad"
             , "better"
@@ -122,7 +125,7 @@ twords = [ "good"
 ------------------------------------------------------------------------------}
 
 sys :: Sys
-sys = S "Ps" f1r [f4r,f5r]
+sys = S "Ps" f1r [fd]
 
 -- * remote
 f1r, f4r, f5r :: FilePath
