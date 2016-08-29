@@ -1,0 +1,18 @@
+unique.txt
+--------------------------------------------------
+total: 63129080
+--------------------------------------------------
+unique.     unique.     411
+unique     unique     49467026
+unique     uniQue     925
+unique     uNiQuE     633
+unique     Unique     12517926
+unique     UniquE     558
+unique     UniqUe     2048
+unique     UniQue     3809
+unique     UniQuE     356
+unique     UnIqUe     612
+unique     UnIQue     1835
+unique     UNique     444
+unique     UNiQUE     550
+unique     UNIQUE     1131947

@@ -1,0 +1,23 @@
+best.txt
+--------------------------------------------------
+total: 371880036
+--------------------------------------------------
+best.     best.     1422
+best'     best'     225
+best     best     232776352
+best     besT     882
+best     beSt     1152
+best     beST     344
+best     bEst     1186
+best     bEsT     4181
+best     bESt     487
+best     bEST     1639
+best.     Best.     1307
+best     Best     128821331
+best     BesT     6040
+best     BeSt     14277
+best     BeST     8192
+best     BEst     5254
+best     BEsT     439
+best     BESt     2730
+best     BEST     10232596

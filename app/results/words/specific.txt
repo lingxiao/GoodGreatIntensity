@@ -1,0 +1,9 @@
+specific.txt
+--------------------------------------------------
+total: 107786841
+--------------------------------------------------
+specific.     specific.     773
+specific     specific     94811244
+specific     Specific     11642936
+specific     SPecific     289
+specific     SPECIFIC     1331599

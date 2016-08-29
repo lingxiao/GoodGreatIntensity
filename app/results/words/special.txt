@@ -1,0 +1,25 @@
+special.txt
+--------------------------------------------------
+total: 244324661
+--------------------------------------------------
+special...     special...     230
+special.     special.     737
+special'     special'     441
+special     special     104309379
+special     speciaL     551
+special     sPecial     806
+special     sPeCiAl     380
+special     sPECIAL     483
+special.     Special.     1940
+special     Special     120210430
+special     SpeciaL     1053
+special     SpeCial     383
+special     SpeCiaL     225
+special     SpEciAL     295
+special     SpEcIaL     1145
+special     SpECIaL     418
+special     SpECIAL     211
+special     SPecial     2188
+special     SPECiAL     932
+special     SPECIAl     402
+special     SPECIAL     19792032

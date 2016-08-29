@@ -1,0 +1,13 @@
+solid.txt
+--------------------------------------------------
+total: 37430412
+--------------------------------------------------
+solid.     solid.     1117
+solid     solid     22807416
+solid     sOlid     724
+solid     Solid     12943764
+solid     SoliD     245
+solid     SoLiD     719
+solid     SOlid     689
+solid     SOLiD     474
+solid     SOLID     1675264

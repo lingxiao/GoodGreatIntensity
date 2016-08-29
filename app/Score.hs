@@ -48,6 +48,7 @@ data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
   Score 
 -----------------------------------------------------------------------------}
 
+-- * do not actually run this
 score :: (Show a, Fractional a) 
       => Adjective 
       -> Adjective 
@@ -150,7 +151,8 @@ querySave p g = do
                   ++ "     " 
                   ++ unpack w' 
                   ++ "     "
-                  ++ show n) ts
+                  ++ show n
+                  ++ "\n") ts
     
   return $ fromInteger n
 

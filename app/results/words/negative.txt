@@ -1,0 +1,12 @@
+negative.txt
+--------------------------------------------------
+total: 30507741
+--------------------------------------------------
+negative.     negative.     1949
+negative     negative     25799922
+negative.     Negative.     361
+negative     Negative     4064970
+negative     NeGative     335
+negative     NeGaTiVe     227
+negative     NEGative     382
+negative     NEGATIVE     639595
