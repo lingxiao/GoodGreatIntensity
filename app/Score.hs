@@ -56,8 +56,8 @@ score :: (Show a, Fractional a)
 score a1 a2 = do
 
   -- * compute score
-  p1' <- fromInteger <$> sumcnt (p_weakStrong "*" "*")
-  p2' <- fromInteger <$> sumcnt (p_strongWeak "*" "*")
+  p1' <- fromInteger <$> sumcnt (p_weakStrong star star)
+  p2' <- fromInteger <$> sumcnt (p_strongWeak star star)
 
   w1' <- fromInteger <$> w1 a1 a2
   w2' <- fromInteger <$> w2 a1 a2
@@ -100,13 +100,13 @@ score a1 a2 = do
 ------------------------------------------------------------------------------}
 
 w1 :: Adjective -> Adjective -> ReaderT Sys IO Total
-w1 a1 = sumcnt . p_weakStrong a1
+w1 a1 a2 = sumcnt $ p_weakStrong (word a1) (word a2)
 
 w2 :: Adjective -> Adjective -> ReaderT Sys IO Total
 w2 a1 a2 = w1 a2 a1
 
 s1 :: Adjective -> Adjective -> ReaderT Sys IO Total
-s1 a1 = sumcnt . p_strongWeak a1
+s1 a1 a2 = sumcnt $ p_strongWeak (word a1) (word a2)
 
 s2 :: Adjective -> Adjective -> ReaderT Sys IO Total
 s2 a1 a2 = s1 a2 a1

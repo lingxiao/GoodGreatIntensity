@@ -30,8 +30,8 @@ import Parsers
 
 type Name      = String
 type Adjective = String
-type Pws       = Adjective -> Adjective -> (Name, [Parser Text])
-type Psw       = Adjective -> Adjective -> (Name, [Parser Text])
+type Pws       = Parser Text -> Parser Text -> (Name, [Parser Text])
+type Psw       = Parser Text -> Parser Text -> (Name, [Parser Text])
 
 
 {-----------------------------------------------------------------------------
@@ -43,8 +43,8 @@ type Psw       = Adjective -> Adjective -> (Name, [Parser Text])
 
 p_weakStrong :: Pws
 p_weakStrong = \u v -> 
-    ( "p_weakStrong_" ++ u ++ "_" ++ v
-    , (\p -> word u `p` word v ) <$>
+    ( "p_weakStrong_" ++ name u ++ "_" ++ name v
+    , (\p -> p u v ) <$>
     [ butNot
     , althoughNot
     , thoughNot
@@ -56,8 +56,8 @@ p_weakStrong = \u v ->
 
 p_strongWeak :: Psw
 p_strongWeak = \u v -> 
-    ( "p_strongWeak_" ++ u ++ "_" ++ v
-    , (\p -> word u `p` word v ) <$>
+    ( "p_strongWeak_" ++ name u ++ "_" ++ name v
+    , (\p -> p u v ) <$>
     [ notJust1
     , notButJust
     , notStill
