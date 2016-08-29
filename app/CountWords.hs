@@ -36,15 +36,15 @@ import Patterns
 countWords :: IO ()
 countWords = do
       createDirectoryIfMissing False "words"
-      mapM countw testwords >> return ()
+      mapM go testwords >> return ()
 
 
 {-----------------------------------------------------------------------------
   words
 ------------------------------------------------------------------------------}
 
-countw :: String -> IO Integer
-countw a = runReaderT (cntwd . word $ a) sys_words
+go :: String -> IO Integer
+go a = runReaderT (cntwd . word $ a) sys_words
 
 testwords = [ "better"
             , "best"
@@ -94,17 +94,11 @@ testwords = [ "better"
 ------------------------------------------------------------------------------}
 
 sys_words :: Sys
-sys_words = S "words" f1 []
+sys_words = S "words" f1r []
 
-sys_words' :: Sys
-sys_words' = S "words" f1r []
-
-
--- * remote
+f1r :: FilePath
 f1r = "/nlp/data/xiao/ngrams/1gms"
 
--- * local
-f1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
 
 
 
