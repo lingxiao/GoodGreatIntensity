@@ -162,12 +162,12 @@ querySave p g = do
 -- * `query` for occurences of `p` in all files found at paths `fs`
 query :: Op m 
       => [FilePath] -> Parser Text -> m (Total,[ParseResult])
-query fs p  = eval $ streamFile fs $$ queryFile p
+query fs p  = eval $ openFiles fs $$ queryFiles p
 
 -- * open all ".txt" files found at path `p` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
-streamFile :: FileOpS m s => [FilePath] -> Source m ParseResult
-streamFile fs =  fs `sourceDirectories` ".txt"
+openFiles :: FileOpS m s => [FilePath] -> Source m ParseResult
+openFiles fs =  fs `sourceDirectories` ".txt"
              =$= openFile
              =$= linesOn "\t"
              =$= filterC (\x -> Prelude.length x == 2)
@@ -176,10 +176,10 @@ streamFile fs =  fs `sourceDirectories` ".txt"
        
 -- * search for pattern `p` and sum all of its occurences
 -- * save occurences in local state
-queryFile :: FileOpS m [ParseResult]
+queryFiles :: FileOpS m [ParseResult]
            => Parser Text 
            -> Consumer ParseResult m Total
-queryFile p =  filterC (\(w,_,_) -> case p <** w of
+queryFiles p =  filterC (\(w,_,_) -> case p <** w of
                         Left _ -> False
                         _      -> True)
             -- * =$= logi
