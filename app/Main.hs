@@ -26,7 +26,7 @@ import Preprocess
 
 import Score
 import Patterns
-import CountRoutines
+import MainSubroutines
 
 
 main :: IO ()
