@@ -26,6 +26,7 @@ import Preprocess
 
 import Score
 import Patterns
+import CountWords
 
 {-----------------------------------------------------------------------------
   Main
@@ -33,71 +34,16 @@ import Patterns
 
 
 main :: IO ()
-main = do
-    mapM countw testwords
-    return ()
+main = countWords
 
     --createDirectoryIfMissing False "good_great"
     --runReaderT (w1 "good" "great") sys
     --return ()
 
-{-----------------------------------------------------------------------------
-  words
-------------------------------------------------------------------------------}
-
-countw :: String -> IO Integer
-countw a = runReaderT (cntwd . word $ a) sys_words
-
-testwords = [ "better"
-            , "best"
-            , "acceptable"
-            , "satisfactory"
-            , "good"
-            , "great"
-            , "solid"
-            , "superb"
-            , "muddy"
-            , "sticky"
-            , "humid"
-            , "tacky"
-            , "moist"
-            , "damp"
-            , "steamy"
-            , "wet"
-            , "drippy"
-            , "watery"
-            , "boggy"
-            , "soggy"
-            , "rainy"
-            , "waterlogged"
-            , "evil"
-            , "negative"
-            , "mediocre"
-            , "poor"
-            , "bad"
-            , "worse"
-            , "awful"
-            , "worst"
-            , "terrible"
-            , "innocent"
-            , "simple"
-            , "naive"
-            , "childlike"
-            , "limited"
-            , "special"
-            , "peculiar"
-            , "specific"
-            , "particular"
-            , "unique"
-            ]
-
 
 {-----------------------------------------------------------------------------
   System Paths 
 ------------------------------------------------------------------------------}
-
-sys_words :: Sys
-sys_words = S "words" f1 []
 
 sys :: String -> Sys
 sys xs = S xs f1 [f4,f5]
