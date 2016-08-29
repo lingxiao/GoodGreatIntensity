@@ -28,13 +28,10 @@ import Parsers
    Types
 ------------------------------------------------------------------------------}
 
-type Adjective = String
 type Name      = String
-
-type Pattern   = (Name, Parser Text)
-
-type Pws       = Adjective -> Adjective -> (Name, [Pattern])
-type Psw       = Adjective -> Adjective -> (Name, [Pattern])
+type Adjective = String
+type Pws       = Adjective -> Adjective -> (Name, [Parser Text])
+type Psw       = Adjective -> Adjective -> (Name, [Parser Text])
 
 
 {-----------------------------------------------------------------------------
@@ -43,37 +40,32 @@ type Psw       = Adjective -> Adjective -> (Name, [Pattern])
          wrapping parser
 ------------------------------------------------------------------------------}
 
-word' :: String -> Parser Text
-word' xs = if xs == "*" then star else word xs
-
 
 p_weakStrong :: Pws
 p_weakStrong = \u v -> 
     ( "p_weakStrong_" ++ u ++ "_" ++ v
-    , [ (u ++ "_but_not_"      ++ v        , word' u `butNot`      word' v)
-      , (u ++ "_although_not_" ++ v        , word' u `althoughNot` word' v)
-      , (u ++ "_though_not_"   ++ v        , word' u `thoughNot`   word' v)
-      , (u ++ "_andor_even_"   ++ v        , word' u `andorEven`   word' v)
-      , (u ++ "_andor_almost_" ++ v        , word' u `andorAlmost` word' v)
-      , ("not_only_" ++ u ++ "_but_" ++ v  , word' u `notOnly`     word' v)
-      , ("not_just_" ++ u ++ "_but_" ++ v  , word' u `notJust`     word' v)
-      ]
-    )    
-
+    , (\p -> word u `p` word v ) <$>
+    [ butNot
+    , althoughNot
+    , thoughNot
+    , andorEven
+    , andorAlmost
+    , notOnly
+    , notJust]
+    )
 
 p_strongWeak :: Psw
 p_strongWeak = \u v -> 
-    ("p_strongWeak_" ++ u ++ "_" ++ v
-    , [ ("not_" ++ u ++ "_just_"           ++ v    , word' u `notJust1`        word' v)
-      , ("not_" ++ u ++ "but_just_"        ++ v    , word' u `notButJust`      word' v)
-      , ("not_" ++ u ++ "_still_"          ++ v    , word' u `notStill`        word' v)      
-      , ("not_" ++ u ++ "_but_still_"      ++ v    , word' u `notButStill`     word' v)
-      , ("not_" ++ u ++ "_although_still_" ++ v    , word' u `notAlthoughStill`word' v)
-      , ("not_" ++ u ++ "_though_still_"   ++ v    , word' u `notThoughStill`  word' v)
-      , (u ++ "_or_very_" ++ v                     , word' u `orVery`          word' v)
-      ]
+    ( "p_strongWeak_" ++ u ++ "_" ++ v
+    , (\p -> word u `p` word v ) <$>
+    [ notJust1
+    , notButJust
+    , notStill
+    , notButStill
+    , notAlthoughStill
+    , notThoughStill
+    , orVery]
     )
-
 
 {-----------------------------------------------------------------------------
    Weak-strong patterns

@@ -49,7 +49,7 @@ data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
   Score 
 -----------------------------------------------------------------------------}
 
-
+-- * TODO: an error here create p_weakStrong_great_great
 score :: (Show a, Fractional a) 
       => Adjective 
       -> Adjective 
@@ -72,8 +72,8 @@ score a1 a2 = do
   let s2'' = s2' / p2'
 
 
-  a1' <- fromInteger <$> cntwd (a1, word a1)
-  a2' <- fromInteger <$> cntwd (a2, word a2)
+  a1' <- fromInteger <$> (cntwd $ word a1)
+  a2' <- fromInteger <$> (cntwd $ word a2)
 
   let top = (w1'' - s1'') - (w2'' - s2')
   let bot = a1' * a2'
@@ -116,10 +116,9 @@ s2 a1 a2 = s1 a2 a1
 {-----------------------------------------------------------------------------
   Score subroutines
 ------------------------------------------------------------------------------}
-
 -- * count all occurences of `Pattern` 
 -- * and save the cumulative results, also save intermediate results
-sumcnt :: (Name, [Pattern]) -> ReaderT Sys IO Total
+sumcnt :: (Name, [Parser Text]) -> ReaderT Sys IO Total
 sumcnt (name, ps) = do
   sys <- ask
   ns  <- mapM cnt ps
@@ -127,27 +126,26 @@ sumcnt (name, ps) = do
   liftIO $ writeResult (out sys ++ "/" ++ name ++ ".txt") m []
   return m
 
-
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query all `ngmp`ath for occurences of pattern
-cnt :: Pattern -> ReaderT Sys IO Total
+cnt :: Parser Text -> ReaderT Sys IO Total
 cnt p = querySave p ngm
 
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query `onegm` for occurences of pattern
-cntwd :: Pattern -> ReaderT Sys IO Total
+cntwd :: Parser Text -> ReaderT Sys IO Total
 cntwd p = querySave p (\s -> [onegm s])
 
 
 -- * `query` file, print results, and save results
-querySave :: Pattern -> (Sys -> [FilePath]) -> ReaderT Sys IO Total
-querySave (name, p) g = do
+querySave :: Parser Text -> (Sys -> [FilePath]) -> ReaderT Sys IO Total
+querySave p g = do
   sys     <- ask
   let (outp, fs) = (out sys, g sys)
   (n, ts) <- query fs p
-  liftIO $ writeResult (outp ++ "/" ++ name) n ts
+  liftIO $ writeResult (outp ++ "/" ++ name p) n ts
 
-  liftIO $ print name
+  liftIO $ print $ name p
   liftIO $ print "================================="
   liftIO $ mapM (\(w,w',n) ->  print
                   $  unpack w 
@@ -182,9 +180,9 @@ streamFile fs =  fs `sourceDirectories` ".txt"
 queryFile :: FileOpS m [ParseResult]
            => Parser Text 
            -> Consumer ParseResult m Total
-queryFile p =  filterC (\(w,_,_) -> 
-                        if p <** w == Nothing then False 
-                                              else True)
+queryFile p =  filterC (\(w,_,_) -> case p <** w of
+                        Left _ -> False
+                        _      -> True)
             -- * =$= logi
             =$= awaitForever (\t -> do
                     ts <- lift get

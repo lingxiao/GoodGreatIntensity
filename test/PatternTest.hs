@@ -38,8 +38,11 @@ main = do
     return ()
 
 
-justP :: String -> Maybe Text
-justP = Just . pack
+right :: String -> Either String Text
+right = Right . pack
+
+name' :: Show a => Parser a -> Either String a
+name' = Left . name
 
 {-----------------------------------------------------------------------------
     words
@@ -47,28 +50,28 @@ justP = Just . pack
 
 tcomma :: Test
 tcomma = "comma" 
-       ~: TestList [ comma <** (pack ","  ) ~?= justP ","
-                   , comma <** (pack "  ,") ~?= justP ","
-                   , comma <** (pack "h"  ) ~?= Nothing
+       ~: TestList [ comma <** (pack ","  ) ~?= right ","
+                   , comma <** (pack "  ,") ~?= right ","
+                   , comma <** (pack "h"  ) ~?= name' comma
                    ]
 
 
 tcomma' :: Test
-tcomma' = let o = justP "(,)"
+tcomma' = let o = right "(,)"
        in "comma'" 
        ~: TestList [ comma' <** (pack ","  ) ~?= o
                    , comma' <** (pack "  ,") ~?= o
                    , comma' <** (pack " ")   ~?= o
-                   , comma' <** (pack "h"  ) ~?= Nothing
+                   , comma' <** (pack "h"  ) ~?= name' comma'
                    ]
 
 
 tbut :: Test
-tbut = let o = justP "but"
+tbut = let o = right "but"
     in "but_"
      ~: TestList [ but_ <** (pack "but"  )  ~?= o
                  , but_ <** (pack "  but")  ~?= o
-                 , but_ <** (pack "  bbut") ~?= Nothing
+                 , but_ <** (pack "  bbut") ~?= name' but_
                  ]
 
 
@@ -78,39 +81,39 @@ tbut = let o = justP "but"
 ------------------------------------------------------------------------------}
 
 tbutnot :: Test
-tbutnot =  let o = justP $ "good (,) but not great"
+tbutnot =  let o = right $ "good (,) but not great"
         in let p = (word "good") `butNot` (word "great")
         in "but not"
         ~: TestList [ p <** (pack "good but not great"        ) ~?= o
                     , p <** (pack "good, but not great"       ) ~?= o
                     , p <** (pack "good ,  but not great"     ) ~?= o
                     , p <** (pack "good but not great comment") ~?= o
-                    , p <** (pack "foo but not bar"           ) ~?= Nothing
-                    , p <** (pack "foo,  but not bar"         ) ~?= Nothing
+                    , p <** (pack "foo but not bar"           ) ~?= name' p
+                    , p <** (pack "foo,  but not bar"         ) ~?= name' p
                     ]
 
 
 tbutnot' :: Test
-tbutnot' =  let o = justP $ "* (,) but not *"
+tbutnot' =  let o = right $ "* (,) but not *"
         in  let p = star `butNot` star
         in "* but not * "
         ~: TestList [ p <** (pack "foo but not bar" ) ~?= o
                     , p <** (pack "goo but not gre" ) ~?= o
                     , p <** (pack "foo, but not bar") ~?= o
-                    , p <** (pack "foo but yes bar" ) ~?= Nothing
+                    , p <** (pack "foo but yes bar" ) ~?= name' p
 
                     ]
 
 
 talthoughnot :: Test
-talthoughnot =  let o = justP $ "good (,) although not great"
+talthoughnot =  let o = right $ "good (,) although not great"
              in let p = (word "good") `althoughNot` (word "great")
              in "although not"
         ~: TestList [ p <** (pack "good although not great"   ) ~?= o
                     , p <** (pack "good, although not great"  ) ~?= o
                     , p <** (pack "good ,  although not great") ~?= o
-                    , p <** (pack "foo although not bar"      ) ~?= Nothing
-                    , p <** (pack "foo,  although not bar"    ) ~?= Nothing
+                    --, p <** (pack "foo although not bar"      ) ~?= name' p
+                    --, p <** (pack "foo,  although not bar"    ) ~?= name' p
                     ]
 
 

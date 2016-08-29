@@ -38,8 +38,11 @@ main = do
 
 
 
-justP :: String -> Maybe Text
-justP = Just . pack
+right :: String -> Either String Text
+right = Right . pack
+
+name' :: Show a => Parser a -> Either String a
+name' = Left . name
 
 {-----------------------------------------------------------------------------
     Basic parsers
@@ -47,78 +50,87 @@ justP = Just . pack
 
 tspaces :: Test
 tspaces = "spaces" 
-        ~: TestList [ spaces <** (pack ""   ) ~?= justP " "
-                    , spaces <** (pack "   ") ~?= justP " "
-                    , spaces <** (pack "hel") ~?= justP " "
+        ~: TestList [ spaces <** (pack ""   ) ~?= right " "
+                    , spaces <** (pack "   ") ~?= right " "
+                    , spaces <** (pack "hel") ~?= right " "
                     ]
+
+
 
 tspaces1 :: Test
 tspaces1 = "spaces1" 
-        ~: TestList [ spaces1<**  (pack ""   ) ~?= Nothing
-                    , spaces1<**  (pack "   ") ~?= justP " "
-                    , spaces1<**  (pack "hel") ~?= Nothing
+        ~: TestList [ spaces1<**  (pack ""   ) ~?= name' spaces1
+                    , spaces1<**  (pack "hel") ~?= name' spaces1
+                    , spaces1<**  (pack "   ") ~?= right " "
                     ]
 
 
+
 tNotAlphaDigitSpace :: Test
-tNotAlphaDigitSpace = "notAlphaDigitSpace"
-     ~: TestList [ notAlphaDigitSpace <** (pack ".") ~?= Just '.'
-                 , notAlphaDigitSpace <** (pack " ") ~?= Nothing
-                 , notAlphaDigitSpace <** (pack "1") ~?= Nothing
-                 , notAlphaDigitSpace <** (pack "h") ~?= Nothing
+tNotAlphaDigitSpace = 
+    let err = name' notAlphaDigitSpace
+    in     "notAlphaDigitSpace"
+     ~: TestList [ notAlphaDigitSpace <** (pack ".") ~?= Right '.'
+                 , notAlphaDigitSpace <** (pack " ") ~?= err
+                 , notAlphaDigitSpace <** (pack "1") ~?= err
+                 , notAlphaDigitSpace <** (pack "h") ~?= err
      ]
 
 
 teow :: Test
 teow = "eow"
-    ~: TestList [ eow <** (pack "..."  ) ~?= justP "..."
-                , eow <** (pack ".. "  ) ~?= justP ".."
-                , eow <** (pack ".. hi") ~?= justP ".."
+    ~: TestList [ eow <** (pack "..."  ) ~?= right "..."
+                , eow <** (pack ".. "  ) ~?= right ".."
+                , eow <** (pack ".. hi") ~?= right ".."
 
-                , eow <** (pack "..1"  ) ~?= Nothing
-                , eow <** (pack ".h" )   ~?= Nothing
-                , eow <** (pack "..h")   ~?= Nothing
+                , eow <** (pack "..1"  ) ~?= name' eow
+                , eow <** (pack ".h" )   ~?= name' eow
+                , eow <** (pack "..h")   ~?= name' eow
     ]
 
 
 tword :: Test
-tword =  let p = word  "hello"
-      in let o = justP "hello"
+tword =  let p   = word  "hello"
+      in let o   = right "hello"
+      in let err = name' p 
       in "word"                    
       ~: TestList [ p <** (pack "hello"  ) ~?= o
                   , p <** (pack "hello!" ) ~?= o
                   , p <** (pack "  hello") ~?= o
                   , p <** (pack "hello " ) ~?= o
-                  , p <** (pack "foo"    ) ~?= Nothing
-                  , p <** (pack "hello1" ) ~?= Nothing
-                  , p <** (pack "helloo" ) ~?= Nothing
+                  , p <** (pack "foo"    ) ~?= err
+                  , p <** (pack "hello1" ) ~?= err
+                  , p <** (pack "helloo" ) ~?= err
 
                   , p <** (pack "hello..."    ) ~?= o
-                  , p <** (pack "hello.f"     ) ~?= Nothing
-                  , p <** (pack "hello......f") ~?= Nothing
-                  , p <** (pack "hello-/hello") ~?= Nothing
-                  , p <** (pack "hello'ol"    ) ~?= Nothing
-                  , p <** (pack "hello.com"   ) ~?= Nothing
-                  , p <** (pack "hello.kw.net") ~?= Nothing
+                  , p <** (pack "hello.f"     ) ~?= err
+                  , p <** (pack "hello......f") ~?= err
+                  , p <** (pack "hello-/hello") ~?= err
+                  , p <** (pack "hello'ol"    ) ~?= err
+                  , p <** (pack "hello.com"   ) ~?= err
+                  , p <** (pack "hello.kw.net") ~?= err
                   ]
 
+
 tanyWord :: Test
-tanyWord = let o = justP "hello" 
+tanyWord = let o   = right "hello" 
+        in let err = name' anyWord
         in "anyWord"
         ~: TestList [ anyWord <** (pack "hello"      ) ~?= o
                     , anyWord <** (pack "hello world") ~?= o
                     , anyWord <** (pack "hello..."   ) ~?= o
-                    , anyWord <** (pack "h"          ) ~?= justP "h"    
+                    , anyWord <** (pack "h"          ) ~?= right "h"    
 
-                    , anyWord <** (pack "!"          ) ~?= Nothing
-                    , anyWord <** (pack "9"          ) ~?= Nothing
-                    , anyWord <** (pack ""           ) ~?= Nothing
-                    , anyWord <** (pack "    "       ) ~?= Nothing
+                    , anyWord <** (pack "!"          ) ~?= err
+                    , anyWord <** (pack "9"          ) ~?= err
+                    , anyWord <** (pack ""           ) ~?= err
+                    , anyWord <** (pack "    "       ) ~?= err
 
-                    , anyWord <** (pack "good.f"     ) ~?= Nothing
-                    , anyWord <** (pack "good.....f" ) ~?= Nothing
-                    , anyWord <** (pack "good-/good" ) ~?= Nothing
-                    , anyWord <** (pack "good'ol"    ) ~?= Nothing
-                    , anyWord <** (pack "good.com"   ) ~?= Nothing
+                    , anyWord <** (pack "good.f"     ) ~?= err
+                    , anyWord <** (pack "good.....f" ) ~?= err
+                    , anyWord <** (pack "good-/good" ) ~?= err
+                    , anyWord <** (pack "good'ol"    ) ~?= err
+                    , anyWord <** (pack "good.com"   ) ~?= err
                     ]
+
 
