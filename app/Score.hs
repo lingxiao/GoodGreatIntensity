@@ -40,14 +40,12 @@ import Preprocess
 ------------------------------------------------------------------------------}
 
 type ParseResult = (Text,Text,Integer)
-type Total       = Integer
 type OutPath     = FilePath
 data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
                        deriving (Show)
 
 {----------------------------------------------------------------------------
   Score 
------------------------------------------------------------------------------}
 
 score :: (Show a, Fractional a) 
       => Adjective 
@@ -94,30 +92,32 @@ score a1 a2 = do
 
   return score'
 
+-----------------------------------------------------------------------------}
 
 {-----------------------------------------------------------------------------
   Score parts
 ------------------------------------------------------------------------------}
 
-w1 :: Adjective -> Adjective -> ReaderT Sys IO Total
+w1 :: Adjective -> Adjective -> ReaderT Sys IO Integer
 w1 a1 a2 = sumcnt $ p_weakStrong (word a1) (word a2)
 
-w2 :: Adjective -> Adjective -> ReaderT Sys IO Total
+w2 :: Adjective -> Adjective -> ReaderT Sys IO Integer
 w2 a1 a2 = w1 a2 a1
 
-s1 :: Adjective -> Adjective -> ReaderT Sys IO Total
+s1 :: Adjective -> Adjective -> ReaderT Sys IO Integer
 s1 a1 a2 = sumcnt $ p_strongWeak (word a1) (word a2)
 
-s2 :: Adjective -> Adjective -> ReaderT Sys IO Total
+s2 :: Adjective -> Adjective -> ReaderT Sys IO Integer
 s2 a1 a2 = s1 a2 a1
-
 
 {-----------------------------------------------------------------------------
   Score subroutines
 ------------------------------------------------------------------------------}
+
+
 -- * count all occurences of `Pattern` 
 -- * and save the cumulative results, also save intermediate results
-sumcnt :: (Name, [Parser Text]) -> ReaderT Sys IO Total
+sumcnt :: (Name, [Parser Text]) -> ReaderT Sys IO Integer
 sumcnt (name, ps) = do
   sys <- ask
   ns  <- mapM cnt ps
@@ -127,17 +127,18 @@ sumcnt (name, ps) = do
 
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query all `ngmp`ath for occurences of pattern
-cnt :: Parser Text -> ReaderT Sys IO Total
+cnt :: Parser Text -> ReaderT Sys IO Integer
 cnt p = querySave p ngm
 
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query `onegm` for occurences of pattern
-cntwd :: Parser Text -> ReaderT Sys IO Total
+cntwd :: Parser Text -> ReaderT Sys IO Integer
 cntwd p = querySave p (\s -> [onegm s])
 
-
 -- * `query` file, print results, and save results
-querySave :: Parser Text -> (Sys -> [FilePath]) -> ReaderT Sys IO Total
+querySave :: Parser Text 
+          -> (Sys -> [FilePath]) 
+          -> ReaderT Sys IO Integer
 querySave p g = do
   sys     <- ask
   let (outp, fs) = (out sys, g sys)
@@ -153,15 +154,15 @@ querySave p g = do
                   ++ "     "
                   ++ show n) ts
     
-  return n
+  return $ fromInteger n
 
 {-----------------------------------------------------------------------------
   Conduit routines
 ------------------------------------------------------------------------------}
 
 -- * `query` for occurences of `p` in all files found at paths `fs`
-query :: Op m 
-      => [FilePath] -> Parser Text -> m (Total,[ParseResult])
+query :: (Op m , Fractional a)
+      => [FilePath] -> Parser Text -> m (Integer,[ParseResult])
 query fs p  = eval $ openFiles fs $$ queryFiles p
 
 -- * open all ".txt" files found at path `p` and stream them as lines
@@ -178,7 +179,7 @@ openFiles fs =  fs `sourceDirectories` ".txt"
 -- * save occurences in local state
 queryFiles :: FileOpS m [ParseResult]
            => Parser Text 
-           -> Consumer ParseResult m Total
+           -> Consumer ParseResult m Integer
 queryFiles p =  filterC (\(w,_,_) -> case p <** w of
                         Left _ -> False
                         _      -> True)
@@ -198,7 +199,10 @@ queryFiles p =  filterC (\(w,_,_) -> case p <** w of
 
 -- * write result named `name` to local directory,
 -- * result is total count `n` and incidences occured `xs`
-writeResult :: String -> Integer -> [ParseResult] -> IO ()
+writeResult :: String 
+            -> Integer
+            -> [ParseResult] 
+            -> IO ()
 writeResult xs n ts = do
     let ys   = dropExtension xs
     let file = ys ++ ".txt"
