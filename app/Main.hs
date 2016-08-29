@@ -63,11 +63,11 @@ sysr xs = S xs f1r [f4r,f5r]
 ------------------------------------------------------------------------------}
 
 -- * remote
-f1r = "/nlp/data/xiao/ngrams/data/1gms"
-f2r = "/nlp/data/xiao/ngrams/data/2gms"
-f3r = "/nlp/data/xiao/ngrams/data/3gms"
-f4r = "/nlp/data/xiao/ngrams/data/4gms"
-f5r = "/nlp/data/xiao/ngrams/data/5gms"
+f1r = "/nlp/data/xiao/ngrams/1gms"
+f2r = "/nlp/data/xiao/ngrams/2gms"
+f3r = "/nlp/data/xiao/ngrams/3gms"
+f4r = "/nlp/data/xiao/ngrams/4gms"
+f5r = "/nlp/data/xiao/ngrams/5gms"
 
 -- * local
 fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
