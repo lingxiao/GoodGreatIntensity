@@ -34,7 +34,9 @@ import Patterns
 ------------------------------------------------------------------------------}
 
 countWords :: IO ()
-countWords = mapM countw testwords >> return ()
+countWords = do
+      createDirectoryIfMissing False "words"
+      mapM countw testwords >> return ()
 
 
 {-----------------------------------------------------------------------------
