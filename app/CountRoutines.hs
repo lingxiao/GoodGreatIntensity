@@ -12,7 +12,8 @@
  
 module CountRoutines (
         countWords
-      , countStar
+      , p1
+      , p2
       ) where
 
 
