@@ -69,7 +69,6 @@ score a1 a2 = do
   let s1'' = s1' / p2'
   let s2'' = s2' / p2'
 
-
   na1 <- fromInteger <$> (cntwd $ word a1)
   na2 <- fromInteger <$> (cntwd $ word a2)
 

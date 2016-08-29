@@ -31,18 +31,34 @@ import Patterns
   Main
 ------------------------------------------------------------------------------}
 
-sys, sysr :: Sys
-sys  = S "good_great" f1  [f4,f5]
-sysr = S "good_great" f2r [f4r,f5r]
 
 main :: IO ()
 main = do
-    createDirectoryIfMissing False "good_great"
-    runReaderT (w1 "good" "great") sys
+    createDirectoryIfMissing False "small_minute"
+    runReaderT (cntwd $ word "small" ) sys_small_minute
+    runReaderT (cntwd $ word "minute") sys_small_minute
     return ()
 
+    --createDirectoryIfMissing False "good_great"
+    --runReaderT (w1 "good" "great") sys
+    --return ()
+
 {-----------------------------------------------------------------------------
-  Paths
+  System Paths 
+------------------------------------------------------------------------------}
+
+sys_good_great   = sys "good_great"
+sysr_good_great  = sys "good_great"
+sys_small_minute = sys "small_minute"
+
+sys :: String -> Sys
+sys xs = S xs f1 [f4,f5]
+
+sysr :: String -> Sys
+sysr xs = S xs f1r [f4r,f5r]
+
+{-----------------------------------------------------------------------------
+  FilePath
 ------------------------------------------------------------------------------}
 
 -- * remote
