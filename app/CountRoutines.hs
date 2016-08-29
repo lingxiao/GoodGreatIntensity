@@ -35,7 +35,7 @@ import Patterns
   Routines
 ------------------------------------------------------------------------------}
 
--- * count training set
+-- * count frequency of all words. from paper: cnt(ai)
 countWords :: IO ()
 countWords = do
       createDirectoryIfMissing False "words"
@@ -43,14 +43,14 @@ countWords = do
             where go a = runReaderT (cntwd . word $ a) sys
 
 
--- * P1
+-- * P1 from paper: Σ_{p_i ∈ Pws} cnt(p_i)
 p1 :: IO Integer
 p1 = do
       createDirectoryIfMissing False "Ps"
       runReaderT go sys 
             where go = sumcnt $ p_weakStrong star star
 
--- * P2
+-- * P2 from paper: Σ_{p_i ∈ Psw} cnt(p_i)
 p2 :: IO Integer
 p2 = do
       createDirectoryIfMissing False "Ps"
