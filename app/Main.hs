@@ -34,9 +34,7 @@ import Patterns
 
 main :: IO ()
 main = do
-    createDirectoryIfMissing False "small_minute"
-    runReaderT (cntwd $ word "small" ) sys_small_minute'
-    runReaderT (cntwd $ word "minute") sys_small_minute'
+    mapM countw testwords
     return ()
 
     --createDirectoryIfMissing False "good_great"
@@ -44,13 +42,62 @@ main = do
     --return ()
 
 {-----------------------------------------------------------------------------
+  words
+------------------------------------------------------------------------------}
+
+countw :: String -> IO Integer
+countw a = runReaderT (cntwd . word $ a) sys_words
+
+testwords = [ "better"
+            , "best"
+            , "acceptable"
+            , "satisfactory"
+            , "good"
+            , "great"
+            , "solid"
+            , "superb"
+            , "muddy"
+            , "sticky"
+            , "humid"
+            , "tacky"
+            , "moist"
+            , "damp"
+            , "steamy"
+            , "wet"
+            , "drippy"
+            , "watery"
+            , "boggy"
+            , "soggy"
+            , "rainy"
+            , "waterlogged"
+            , "evil"
+            , "negative"
+            , "mediocre"
+            , "poor"
+            , "bad"
+            , "worse"
+            , "awful"
+            , "worst"
+            , "terrible"
+            , "innocent"
+            , "simple"
+            , "naive"
+            , "childlike"
+            , "limited"
+            , "special"
+            , "peculiar"
+            , "specific"
+            , "particular"
+            , "unique"
+            ]
+
+
+{-----------------------------------------------------------------------------
   System Paths 
 ------------------------------------------------------------------------------}
 
-sys_good_great    = sys "good_great"
-sys_good_great'   = sysr "good_great"
-sys_small_minute  = sys "small_minute"
-sys_small_minute' = sysr "small_minute"
+sys_words :: Sys
+sys_words = S "words" f1 []
 
 sys :: String -> Sys
 sys xs = S xs f1 [f4,f5]
