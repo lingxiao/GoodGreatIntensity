@@ -18,7 +18,7 @@ module MainSubroutines (
 
 
 import System.Directory
-import Data.Text hiding (foldr)
+import Data.Text hiding (foldr, concat)
 import Control.Monad.Trans.Reader
 
 import Core
@@ -26,7 +26,6 @@ import Parsers
 import Patterns
 import Conduits
 import Preprocess
-
 
 import Score
 import Patterns
@@ -58,6 +57,9 @@ p2 = do
       runReaderT go $ S "P2" f1r [f4r,f5r]
             where go = sumcnt $ p_strongWeak star star
 
+sGoodbad = 
+      let ws = [(u,v) | u <- goodbad, v <- goodbad, u /= v]
+      in ws
 
 {-----------------------------------------------------------------------------
   words
@@ -65,7 +67,9 @@ p2 = do
 
 -- * TODO: move these into a .txt file
 -- * TODO: a sane output input directory structure
-twords = [ "good"
+twords = concat [goodbad, wetdry, negmediocre, sophNaif, character]
+
+goodbad =   [ "good"
             , "bad"
             , "better"
             , "best"
@@ -74,9 +78,9 @@ twords = [ "good"
             , "good"
             , "great"
             , "solid"
-            , "superb"
+            , "superb"]
 
-            , "wet"
+wetdry =    [ "wet"
             , "dry"
             , "muddy"
             , "sticky"
@@ -91,9 +95,9 @@ twords = [ "good"
             , "boggy"
             , "soggy"
             , "rainy"
-            , "waterlogged"
+            , "waterlogged"]
 
-            , "evil"
+negmediocre = ["evil"
             , "negative"
             , "mediocre"
             , "poor"
@@ -101,24 +105,23 @@ twords = [ "good"
             , "worse"
             , "awful"
             , "worst"
-            , "terrible"
+            , "terrible"]
 
-            , "sophisticated"
+sophNaif  = ["sophisticated"
             , "naif"
             , "innocent"
             , "simple"
             , "naive"
-            , "childlike"
+            , "childlike"]
 
-            , "characteristic"
+character = ["characteristic"
             , "uncharacteristic"
             , "limited"
             , "special"
             , "peculiar"
             , "specific"
             , "particular"
-            , "unique"
-            ]
+            , "unique"]
 
 {-----------------------------------------------------------------------------
   System Paths 

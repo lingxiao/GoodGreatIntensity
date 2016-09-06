@@ -30,6 +30,8 @@ import MainSubroutines
 
 
 main :: IO ()
-main = undefined
-
+main = do
+    p1
+    p2 
+    return ()
 

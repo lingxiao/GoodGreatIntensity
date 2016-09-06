@@ -78,8 +78,9 @@ score a1 a2 = do
 
   let score' = top / bot
 
-  -- * save file
   sys <- ask
+
+  -- * print save message
   let xs1 = "(" ++ show w1'' ++ " - " ++ show s1'' ++ ")"
   let xs2 = "(" ++ show w2'' ++ " - " ++ show s2'' ++ ")"
   let xs3 = show na1 ++ " * " ++ show na2
@@ -89,6 +90,7 @@ score a1 a2 = do
 
   let name = out sys ++ "/" ++ a1 ++ "_" ++ a2
 
+  -- * save file
   liftIO $ writeScore name eq score'
 
   return score'
@@ -171,10 +173,9 @@ openFiles :: FileOpS m s => [FilePath] -> Source m ParseResult
 openFiles fs =  fs `sourceDirectories` ".txt"
              =$= openFile
              =$= linesOn "\t"
-             =$= filterC (\x -> Prelude.length x == 2)
+             =$= filterC (\x     -> Prelude.length x == 2)
              =$= mapC    (\[w,n] -> (pre w, w, read . unpack $ n :: Integer))
 
-       
 -- * search for pattern `p` and sum all of its occurences
 -- * save occurences in local state
 queryFiles :: FileOpS m [ParseResult]
@@ -191,7 +192,6 @@ queryFiles p =  filterC (\(w,_,_) -> case p <** w of
                     yield t
                 )
             =$= foldlC  (\m (_,_,n) -> m + n) 0
-
 
 {-----------------------------------------------------------------------------
   Save file
@@ -221,7 +221,6 @@ writeResult xs n ts = do
     S.hClose o
     return ()
         where mark = foldr (++) mempty $ (const "-") <$> [1..50] 
-
 
 
 -- * write result named `name` to this directory,

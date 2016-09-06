@@ -36,8 +36,6 @@ type Psw       = Parser Text -> Parser Text -> (Name, [Parser Text])
 
 {-----------------------------------------------------------------------------
    Pattern Lists
-   TODO: factor all naming patterns into some new monad type 
-         wrapping parser
 ------------------------------------------------------------------------------}
 
 
