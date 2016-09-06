@@ -19,7 +19,7 @@
 #$ -wd /scratch/username/sample_script_outputs/
 
 # make sure I set my $CWD (current working directory)
-cd $HOME/nlpgridscripts
+cd $HOME/GoodGreatIntensity/nlpgridscripts
 
 
 # when am I running
