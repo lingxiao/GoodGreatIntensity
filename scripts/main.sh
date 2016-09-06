@@ -19,7 +19,7 @@
 
 
 # make sure I set my $CWD (current working directory)
-cd $HOME/xiao/GoodGreatIntensity/nlpgridscripts
+cd $HOME/xiao/GoodGreatIntensity/scripts
 
 
 # when am I running
