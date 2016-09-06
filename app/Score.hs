@@ -44,59 +44,8 @@ type OutPath     = FilePath
 data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
                        deriving (Show)
 
-{----------------------------------------------------------------------------
-  Score 
------------------------------------------------------------------------------}
-
--- * do not actually run this
-score :: (Show a, Fractional a) 
-      => Adjective 
-      -> Adjective 
-      -> ReaderT Sys IO a
-score a1 a2 = do
-
-  -- * compute score
-  p1' <- fromInteger <$> sumcnt (p_weakStrong star star)
-  p2' <- fromInteger <$> sumcnt (p_strongWeak star star)
-
-  w1' <- fromInteger <$> w1 a1 a2
-  w2' <- fromInteger <$> w2 a1 a2
-  
-  s1' <- fromInteger <$> s1 a1 a2
-  s2' <- fromInteger <$> s2 a1 a2
-
-  let w1'' = w1' / p1'
-  let w2'' = w2' / p1'
-  let s1'' = s1' / p2'
-  let s2'' = s2' / p2'
-
-  na1 <- fromInteger <$> (cntwd $ word a1)
-  na2 <- fromInteger <$> (cntwd $ word a2)
-
-  let top = (w1'' - s1'') - (w2'' - s2')
-  let bot = na1 * na2
-
-  let score' = top / bot
-
-  sys <- ask
-
-  -- * print save message
-  let xs1 = "(" ++ show w1'' ++ " - " ++ show s1'' ++ ")"
-  let xs2 = "(" ++ show w2'' ++ " - " ++ show s2'' ++ ")"
-  let xs3 = show na1 ++ " * " ++ show na2
-
-  let eq = show score' ++ " = "
-          ++ xs1 ++ " - " ++ xs2 ++ "  /  " ++ xs3
-
-  let name = out sys ++ "/" ++ a1 ++ "_" ++ a2
-
-  -- * save file
-  liftIO $ writeScore name eq score'
-
-  return score'
-
 {-----------------------------------------------------------------------------
-  Score parts
+  Score 
 ------------------------------------------------------------------------------}
 
 w1 :: Adjective -> Adjective -> ReaderT Sys IO Integer
@@ -243,7 +192,56 @@ writeScore xs eq n = do
 
 
 
+{----------------------------------------------------------------------------
+  @Depricated. Score 
 
+-- * do not actually run this
+score :: (Show a, Fractional a) 
+      => Adjective 
+      -> Adjective 
+      -> ReaderT Sys IO a
+score a1 a2 = do
+
+  -- * compute score
+  p1' <- fromInteger <$> sumcnt (p_weakStrong star star)
+  p2' <- fromInteger <$> sumcnt (p_strongWeak star star)
+
+  w1' <- fromInteger <$> w1 a1 a2
+  w2' <- fromInteger <$> w2 a1 a2
+  
+  s1' <- fromInteger <$> s1 a1 a2
+  s2' <- fromInteger <$> s2 a1 a2
+
+  let w1'' = w1' / p1'
+  let w2'' = w2' / p1'
+  let s1'' = s1' / p2'
+  let s2'' = s2' / p2'
+
+  na1 <- fromInteger <$> (cntwd $ word a1)
+  na2 <- fromInteger <$> (cntwd $ word a2)
+
+  let top = (w1'' - s1'') - (w2'' - s2')
+  let bot = na1 * na2
+
+  let score' = top / bot
+
+  sys <- ask
+
+  -- * print save message
+  let xs1 = "(" ++ show w1'' ++ " - " ++ show s1'' ++ ")"
+  let xs2 = "(" ++ show w2'' ++ " - " ++ show s2'' ++ ")"
+  let xs3 = show na1 ++ " * " ++ show na2
+
+  let eq = show score' ++ " = "
+          ++ xs1 ++ " - " ++ xs2 ++ "  /  " ++ xs3
+
+  let name = out sys ++ "/" ++ a1 ++ "_" ++ a2
+
+  -- * save file
+  liftIO $ writeScore name eq score'
+
+  return score'
+-----------------------------------------------------------------------------}
 
 
 
