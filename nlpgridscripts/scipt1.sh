@@ -12,14 +12,14 @@
 
 # name of job
 # man 1 qsub
-#$ -N sample_sge_script
+#$ -N test_script
 
 # working directory (check for specific requirements for your research group)
 # man 1 qsub
-#$ -wd /scratch/username/sample_script_outputs/
+# 
 
 # make sure I set my $CWD (current working directory)
-cd $HOME/GoodGreatIntensity/nlpgridscripts
+cd $HOME/xiao/GoodGreatIntensity/nlpgridscripts
 
 
 # when am I running
@@ -29,4 +29,5 @@ cd $HOME/GoodGreatIntensity/nlpgridscripts
 /bin/hostname
 
 # what environment variables are available to this job script, e.g. $JOB_ID
-/usr/bin/env
+#/usr/bin/env
+echo $JOB_ID
