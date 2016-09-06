@@ -13,6 +13,5 @@ module Lib where
 
 import Core
 import Parsers
-import Patterns
 import Conduits
 import Preprocess

@@ -1,7 +1,0 @@
-terrible.txt
---------------------------------------------------
-total: 8610277
---------------------------------------------------
-terrible     terrible     6457430
-terrible     Terrible     2054747
-terrible     TERRIBLE     98100

@@ -1,8 +1,0 @@
-waterlogged.txt
---------------------------------------------------
-total: 109955
---------------------------------------------------
-waterlogged     waterlogged     92479
-waterlogged     Waterlogged     15878
-waterlogged     WaterLogged     242
-waterlogged     WATERLOGGED     1356

@@ -1,7 +1,0 @@
-characteristic.txt
---------------------------------------------------
-total: 6889575
---------------------------------------------------
-characteristic     characteristic     6171918
-characteristic     Characteristic     638864
-characteristic     CHARACTERISTIC     78793

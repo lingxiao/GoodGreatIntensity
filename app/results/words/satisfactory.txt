@@ -1,7 +1,0 @@
-satisfactory.txt
---------------------------------------------------
-total: 6785226
---------------------------------------------------
-satisfactory     satisfactory     5421850
-satisfactory     Satisfactory     1259123
-satisfactory     SATISFACTORY     104253
