@@ -1,0 +1,7 @@
+sophisticated.txt
+--------------------------------------------------
+total: 9100034
+--------------------------------------------------
+sophisticated     sophisticated     7769303
+sophisticated     Sophisticated     1298194
+sophisticated     SOPHISTICATED     32537

@@ -1,0 +1,13 @@
+poor.txt
+--------------------------------------------------
+total: 48058651
+--------------------------------------------------
+poor.     poor.     1558
+poor'     poor'     262
+poor     poor     34807247
+poor.     Poor.     1996
+poor'     Poor'     1288
+poor     Poor     12751210
+poor     PooR     243
+poor     PoOr     296
+poor     POOR     494551

@@ -1,0 +1,7 @@
+uncharacteristic.txt
+--------------------------------------------------
+total: 106855
+--------------------------------------------------
+uncharacteristic     uncharacteristic     103103
+uncharacteristic     Uncharacteristic     3536
+uncharacteristic     UNCHARACTERISTIC     216

@@ -1,0 +1,6 @@
+good__though_not_great.txt
+--------------------------------------------------
+total: 616
+--------------------------------------------------
+good , though not great     good , though not great     504
+good though not great     good though not great     112

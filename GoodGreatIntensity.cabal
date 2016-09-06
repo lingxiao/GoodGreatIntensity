@@ -16,8 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
-
-  other-modules  :     Core
+                       Core
                     ,  Parsers
                     ,  Conduits
                     ,  Preprocess
@@ -45,7 +44,8 @@ executable GoodGreatIntensity-exe
   hs-source-dirs:      app
   main-is:             Main.hs
 
-  other-modules  :     Score
+  other-modules  :     MainSubroutines
+                     , Score
                      , Patterns
                      , Untar
 

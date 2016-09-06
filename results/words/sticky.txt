@@ -1,0 +1,9 @@
+sticky.txt
+--------------------------------------------------
+total: 5700342
+--------------------------------------------------
+sticky     sticky     2884618
+sticky     sTiCkY     419
+sticky     Sticky     2711981
+sticky     StIcKy     987
+sticky     STICKY     102337

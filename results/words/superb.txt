@@ -1,0 +1,13 @@
+superb.txt
+--------------------------------------------------
+total: 7895134
+--------------------------------------------------
+superb     superb     5843627
+superb     superB     332
+superb     supERB     375
+superb     Superb     1597606
+superb     SuperB     5916
+superb     SupERB     1647
+superb     SuPERB     537
+superb     SUperb     244
+superb     SUPERB     444850

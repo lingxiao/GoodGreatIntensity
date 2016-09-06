@@ -1,0 +1,8 @@
+particular.txt
+--------------------------------------------------
+total: 72057200
+--------------------------------------------------
+particular     particular     69464451
+particular     pARTicular     280
+particular     Particular     1049017
+particular     PARTICULAR     1543452

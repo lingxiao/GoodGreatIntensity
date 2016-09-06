@@ -1,0 +1,13 @@
+worst.txt
+--------------------------------------------------
+total: 16977735
+--------------------------------------------------
+worst.     worst.     764
+worst     worst     13042459
+worst.     Worst.     320
+worst     Worst     3587556
+worst     WorSt     371
+worst     WorST     202
+worst     WoRsT     535
+worst     WOrst     200
+worst     WORST     345328

@@ -1,0 +1,8 @@
+innocent.txt
+--------------------------------------------------
+total: 8051843
+--------------------------------------------------
+innocent     innocent     6175762
+innocent     Innocent     1746012
+innocent     InNoCeNt     499
+innocent     INNOCENT     129570
