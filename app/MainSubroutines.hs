@@ -14,7 +14,6 @@ module MainSubroutines (
         main_words
       , main_weakStrong
       , main_strongWeak
-      , main_test
       ) where
 
 
