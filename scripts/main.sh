@@ -33,4 +33,4 @@ cd $HOME/xiao/GoodGreatIntensity/scripts
 #echo $JOB_ID $SGE_STDOUT_PATH 
 
 # run my scripts
-$HOME/xiao/GoodGreatIntensity/app/Main.hs
+$HOME/xiao/GoodGreatIntensity/.stack-work/install/x86_64-linux/lts-6.11/7.10.3/bin/GoodGreatIntensity-exe
