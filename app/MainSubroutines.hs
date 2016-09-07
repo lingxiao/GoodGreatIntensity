@@ -14,6 +14,7 @@ module MainSubroutines (
         main_words
       , main_weakStrong
       , main_strongWeak
+      , main_test
       ) where
 
 
@@ -37,26 +38,41 @@ import Patterns
   Routines
 ------------------------------------------------------------------------------}
 
+main_test :: IO ()
+main_test = do
+      --makeDirAtTop "testo"
+      createDirectoryIfMissing False "testo"
+      mapM go ["great"]
+      return ()
+            where go w = runReaderT (countWord $ word w) 
+                       $ S "testo" fd []      --runReaderT go $ S "testo" f1 [fd]
+      --return ()
+            --where go = sumCount $ p_weakStrong star star
+
+
 -- * count frequency of all words. from paper: cnt(ai)
 main_words :: IO [Integer]
 main_words = do
-      makeDirAtTop "words"
+      --makeDirAtTop "output"
+      createDirectoryIfMissing False "output"
       mapM go twords
             where go w = runReaderT (countWord $ word w) 
-                       $ S "words" f1r []
+                       $ S "output" f1r []
 
 -- * P1 from paper: Σ_{p_i ∈ Pws} cnt(p_i)
 main_weakStrong :: IO Integer
 main_weakStrong = do
-      makeDirAtTop "P1"
-      runReaderT go $ S "P1" f1r [f4r,f5r]
+      --makeDirAtTop "output"
+      createDirectoryIfMissing False "output"
+      runReaderT go $ S "output" f1r [f4r,f5r]
             where go = sumCount $ p_weakStrong star star
 
 -- * P2 from paper: Σ_{p_i ∈ Psw} cnt(p_i)
 main_strongWeak :: IO Integer
 main_strongWeak = do
-      makeDirAtTop "P2"
-      runReaderT go $ S "P2" f1r [f4r,f5r]
+      --makeDirAtTop "output"
+      createDirectoryIfMissing False "output"
+      runReaderT go $ S "output" f1r [f4r,f5r]
             where go = sumCount $ p_strongWeak star star
 
 {-----------------------------------------------------------------------------

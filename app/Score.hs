@@ -33,8 +33,9 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Resource
 import Control.Monad.Trans.Reader
 
+import Data.List.Split             (splitOn)
 import Data.Conduit 
-import Data.Text            hiding (foldr, length, count)
+import Data.Text            hiding (foldr, length, count, splitOn)
 import Data.Attoparsec.Text hiding (count)
 import Conduit              (mapC, scanlC, foldlC, filterC)
 
@@ -74,7 +75,6 @@ s2 = flip s1
   Score subroutines
 ------------------------------------------------------------------------------}
 
-
 -- * Given parser `p`, query `onegram` for occurences of `p`
 countWord :: Parser Text -> ReaderT Sys IO Integer
 countWord p = querySave p (\s -> [onegram s])
@@ -95,20 +95,20 @@ sumCount (name, ps) = do
 count :: Parser Text -> ReaderT Sys IO Integer
 count = flip querySave ngrams
 
--- * given a parser `p` and function `files`
--- * to access the `files` in `sys`tem
+-- * given a parser `p`,
+-- * `getFile`s in `sys`tem
 -- * `query` each file, print results, and `save` results
 -- * int `out`put directory specified by `sys`tem
 querySave :: Parser Text 
           -> (Sys -> [FilePath]) 
           -> ReaderT Sys IO Integer
-querySave p files = do
+querySave parser getFile = do
   sys     <- ask
-  let (outp, fs) = (out sys, files sys)
-  (n, ts) <- query fs p
-  liftIO $ writeResult (outp ++ "/" ++ name p) n ts
+  let (outp, fs) = (out sys, getFile sys)
+  (n, ts) <- query fs parser
+  liftIO $ writeResult (outp ++ "/" ++ name parser) n ts
 
-  liftIO $ print $ name p ++ "  " ++ show n
+  liftIO $ print $ name parser ++ "  " ++ show n
   liftIO $ print "================================="
   liftIO $ mapM (\(w,w',n) ->  print
                   $  unpack w 
@@ -200,7 +200,6 @@ writeScore xs eq n = do
     S.hClose o
     return ()
         where mark = foldr (++) mempty $ (const "-") <$> [1..50] 
-
 
 
 {----------------------------------------------------------------------------
