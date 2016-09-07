@@ -40,10 +40,7 @@ p <** t = case parse p t of
 infixr 9 <+>
 (<+>) :: Parser Text -> Parser Text -> Parser Text
 p <+> q = (\u v -> concat [u, pack " ", v]) <$> p <*> q
-      <?> p `addName` q
-
-addName :: Parser Text -> Parser Text -> String
-addName p q = name p ++ "_" ++ name q
+      <?> (name p ++ "_" ++ name q)
 
 name :: Show a => Parser a -> String
 name p = case (p >> mzero) <** empty of
