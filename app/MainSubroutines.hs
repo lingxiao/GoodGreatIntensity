@@ -59,11 +59,6 @@ main_strongWeak = do
       runReaderT go $ S "P2" f1r [f4r,f5r]
             where go = sumcnt $ p_strongWeak star star
 
-sGoodbad = 
-      let ws = [(u,v) | u <- goodbad, v <- goodbad, u /= v]
-      in ws
-
-
 {-----------------------------------------------------------------------------
   Utils
 ------------------------------------------------------------------------------}
