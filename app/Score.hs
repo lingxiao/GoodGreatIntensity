@@ -90,14 +90,14 @@ sumCount (name, ps) = do
   liftIO $ writeResult (out sys ++ "/" ++ name ++ ".txt") m []
   return m
 
--- * Given `Pattern` named `name` and parser `p`,
--- * query all `ngramsp`ath for occurences of pattern
+-- * Given some `Parser Text`
+-- * query all `ngrams` file paths for occurences 
 count :: Parser Text -> ReaderT Sys IO Integer
 count = flip querySave ngrams
 
--- * given a parser `p` and function
+-- * given a parser `p` and function `files`
 -- * to access the `files` in `sys`tem
--- * `query` file, print results, and `save` results
+-- * `query` each file, print results, and `save` results
 -- * int `out`put directory specified by `sys`tem
 querySave :: Parser Text 
           -> (Sys -> [FilePath]) 
@@ -146,7 +146,6 @@ queryFiles :: FileOpS m [ParseResult]
 queryFiles p =  filterC (\(w,_,_) -> case p <** w of
                         Left _ -> False
                         _      -> True)
-            -- * =$= logi
             =$= awaitForever (\t -> do
                     ts <- lift get
                     let ts' = t:ts
