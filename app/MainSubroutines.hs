@@ -40,7 +40,7 @@ import Patterns
 -- * count frequency of all words. from paper: cnt(ai)
 main_words :: IO [Integer]
 main_words = do
-      makeDir "words"
+      makeDirAtTop "words"
       mapM go twords
             where go a = runReaderT (cntwd . word $ a) 
                        $ S "words" f1r []
@@ -48,14 +48,14 @@ main_words = do
 -- * P1 from paper: Σ_{p_i ∈ Pws} cnt(p_i)
 main_weakStrong :: IO Integer
 main_weakStrong = do
-      makeDir "P1"
+      makeDirAtTop "P1"
       runReaderT go $ S "P1" f1r [f4r,f5r]
             where go = sumcnt $ p_weakStrong star star
 
 -- * P2 from paper: Σ_{p_i ∈ Psw} cnt(p_i)
 main_strongWeak :: IO Integer
 main_strongWeak = do
-      makeDir "P2"
+      makeDirAtTop "P2"
       runReaderT go $ S "P2" f1r [f4r,f5r]
             where go = sumcnt $ p_strongWeak star star
 
@@ -63,8 +63,9 @@ main_strongWeak = do
   Utils
 ------------------------------------------------------------------------------}
 
-makeDir :: FilePath -> IO FilePath
-makeDir p = do
+-- * create directory `p` at top of project folder
+makeDirAtTop :: FilePath -> IO FilePath
+makeDirAtTop p = do
       xs <- getCurrentDirectory
       let project = "GoodGreatIntensity"
       let top:_   = splitOn project xs
