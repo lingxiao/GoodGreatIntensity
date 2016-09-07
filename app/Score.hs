@@ -34,9 +34,9 @@ import Control.Monad.Trans.Resource
 import Control.Monad.Trans.Reader
 
 import Data.Conduit 
-import Conduit (mapC, scanlC, foldlC, filterC)
-import Data.Text hiding (foldr, length)
-import Data.Attoparsec.Text
+import Data.Text            hiding (foldr, length, count)
+import Data.Attoparsec.Text hiding (count)
+import Conduit              (mapC, scanlC, foldlC, filterC)
 
 import Core
 import Parsers
@@ -85,15 +85,15 @@ countWord p = querySave p (\s -> [onegram s])
 sumCount :: (Name, [Parser Text]) -> ReaderT Sys IO Integer
 sumCount (name, ps) = do
   sys <- ask
-  ns  <- mapM cnt ps
+  ns  <- mapM count ps
   let m = sum ns
   liftIO $ writeResult (out sys ++ "/" ++ name ++ ".txt") m []
   return m
 
 -- * Given `Pattern` named `name` and parser `p`,
 -- * query all `ngramsp`ath for occurences of pattern
-cnt :: Parser Text -> ReaderT Sys IO Integer
-cnt = flip querySave ngrams
+count :: Parser Text -> ReaderT Sys IO Integer
+count = flip querySave ngrams
 
 -- * given a parser `p` and function
 -- * to access the `files` in `sys`tem
@@ -215,8 +215,8 @@ score :: (Show a, Fractional a)
 score a1 a2 = do
 
   -- * compute score
-  p1' <- fromInteger <$> sumcnt (p_weakStrong star star)
-  p2' <- fromInteger <$> sumcnt (p_strongWeak star star)
+  p1' <- fromInteger <$> sumcount (p_weakStrong star star)
+  p2' <- fromInteger <$> sumcount (p_strongWeak star star)
 
   w1' <- fromInteger <$> w1 a1 a2
   w2' <- fromInteger <$> w2 a1 a2
@@ -229,8 +229,8 @@ score a1 a2 = do
   let s1'' = s1' / p2'
   let s2'' = s2' / p2'
 
-  na1 <- fromInteger <$> (cntwd $ word a1)
-  na2 <- fromInteger <$> (cntwd $ word a2)
+  na1 <- fromInteger <$> (countwd $ word a1)
+  na2 <- fromInteger <$> (countwd $ word a2)
 
   let top = (w1'' - s1'') - (w2'' - s2')
   let bot = na1 * na2
