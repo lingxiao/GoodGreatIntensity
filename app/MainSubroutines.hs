@@ -64,6 +64,10 @@ sGoodbad =
       in ws
 
 
+{-----------------------------------------------------------------------------
+  Utils
+------------------------------------------------------------------------------}
+
 makeDir :: FilePath -> IO FilePath
 makeDir p = do
       xs <- getCurrentDirectory
@@ -72,8 +76,6 @@ makeDir p = do
       let dir     = top ++ project ++ "/" ++ takeBaseName p
       createDirectoryIfMissing False dir
       return dir
-
-
 
 
 {-----------------------------------------------------------------------------
