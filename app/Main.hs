@@ -31,7 +31,9 @@ import MainSubroutines
 
 main :: IO ()
 main = do
-    p1
-    p2 
+    main_weakStrong 
+    main_strongWeak
     return ()
+
+
 

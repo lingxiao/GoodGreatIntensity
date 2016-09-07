@@ -11,15 +11,18 @@
 ---------------------------------------------------------------------------------------------------
  
 module MainSubroutines (
-        countWords
-      , p1
-      , p2
+        main_words
+      , main_weakStrong
+      , main_strongWeak
       ) where
 
 
 import System.Directory
-import Data.Text hiding (foldr, concat)
+import System.FilePath.Posix
 import Control.Monad.Trans.Reader
+
+import Data.List.Split  (splitOn)
+import Data.Text hiding (foldr, concat, splitOn)
 
 import Core
 import Parsers
@@ -35,31 +38,43 @@ import Patterns
 ------------------------------------------------------------------------------}
 
 -- * count frequency of all words. from paper: cnt(ai)
-countWords :: IO [Integer]
-countWords = do
-      createDirectoryIfMissing False "words"
+main_words :: IO [Integer]
+main_words = do
+      makeDir "words"
       mapM go twords
             where go a = runReaderT (cntwd . word $ a) 
                        $ S "words" f1r []
 
-
 -- * P1 from paper: Σ_{p_i ∈ Pws} cnt(p_i)
-p1 :: IO Integer
-p1 = do
-      createDirectoryIfMissing False "P1"
+main_weakStrong :: IO Integer
+main_weakStrong = do
+      makeDir "P1"
       runReaderT go $ S "P1" f1r [f4r,f5r]
             where go = sumcnt $ p_weakStrong star star
 
 -- * P2 from paper: Σ_{p_i ∈ Psw} cnt(p_i)
-p2 :: IO Integer
-p2 = do
-      createDirectoryIfMissing False "P2"
+main_strongWeak :: IO Integer
+main_strongWeak = do
+      makeDir "P2"
       runReaderT go $ S "P2" f1r [f4r,f5r]
             where go = sumcnt $ p_strongWeak star star
 
 sGoodbad = 
       let ws = [(u,v) | u <- goodbad, v <- goodbad, u /= v]
       in ws
+
+
+makeDir :: FilePath -> IO FilePath
+makeDir p = do
+      xs <- getCurrentDirectory
+      let project = "GoodGreatIntensity"
+      let top:_   = splitOn project xs
+      let dir     = top ++ project ++ "/" ++ takeBaseName p
+      createDirectoryIfMissing False dir
+      return dir
+
+
+
 
 {-----------------------------------------------------------------------------
   words

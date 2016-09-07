@@ -38,7 +38,6 @@ type Psw       = Parser Text -> Parser Text -> (Name, [Parser Text])
    Pattern Lists
 ------------------------------------------------------------------------------}
 
-
 p_weakStrong :: Pws
 p_weakStrong = \u v -> 
     ( "p_weakStrong_" ++ name u ++ "_" ++ name v

@@ -64,7 +64,6 @@ s2 a1 a2 = s1 a2 a1
   Score subroutines
 ------------------------------------------------------------------------------}
 
-
 -- * count all occurences of `Pattern` 
 -- * and save the cumulative results, also save intermediate results
 sumcnt :: (Name, [Parser Text]) -> ReaderT Sys IO Integer
@@ -174,7 +173,6 @@ writeResult xs n ts = do
 
 -- * write result named `name` to this directory,
 -- * result is score equation `eq` and actual score `n`
-
 writeScore :: Show a => FilePath -> String -> a -> IO ()
 writeScore xs eq n = do
     let ys   = dropExtension xs
