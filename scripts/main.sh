@@ -12,7 +12,7 @@
 
 # name of job
 # man 1 qsub
-#$ -N test_script
+#$ -N main
 
 # working directory (check for specific requirements for your research group)
 # man 1 qsub
