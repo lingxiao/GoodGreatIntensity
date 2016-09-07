@@ -8,7 +8,7 @@
 
 # request 1 gigabyte of RAM 
 # man 5 complex
-#$ -l mem=1G
+#$ -l mem=40G
 
 # name of job
 # man 1 qsub
