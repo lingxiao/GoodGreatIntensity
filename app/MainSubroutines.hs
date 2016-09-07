@@ -42,7 +42,7 @@ main_words :: IO [Integer]
 main_words = do
       makeDirAtTop "words"
       mapM go twords
-            where go a = runReaderT (cntwd . word $ a) 
+            where go w = runReaderT (countWord $ word w) 
                        $ S "words" f1r []
 
 -- * P1 from paper: Σ_{p_i ∈ Pws} cnt(p_i)
@@ -50,29 +50,28 @@ main_weakStrong :: IO Integer
 main_weakStrong = do
       makeDirAtTop "P1"
       runReaderT go $ S "P1" f1r [f4r,f5r]
-            where go = sumcnt $ p_weakStrong star star
+            where go = sumCount $ p_weakStrong star star
 
 -- * P2 from paper: Σ_{p_i ∈ Psw} cnt(p_i)
 main_strongWeak :: IO Integer
 main_strongWeak = do
       makeDirAtTop "P2"
       runReaderT go $ S "P2" f1r [f4r,f5r]
-            where go = sumcnt $ p_strongWeak star star
+            where go = sumCount $ p_strongWeak star star
 
 {-----------------------------------------------------------------------------
   Utils
 ------------------------------------------------------------------------------}
 
--- * create directory `p` at top of project folder
+-- * create directory `f` at top of project folder
 makeDirAtTop :: FilePath -> IO FilePath
-makeDirAtTop p = do
+makeDirAtTop f = do
       xs <- getCurrentDirectory
       let project = "GoodGreatIntensity"
       let top:_   = splitOn project xs
-      let dir     = top ++ project ++ "/" ++ takeBaseName p
+      let dir     = top ++ project ++ "/" ++ takeBaseName f
       createDirectoryIfMissing False dir
       return dir
-
 
 {-----------------------------------------------------------------------------
   words

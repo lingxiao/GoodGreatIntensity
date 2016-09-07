@@ -10,7 +10,17 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Score where
+module Score (
+
+    Sys (..)
+  , w1
+  , w2
+  , s1
+  , s2
+  , sumCount
+  , countWord
+
+  ) where
 
 import Prelude hiding (filter)
 
@@ -41,7 +51,7 @@ import Preprocess
 
 type ParseResult = (Text,Text,Integer)
 type OutPath     = FilePath
-data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
+data Sys         = S { out :: FilePath, onegram :: FilePath, ngrams :: [FilePath]}
                        deriving (Show)
 
 {-----------------------------------------------------------------------------
@@ -49,25 +59,31 @@ data Sys         = S { out :: FilePath, onegm :: FilePath, ngm :: [FilePath]}
 ------------------------------------------------------------------------------}
 
 w1 :: Adjective -> Adjective -> ReaderT Sys IO Integer
-w1 a1 a2 = sumcnt $ p_weakStrong (word a1) (word a2)
-
-w2 :: Adjective -> Adjective -> ReaderT Sys IO Integer
-w2 a1 a2 = w1 a2 a1
+w1 a1 a2 = sumCount $ p_weakStrong (word a1) (word a2)
 
 s1 :: Adjective -> Adjective -> ReaderT Sys IO Integer
-s1 a1 a2 = sumcnt $ p_strongWeak (word a1) (word a2)
+s1 a1 a2 = sumCount $ p_strongWeak (word a1) (word a2)
+
+w2 :: Adjective -> Adjective -> ReaderT Sys IO Integer
+w2 = flip w1
 
 s2 :: Adjective -> Adjective -> ReaderT Sys IO Integer
-s2 a1 a2 = s1 a2 a1
+s2 = flip s1
 
 {-----------------------------------------------------------------------------
   Score subroutines
 ------------------------------------------------------------------------------}
 
+
+-- * Given parser `p`, query `onegram` for occurences of `p`
+countWord :: Parser Text -> ReaderT Sys IO Integer
+countWord p = querySave p (\s -> [onegram s])
+
+
 -- * count all occurences of `Pattern` 
 -- * and save the cumulative results, also save intermediate results
-sumcnt :: (Name, [Parser Text]) -> ReaderT Sys IO Integer
-sumcnt (name, ps) = do
+sumCount :: (Name, [Parser Text]) -> ReaderT Sys IO Integer
+sumCount (name, ps) = do
   sys <- ask
   ns  <- mapM cnt ps
   let m = sum ns
@@ -75,22 +91,20 @@ sumcnt (name, ps) = do
   return m
 
 -- * Given `Pattern` named `name` and parser `p`,
--- * query all `ngmp`ath for occurences of pattern
+-- * query all `ngramsp`ath for occurences of pattern
 cnt :: Parser Text -> ReaderT Sys IO Integer
-cnt p = querySave p ngm
+cnt = flip querySave ngrams
 
--- * Given `Pattern` named `name` and parser `p`,
--- * query `onegm` for occurences of pattern
-cntwd :: Parser Text -> ReaderT Sys IO Integer
-cntwd p = querySave p (\s -> [onegm s])
-
--- * `query` file, print results, and save results
+-- * given a parser `p` and function
+-- * to access the `files` in `sys`tem
+-- * `query` file, print results, and `save` results
+-- * int `out`put directory specified by `sys`tem
 querySave :: Parser Text 
           -> (Sys -> [FilePath]) 
           -> ReaderT Sys IO Integer
-querySave p g = do
+querySave p files = do
   sys     <- ask
-  let (outp, fs) = (out sys, g sys)
+  let (outp, fs) = (out sys, files sys)
   (n, ts) <- query fs p
   liftIO $ writeResult (outp ++ "/" ++ name p) n ts
 
