@@ -95,6 +95,9 @@ sumCount (name, ps) = do
 count :: Parser Text -> ReaderT Sys IO Integer
 count = flip querySave ngrams
 
+
+-- * how do you manage saving stuff here?
+
 -- * given a parser `p`,
 -- * `getFile`s in `sys`tem
 -- * `query` each file, print results, and `save` results

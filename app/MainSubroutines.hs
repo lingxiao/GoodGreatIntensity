@@ -38,16 +38,8 @@ import Patterns
   Routines
 ------------------------------------------------------------------------------}
 
-main_test :: IO ()
-main_test = do
-      --makeDirAtTop "testo"
-      createDirectoryIfMissing False "testo"
-      mapM go ["great"]
-      return ()
-            where go w = runReaderT (countWord $ word w) 
-                       $ S "testo" fd []      --runReaderT go $ S "testo" f1 [fd]
-      --return ()
-            --where go = sumCount $ p_weakStrong star star
+-- * how do you manage creating a directory here??
+
 
 
 -- * count frequency of all words. from paper: cnt(ai)
