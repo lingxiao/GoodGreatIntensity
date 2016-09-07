@@ -33,6 +33,7 @@ main :: IO ()
 main = do
     main_weakStrong 
     main_strongWeak
+    print "finished. 12:47pm. Sept 7th, 2016"
     return ()
 
 
