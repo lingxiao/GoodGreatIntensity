@@ -23,20 +23,20 @@ import MainSubroutines
 
 main :: IO ()
 main = do
-    main_p1 config_remote
-    main_p2 config_remote
+    main_p1 con_remote
+    main_p2 con_remote
 
 
 {-----------------------------------------------------------------------------
-  System Configurations
+  System Paths
 ------------------------------------------------------------------------------}
 
-config_local :: Config
-config_local = Con f1 [fd] fsw fws
+con_local :: Config
+con_local = Con f1 [fd] fsw fws
 
 
-config_remote :: Config
-config_remote = Con f1r [f4r, f5r] fswr fwsr
+con_remote :: Config
+con_remote = Con f1r [f4r, f5r] fswr fwsr
 
 
 -- * local ngram directory
