@@ -23,7 +23,7 @@ module PatternCompiler (
 
 import Data.List.Split 
 import Data.Attoparsec.Text
-import Data.Text hiding (foldr, splitOn, init, concat, last)
+import Data.Text (Text, unpack)
 
 import Core
 import Control.Applicative
