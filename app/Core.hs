@@ -62,7 +62,6 @@ type Output      = (Integer, [QueryResult])
 data Config = Con {
       onegram    :: FilePath
     , ngrams     :: [FilePath]
-    , output     :: FilePath
     , strongWeak :: FilePath
     , weakStrong :: FilePath
 } deriving (Show, Eq)

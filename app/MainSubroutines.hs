@@ -26,13 +26,13 @@ import Score
 main_p1 :: Config -> IO ()
 main_p1 con = do
   (n, rrs) <- runReaderT p1 con
-  makeDirAtTop (output con)
-  let f = output con ++ "/p-weak-strong.txt"
+  outdir   <- makeDirAtTop "output"
+  let f = outdir ++ "/p-weak-strong.txt"
   saveOutput f (n,rrs)
 
 main_p2 :: Config -> IO ()
 main_p2 con = do
   (n, rrs) <- runReaderT p2 con
-  makeDirAtTop (output con)
-  let f = output con ++ "/p-strong-weak.txt"
+  outdir   <- makeDirAtTop "output"
+  let f = outdir ++ "/p-strong-weak.txt"
   saveOutput f (n, rrs)
