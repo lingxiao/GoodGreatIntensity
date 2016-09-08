@@ -18,27 +18,62 @@ import System.FilePath
 import System.Directory
 
 import Control.Monad.State  
+import Control.Monad.Except    
+import Control.Monad.Trans.Resource
 import Control.Monad.IO.Class   (MonadIO, liftIO     )
 import Control.Exception.Base   (SomeException       )
 
 import Codec.Compression.GZip   (decompress          )
 
 import Data.Conduit 
-import Data.Conduit.Text
+import Data.Conduit.Text 
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
 import Data.Conduit.Filesystem  (sourceDirectory     )
 import Data.Conduit.Binary      (sourceFile, sinkFile)
 
 
-import Data.Text hiding         (lines, chunksOf     )
-import Data.List.Split          (chunksOf            )
-import Data.Text.Lazy.IO        (readFile , writeFile)
+import Data.Text hiding         (lines, chunksOf, foldr)
+import Data.List.Split          (chunksOf              )
+import Data.Text.Lazy.IO        (readFile , writeFile  )
 import qualified Data.Text.Lazy as LT
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString as B
 
-import Core
+{-----------------------------------------------------------------------------
+   Types: Monad Transformer describing common functions needed
+       to interact with file systems
+------------------------------------------------------------------------------}
+
+-- * A file operation monad transformer
+-- * `FileOps`eration is a stateful computation keeping track of state `s`
+type FileOpS m s = (MonadState s m , MonadIO m            , 
+                    MonadResource m, MonadBaseControl IO m)
+
+-- * A File Operation with trivial state `()`
+type FileOp  m   = FileOpS m ()
+
+-- * Result of `eval` a `FileOpS`
+type Op m        = (MonadBaseControl IO m, MonadThrow m, MonadIO m)
+
+{-----------------------------------------------------------------------------
+   II. Operations over `FileOpS`
+------------------------------------------------------------------------------}
+
+-- * Run a FileOpS `m` with some user specified state `s`
+eval :: (Op m, Monoid s)
+      => ResourceT (StateT s m) a 
+      -> m (a,s)
+eval m = runStateT (runResourceT m) mempty
+
+-- * Run a FileOp `m` with trivial state ()
+-- * Use this when we do not need to keep a 
+-- * meaninful state
+run :: ( MonadBaseControl IO m ) 
+    => ResourceT (StateT () m) a 
+    -> m a
+run m = evalStateT (runResourceT m) ()
+
 
 {-----------------------------------------------------------------------------
   Conduit sources
@@ -176,6 +211,19 @@ cap = do
       liftIO banner
       return ()
     _       -> cap
+
+
+
+{-----------------------------------------------------------------------------
+   III. Utility operations
+------------------------------------------------------------------------------}
+
+-- * When logging to console, `demark` the
+-- * messages with "============="
+banner :: IO ()
+banner = putStrLn $ foldr (++) mempty 
+                  $ (const "-") <$> [1..50] 
+
 
 
 

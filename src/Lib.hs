@@ -11,7 +11,7 @@
 
 module Lib where
 
-import Core
+
 import Parsers
 import Conduits
 import Preprocess

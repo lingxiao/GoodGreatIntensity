@@ -19,8 +19,8 @@ import Data.Text
 ------------------------------------------------------------------------------}
 
 -- * preprocess text
-pre :: Text -> Text
-pre = foldStrip
+preprocess :: Text -> Text
+preprocess = foldStrip
 
 
 {-----------------------------------------------------------------------------

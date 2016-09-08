@@ -10,26 +10,16 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Untar where
+module Untar (
+      untar
+    , shardAll
+    ) where
 
 
 
 import Data.Conduit 
 import Core
 import Conduits
-
-{-----------------------------------------------------------------------------
-   untar all files
-
-untarAll :: IO ()
-untarAll = do
-    run $ untar p1 ".gz" ".txt"
-    run $ untar p2 ".gz" ".txt"
-    run $ untar p3 ".gz" ".txt"
-    run $ untar p4 ".gz" ".txt"
-    run $ untar p5 ".gz" ".txt"
-------------------------------------------------------------------------------}
-
 
 {-----------------------------------------------------------------------------
    top level routines
@@ -53,6 +43,19 @@ shardAll ext p o =  [p] `sourceDirectories` ext
                 =$= logm "Sharded all files!"
                 =$= cap                
 
+
+
+{-----------------------------------------------------------------------------
+   untar all files
+
+untarAll :: IO ()
+untarAll = do
+    run $ untar p1 ".gz" ".txt"
+    run $ untar p2 ".gz" ".txt"
+    run $ untar p3 ".gz" ".txt"
+    run $ untar p4 ".gz" ".txt"
+    run $ untar p5 ".gz" ".txt"
+------------------------------------------------------------------------------}
 
 
 

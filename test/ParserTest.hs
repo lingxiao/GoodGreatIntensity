@@ -27,12 +27,14 @@ import Parsers
 main :: IO ()
 main = do
     runTestTT . TestList 
-              $ [ tspaces
+              $ [ talgebra
+                , tspaces
                 , tspaces1
                 , tNotAlphaDigitSpace
                 , teow
                 , tword
                 , tanyWord
+                , tcomma
                 ]
     return ()
 
@@ -48,46 +50,33 @@ name' = Left . name
     Basic parsers
 ------------------------------------------------------------------------------}
 
-tspaces :: Test
-tspaces = "spaces" 
-        ~: TestList [ spaces <** (pack ""   ) ~?= right " "
-                    , spaces <** (pack "   ") ~?= right " "
-                    , spaces <** (pack "hel") ~?= right " "
+talgebra :: Test
+talgebra = let p    = word "hello"
+        in let q    = word "world"
+        in let r    = word "stuff"
+        in let pq   = p <+> q
+        in let pqr  = p <+> q <+> r
+        in let pqr' = p <+> (q <+> r)
+        in "talgebra"
+        ~: TestList [ (p <+> q) <** (pack "hello world") 
+                      ~?= right "hello world"
+              
+                      -- * commutative property w/ correct inputs
+                    , pqr      <** (pack "hello world stuff") 
+                      ~?= pqr' <** (pack "hello world stuff")
+
+                     -- * commutative property w/ failed inputs
+                    , pqr    <** (pack "foo bar baz") 
+                    ~?= pqr' <** (pack "foo bar baz")
+
+                    -- * identity w/ correct inputs
+                    , pq <+> pzero  <** (pack "hello world") 
+                    ~?= pq          <** (pack "hello world")
+
+                    -- * identity w/ failed inputs
+                    , pq <+> pzero <** (pack "foo bar")     
+                    ~?= pq         <** (pack "foo bar")
                     ]
-
-
-
-tspaces1 :: Test
-tspaces1 = "spaces1" 
-        ~: TestList [ spaces1<**  (pack ""   ) ~?= name' spaces1
-                    , spaces1<**  (pack "hel") ~?= name' spaces1
-                    , spaces1<**  (pack "   ") ~?= right " "
-                    ]
-
-
-
-tNotAlphaDigitSpace :: Test
-tNotAlphaDigitSpace = 
-    let err = name' notAlphaDigitSpace
-    in     "notAlphaDigitSpace"
-     ~: TestList [ notAlphaDigitSpace <** (pack ".") ~?= Right '.'
-                 , notAlphaDigitSpace <** (pack " ") ~?= err
-                 , notAlphaDigitSpace <** (pack "1") ~?= err
-                 , notAlphaDigitSpace <** (pack "h") ~?= err
-     ]
-
-
-teow :: Test
-teow = "eow"
-    ~: TestList [ eow <** (pack "..."  ) ~?= right "..."
-                , eow <** (pack ".. "  ) ~?= right ".."
-                , eow <** (pack ".. hi") ~?= right ".."
-
-                , eow <** (pack "..1"  ) ~?= name' eow
-                , eow <** (pack ".h" )   ~?= name' eow
-                , eow <** (pack "..h")   ~?= name' eow
-    ]
-
 
 tword :: Test
 tword =  let p   = word  "hello"
@@ -132,5 +121,59 @@ tanyWord = let o   = right "hello"
                     , anyWord <** (pack "good'ol"    ) ~?= err
                     , anyWord <** (pack "good.com"   ) ~?= err
                     ]
+
+
+tcomma :: Test
+tcomma = let o = right "(,)"
+       in "comma'" 
+       ~: TestList [ comma <** (pack ","  ) ~?= o
+                   , comma <** (pack "  ,") ~?= o
+                   , comma <** (pack " ")   ~?= o
+                   , comma <** (pack "h"  ) ~?= name' comma
+                   ]
+
+
+tspaces :: Test
+tspaces = "spaces" 
+        ~: TestList [ spaces <** (pack ""   ) ~?= right " "
+                    , spaces <** (pack "   ") ~?= right " "
+                    , spaces <** (pack "hel") ~?= right " "
+                    ]
+
+
+
+tspaces1 :: Test
+tspaces1 = "spaces1" 
+        ~: TestList [ spaces1<**  (pack ""   ) ~?= name' spaces1
+                    , spaces1<**  (pack "hel") ~?= name' spaces1
+                    , spaces1<**  (pack "   ") ~?= right " "
+                    ]
+
+
+
+tNotAlphaDigitSpace :: Test
+tNotAlphaDigitSpace = 
+    let err = name' notAlphaDigitSpace
+    in     "notAlphaDigitSpace"
+     ~: TestList [ notAlphaDigitSpace <** (pack ".") ~?= Right '.'
+                 , notAlphaDigitSpace <** (pack " ") ~?= err
+                 , notAlphaDigitSpace <** (pack "1") ~?= err
+                 , notAlphaDigitSpace <** (pack "h") ~?= err
+     ]
+
+
+teow :: Test
+teow = "eow"
+    ~: TestList [ eow <** (pack "..."  ) ~?= right "..."
+                , eow <** (pack ".. "  ) ~?= right ".."
+                , eow <** (pack ".. hi") ~?= right ".."
+
+                , eow <** (pack "..1"  ) ~?= name' eow
+                , eow <** (pack ".h" )   ~?= name' eow
+                , eow <** (pack "..h")   ~?= name' eow
+    ]
+
+
+
 
 

@@ -16,7 +16,6 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
-                    ,  Core
                     ,  Parsers
                     ,  Conduits
                     ,  Preprocess
@@ -44,9 +43,10 @@ executable GoodGreatIntensity-exe
   hs-source-dirs:      app
   main-is:             Main.hs
 
-  other-modules  :     MainSubroutines
+  other-modules  :     Core
                      , Score
-                     , Patterns
+                     , PatternCompiler
+                     , MainSubroutines
                      , Untar
 
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
@@ -77,7 +77,7 @@ test-suite GoodGreatIntensity-test
 
   other-modules  :     ParserTest
                     ,  PreprocessTest
-                    ,  PatternTest
+                    ,  PatternCompilerTest
 
   build-depends:       base >= 4.7 && < 5
                      , GoodGreatIntensity
