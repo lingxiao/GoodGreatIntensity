@@ -16,7 +16,6 @@ module PatternCompiler (
   , token
   , tokenizer
 
-  -- * rexport this function
   , (<**)
   , name
 
