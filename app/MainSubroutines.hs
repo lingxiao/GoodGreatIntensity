@@ -25,14 +25,14 @@ import Score
 -- * create output directory, run `p1` and save results
 main_p1 :: Config -> IO ()
 main_p1 con = do
-  (n, rrs) <- runReaderT p1 con
   outdir   <- makeDirAtTop "output"
+  (n, rrs) <- runReaderT p1 con
   let f = outdir ++ "/p-weak-strong.txt"
   saveOutput f (n,rrs)
 
 main_p2 :: Config -> IO ()
 main_p2 con = do
-  (n, rrs) <- runReaderT p2 con
   outdir   <- makeDirAtTop "output"
+  (n, rrs) <- runReaderT p2 con
   let f = outdir ++ "/p-strong-weak.txt"
   saveOutput f (n, rrs)
