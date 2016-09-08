@@ -1,7 +1,0 @@
-childlike.txt
---------------------------------------------------
-total: 260693
---------------------------------------------------
-childlike     childlike     233781
-childlike     Childlike     25818
-childlike     CHILDLIKE     1094

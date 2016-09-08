@@ -1,7 +1,0 @@
-mediocre.txt
---------------------------------------------------
-total: 1420722
---------------------------------------------------
-mediocre     mediocre     1067038
-mediocre     Mediocre     346884
-mediocre     MEDIOCRE     6800

@@ -1,9 +1,0 @@
-acceptable.txt
---------------------------------------------------
-total: 14591768
---------------------------------------------------
-acceptable.     acceptable.     524
-acceptable     acceptable     11899711
-acceptable     Acceptable     2449997
-acceptable.     ACCEPTABLE.     357
-acceptable     ACCEPTABLE     241179

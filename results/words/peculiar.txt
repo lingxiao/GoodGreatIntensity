@@ -1,7 +1,0 @@
-peculiar.txt
---------------------------------------------------
-total: 2485776
---------------------------------------------------
-peculiar     peculiar     2215792
-peculiar     Peculiar     246808
-peculiar     PECULIAR     23176
