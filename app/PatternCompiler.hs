@@ -46,7 +46,7 @@ data Token = Word String
            deriving (Eq, Show)
 
 -- * Input into Pattern
-data PInput = S String       -- * Pattern match some Text
+data PInput = S String      -- * Pattern match some Text
            | Star           -- * Pattern match any string of alphabetical symbol 
            | Nil            -- * trivial PInput so that 
                             -- * compile "fillod" Nil Nil = word "fillod"
