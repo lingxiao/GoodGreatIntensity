@@ -92,7 +92,8 @@ countp phrase = do
   (n, ts) <- (ngrams con) `query` phrase
   return (n,ts)
 
--- * `count` for occurences of some word in onegram file
+-- * `count` occurences of some word `w` 
+-- * in onegram file
 count :: String -> ReaderT Config IO Output
 count w = do
   let word = compile w "" ""

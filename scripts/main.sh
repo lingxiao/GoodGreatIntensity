@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# directory for logs
+#$ -o $PWD/job-output
+#$ -e $PWD/job-output
+
+
 # $HOME/sample_applications/sample_sge_script_1.sh
 
 # wallclock time reservation (format is hours:minutes:seconds).
