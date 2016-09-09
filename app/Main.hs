@@ -23,12 +23,11 @@ import MainSubroutines
 main :: IO ()
 main = do
     f <- getCurrentDirectory
-    let dir:_ = splitOn "GoodGreatIntensity" f
-    if dir == "/Users/lingxiao/Documents/NLP/Code/" then 
+    let top:_ = splitOn "GoodGreatIntensity" f
+    if top == "/Users/lingxiao/Documents/NLP/Code/" then 
         mainLocal
     else 
         mainRemote
-
 
 {-----------------------------------------------------------------------------
   Local and remote main
