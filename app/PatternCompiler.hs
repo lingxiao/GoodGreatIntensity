@@ -14,7 +14,7 @@ module PatternCompiler (
 
     Pattern
   , Token  (..)
-  , PInput (..)
+  , PInput (S, Star)
 
   , compile
   , compile'
@@ -45,7 +45,7 @@ data Token = Word String
            | Or Token Token
            deriving (Eq, Show)
 
--- * PInput into Pattern
+-- * Input into Pattern
 data PInput = S String       -- * Pattern match some Text
            | Star           -- * Pattern match any string of alphabetical symbol 
            | Nil            -- * trivial PInput so that 
@@ -106,9 +106,9 @@ tokenizer = fmap token . concat . fmap recoverComma . splitOn " "
 compiler :: [Token] -> Pattern
 compiler ts = \u v -> [u,v] `fill` ts
 
--- * Given stack of strings `w:ws` as PInput to binary pattern,
--- * and list of tokens `t:ts`, create a `Parser Text`
--- * by `fill`ing in all the `Hole`s
+-- * Given stack of strings `w:ws` as eventual input to the 
+-- * binary pattern, and list of tokens `t:ts`, 
+-- * create a `Parser Text` by `fill`ing in all the `Hole`s
 -- * If the stack is empty before tokens are, then all remaining
 -- * `Hole` tokens are mapped to parser `star`
 fill :: [PInput] -> [Token] -> Parser Text
