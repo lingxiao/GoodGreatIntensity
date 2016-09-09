@@ -36,3 +36,10 @@ main_p2 con = do
   (n, rrs) <- runReaderT p2 con
   let f = outdir ++ "/p-strong-weak.txt"
   saveOutput f (n, rrs)
+
+main_test :: Config -> IO ()
+main_test con = do
+    outdir   <- makeDirAtTop "output"
+    (n, rrs) <- runReaderT (w1 "good" "great") con
+    let f = outdir ++ "/p-w1-good-great.txt"
+    saveOutput f (n,rrs)

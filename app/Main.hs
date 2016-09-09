@@ -40,8 +40,9 @@ mainLocal = do
 
 mainRemote :: IO ()
 mainRemote = do
-    main_p1 cRemote
-    main_p2 cRemote
+    main_test cRemote
+    --main_p1 cRemote
+    --main_p2 cRemote
 
 
 {-----------------------------------------------------------------------------
@@ -49,10 +50,10 @@ mainRemote = do
 ------------------------------------------------------------------------------}
 
 cLocal :: Config
-cLocal = Con f1 [f4,f5] fsw fws
+cLocal = Con f1 [fd] fsw fws
 
 cRemote :: Config
-cRemote = Con f1r [fdr] fswr fwsr
+cRemote = Con f1r [f4r] fswr fwsr
 
 
 -- * local ngram directory
