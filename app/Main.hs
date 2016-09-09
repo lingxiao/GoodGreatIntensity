@@ -52,7 +52,7 @@ cLocal :: Config
 cLocal = Con f1 [f4,f5] fsw fws
 
 cRemote :: Config
-cRemote = Con f1r [f5d] fswr fwsr
+cRemote = Con f1r [fd] fswr fwsr
 
 
 -- * local ngram directory
@@ -70,7 +70,7 @@ f1r, f4r, f5r :: FilePath
 f1r = "/nlp/data/xiao/ngrams/1gms"
 f4r = "/nlp/data/xiao/ngrams/4gms"
 f5r = "/nlp/data/xiao/ngrams/5gms"
-f5d = "/nlp/data/xiao/ngrams/dummydata"
+fd  = "/nlp/data/xiao/ngrams/dummydata"
 -- * remote pattern path
 fswr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/inputs/strong-weak-patterns.txt"
 fwsr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/inputs/weak-strong-patterns.txt"
