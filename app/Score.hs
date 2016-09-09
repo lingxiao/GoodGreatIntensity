@@ -29,7 +29,7 @@ import Conduit              (mapC, scanlC, foldlC, filterC)
 
 import Data.Conduit 
 import Data.List.Split      (splitOn)
-import Data.Text            (Text, unpack)
+import Data.Text            (Text, unpack, pack)
 import Data.Attoparsec.Text hiding (count)
 
 
@@ -45,12 +45,12 @@ import PatternCompiler
 w1 :: String -> String -> ReaderT Config IO Output
 w1 a1 a2 = do
   p_ws <- pattern weakStrong
-  sumCount $ (\p -> p a1 a2) <$> p_ws
+  sumCount $ (\p -> p (S a1) (S a2)) <$> p_ws
 
 s1 :: String -> String -> ReaderT Config IO Output
 s1 a1 a2 = do
   p_sw <- pattern strongWeak
-  sumCount $ (\p -> p a1 a2) <$> p_sw
+  sumCount $ (\p -> p (S a1) (S a2)) <$> p_sw
 
 w2 :: String -> String -> ReaderT Config IO Output
 w2 = flip w1
@@ -59,10 +59,14 @@ s2 :: String -> String -> ReaderT Config IO Output
 s2 = flip s1
 
 p1 :: ReaderT Config IO Output
-p1 = w1 "_*_" "_*_"
+p1 = do
+  p_ws <- pattern weakStrong
+  sumCount $ (\p -> p Star Star) <$> p_ws
 
 p2 :: ReaderT Config IO Output
-p2 = s1 "_*_" "_*_"
+p2 = do
+  p_sw <- pattern strongWeak
+  sumCount $ (\p -> p Star Star) <$> p_sw
 
 -- * `get` pattern path and open, then compile
 pattern :: (Config -> FilePath) -> ReaderT Config IO [Pattern]
@@ -96,7 +100,7 @@ countp phrase = do
 -- * in onegram file
 count :: String -> ReaderT Config IO Output
 count w = do
-  let word = compile w "" ""
+  let word = compile' w 
   con     <- ask
   (n, ts) <- [onegram con] `query` word
   return (n,ts)

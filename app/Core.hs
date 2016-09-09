@@ -23,28 +23,6 @@ import Data.Attoparsec.Text
 
 
 {-----------------------------------------------------------------------------
-    Tokenization and Parsing
-------------------------------------------------------------------------------}
-
-data Token = Word String 
-           | Hole 
-           | Slash
-           | Comma
-           | OptComma
-           | Or Token Token
-           deriving (Eq, Show)
-
--- * this wild card symbol denotes any string of alphabetical 
--- * symbols
-wildCardSym :: String
-wildCardSym = "_*_"
-
-
--- * A pattern of form `R * *` relates two 
--- * strings `*` with some relation `R`
-type Pattern     = String -> String -> Parser Text
-
-{-----------------------------------------------------------------------------
   Output of query ngrams
 ------------------------------------------------------------------------------}
 
@@ -65,7 +43,6 @@ data Config = Con {
     , strongWeak :: FilePath
     , weakStrong :: FilePath
 } deriving (Show, Eq)
-
 
 {-----------------------------------------------------------------------------
   Write

@@ -12,7 +12,12 @@
 
 module PatternCompiler (
 
-    compile
+    Pattern
+  , Token  (..)
+  , PInput (..)
+
+  , compile
+  , compile'
   , token
   , tokenizer
 
@@ -23,21 +28,50 @@ module PatternCompiler (
 
 import Data.List.Split 
 import Data.Attoparsec.Text
-import Data.Text (Text, unpack)
+import Data.Text (Text, unpack, pack)
 
-import Core
 import Control.Applicative
 import Parsers
+
+{-----------------------------------------------------------------------------
+    Tokenization and Parsing
+------------------------------------------------------------------------------}
+
+data Token = Word String 
+           | Hole 
+           | Slash
+           | Comma
+           | OptComma
+           | Or Token Token
+           deriving (Eq, Show)
+
+-- * PInput into Pattern
+data PInput = S String       -- * Pattern match some Text
+           | Star           -- * Pattern match any string of alphabetical symbol 
+           | Nil            -- * trivial PInput so that 
+                            -- * compile "fillod" Nil Nil = word "fillod"
+           deriving (Eq, Show) 
+
+
+-- * A pattern of form `R * *` relates two 
+-- * strings `*` with some relation `R`
+type Pattern = PInput -> PInput -> Parser Text
 
 
 {-----------------------------------------------------------------------------
     Top level function
 ------------------------------------------------------------------------------}
 
--- * given an expression, output parser
+-- * given an expression, output pattern
 compile :: String -> Pattern
 compile = compiler . tokenizer
 
+-- * compile a string into a parser, the pattern described by the string 
+-- * does not have any `Hole`s in it
+-- * Note: compile' xs = word xs 
+-- *       so that compile' "*" = pzero, it is the identity pattern
+compile' :: String -> Parser Text
+compile' xs = compile xs Nil Nil
 
 {-----------------------------------------------------------------------------
     Tokenizer
@@ -69,22 +103,21 @@ tokenizer = fmap token . concat . fmap recoverComma . splitOn " "
 
 -- * compile a list of tokens into binary pattern `BinPattern`
 -- * note by construction this function fails with identity parser under (<+>)
-compiler :: [Token] -> (String -> String -> Parser Text)
-compiler ts = \u v -> go [u,v] ts
+compiler :: [Token] -> Pattern
+compiler ts = \u v -> [u,v] `fill` ts
 
--- * Given stack of strings `w:ws` as input to binary pattern,
--- * and list of tokens `t:ts`, create a parser
--- * if the stack is empty before tokens are, then all
--- * tokens `Hole` is sent to parser `star`
--- * Note the privilged string `w` "_*_" denotes wildcard pattern,
--- * so "_*_" maps token `Hole` to the parser `star`
-go :: [String] -> [Token] -> Parser Text
-go (w:ws) (t:ts) | t == Hole = if w == wildCardSym then 
-                               toP  t <+> go ws ts else
-                               word w <+> go ws ts
-                 | otherwise = toP  t <+> go (w:ws) ts
-go []     (t:ts)             = toP  t <+> go []     ts
-go _      []                 = pzero                
+-- * Given stack of strings `w:ws` as PInput to binary pattern,
+-- * and list of tokens `t:ts`, create a `Parser Text`
+-- * by `fill`ing in all the `Hole`s
+-- * If the stack is empty before tokens are, then all remaining
+-- * `Hole` tokens are mapped to parser `star`
+fill :: [PInput] -> [Token] -> Parser Text
+fill (i:is) (Hole:ts) = case i of
+  S w   -> word w <+> fill is ts 
+  Star  -> star   <+> fill is ts
+  Nil   -> pzero  <+> fill is ts
+fill _       []       = pzero  
+fill is      (t:ts)   = toP t <+> fill is ts
 
 
 -- * convert token to parser, note `Hole` is sent to `star` which accept
