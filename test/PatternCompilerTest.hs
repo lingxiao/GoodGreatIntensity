@@ -31,6 +31,7 @@ main = do
               $ [ ttoken
                 , ttokenizer
                 , tcompile
+                , tcompile'
                 , tbutnot
                 , talmost
                 ]
@@ -80,10 +81,10 @@ ttokenizer = "tokenizer"
 ------------------------------------------------------------------------------}
 
 tcompile :: Test
-tcompile =  let p1 = (compile "* or *"                ) "good" "great"
-         in let p2 = (compile "or * or *"             ) "good" "great"
-         in let p3 = (compile "* (and/or) *"          ) "good" "great"
-         in let p4 = (compile "* or *"                ) "_*_"  "_*_"
+tcompile =  let p1 = (compile "* or *"                ) (S "good") (S "great")
+         in let p2 = (compile "or * or *"             ) (S "good") (S "great")
+         in let p3 = (compile "* (and/or) *"          ) (S "good") (S "great")
+         in let p4 = (compile "* or *"                ) Star Star
          in "compile"
          ~: TestList [ p1 <** pack "good or great" ~?= right "good or great"
                      , p1 <** pack "good bu great" ~?= name' p1
@@ -100,6 +101,20 @@ tcompile =  let p1 = (compile "* or *"                ) "good" "great"
                      , p4 <** pack "bar and foo"      ~?= name' p4
          ]
 
+tcompile' :: Test
+tcompile' = let p = compile' "hello"
+         in let q = compile' "*"
+          in "compile"         
+          ~: TestList [ p <** pack "hello" ~?= right "hello"
+                      , p <** pack "world" ~?= name' p
+
+                      -- * Note q never fails. It is the identity pattern
+                      , q <** pack "*"     ~?= right ""
+                      , q <** pack ""      ~?= right ""
+                      , q <** pack "hel"   ~?= right ""
+                      , q <** pack "13/"   ~?= right ""
+                      ]
+
 
 {-----------------------------------------------------------------------------
    Adhoc test compiler on specific phrases
@@ -108,8 +123,8 @@ tcompile =  let p1 = (compile "* or *"                ) "good" "great"
 tbutnot :: Test
 tbutnot =  let o1 = right "good (,) but not great"
         in let o2 = right "* (,) but not *"
-        in let p1 = (compile "* (,) but not *") "good" "great"
-        in let p2 = (compile "* (,) but not *") "_*_" "_*_"
+        in let p1 = (compile "* (,) but not *") (S "good") (S "great")
+        in let p2 = (compile "* (,) but not *") Star Star
         in "but not"
         ~: TestList [ p1 <** (pack "good but not great"        ) ~?= o1
                     , p1 <** (pack "good, but not great"       ) ~?= o1
@@ -119,8 +134,7 @@ tbutnot =  let o1 = right "good (,) but not great"
                     , p1 <** (pack "foo,  but not bar"         ) ~?= name' p1
 
                     , p2 <** (pack "foo but not bar"           ) ~?= o2
-                    , p2<** (pack "foo,  but not bar"         ) ~?= o2
-
+                    , p2<** (pack "foo,  but not bar"         )  ~?= o2
                     ]
 
 talmost :: Test
@@ -129,8 +143,8 @@ talmost =  let o1 = right "good (,) and almost great"
         in let o3 = right "* (,) and almost *"
         in let o4 = right "* (,) or almost *"
 
-        in let p1 = (compile "* (,) (and/or) almost *") "good" "great"
-        in let p2 = (compile "* (,) (and/or) almost *") "_*_"  "_*_"
+        in let p1 = (compile "* (,) (and/or) almost *") (S "good") (S "great")
+        in let p2 = (compile "* (,) (and/or) almost *") Star Star
         in "* (,) (and/or) almost *"
 
         ~: TestList [ p1 <** (pack "good and almost great"     ) ~?= o1
@@ -142,7 +156,6 @@ talmost =  let o1 = right "good (,) and almost great"
                     , p2 <** (pack "foo and almost bar"        ) ~?= o3
                     , p2 <** (pack "foo, or almost bar"        ) ~?= o4
                     , p2 <** (pack "foo, ord almost bar"       ) ~?= name' p2
-
                     ]
 
 

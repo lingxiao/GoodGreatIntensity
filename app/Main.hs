@@ -14,8 +14,7 @@ module Main where
 
 
 import System.Directory
-import Data.Text hiding (foldr)
-import Control.Monad.Trans.Reader
+import Data.List.Split
 
 import Core
 import MainSubroutines
@@ -23,8 +22,27 @@ import MainSubroutines
 
 main :: IO ()
 main = do
+    f <- getCurrentDirectory
+    let dir:_ = splitOn "GoodGreatIntensity" f
+    if dir == "/Users/lingxiao/Documents/NLP/Code/" then 
+        mainLocal
+    else 
+        mainRemote
+
+
+{-----------------------------------------------------------------------------
+  Local and remote main
+------------------------------------------------------------------------------}
+
+mainLocal :: IO ()
+mainLocal = do
     main_p1 cLocal
     main_p2 cLocal
+
+mainRemote :: IO ()
+mainRemote = do
+    main_p1 cRemote
+    main_p2 cRemote
 
 
 {-----------------------------------------------------------------------------
@@ -32,7 +50,7 @@ main = do
 ------------------------------------------------------------------------------}
 
 cLocal :: Config
-cLocal = Con f1 [f4, f5] fsw fws
+cLocal = Con f1 [f4,f5] fsw fws
 
 cRemote :: Config
 cRemote = Con f1r [f4r, f5r] fswr fwsr
