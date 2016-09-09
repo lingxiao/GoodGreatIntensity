@@ -35,8 +35,9 @@ main = do
 
 mainLocal :: IO ()
 mainLocal = do
-    main_p1 cLocal
-    main_p2 cLocal
+    main_test cLocal   -- * it def runs on local
+    --main_p1 cLocal
+    --main_p2 cLocal
 
 mainRemote :: IO ()
 mainRemote = do
@@ -50,10 +51,10 @@ mainRemote = do
 ------------------------------------------------------------------------------}
 
 cLocal :: Config
-cLocal = Con f1 [fd] fsw fws
+cLocal = Con f1 [f4] fsw fws
 
 cRemote :: Config
-cRemote = Con f1r [f4r] fswr fwsr
+cRemote = Con f1r [fdr] fswr fwsr
 
 
 -- * local ngram directory
