@@ -1,9 +1,0 @@
-p-strong-weak
---------------------------------------------------
-total: 613
---------------------------------------------------
-good or very good teaching     Good or very good teaching     70
-good or very good </s>     Good or very good </S>     217
-good or very good </s>     Good or Very Good </S>     152
-good or very good .     Good or Very Good .     128
-good or very good )     Good or Very Good )     46
