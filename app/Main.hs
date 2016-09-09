@@ -52,14 +52,15 @@ cLocal :: Config
 cLocal = Con f1 [f4,f5] fsw fws
 
 cRemote :: Config
-cRemote = Con f1r [f4r, f5r] fswr fwsr
+cRemote = Con f1r [f5d] fswr fwsr
 
 
 -- * local ngram directory
-fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
 f1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
 f4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
 f5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/5gms"
+-- * local dummy data directory
+fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
 -- * local pattern directory
 fsw = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/inputs/strong-weak-patterns.txt"
 fws = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/inputs/weak-strong-patterns.txt"
@@ -69,6 +70,7 @@ f1r, f4r, f5r :: FilePath
 f1r = "/nlp/data/xiao/ngrams/1gms"
 f4r = "/nlp/data/xiao/ngrams/4gms"
 f5r = "/nlp/data/xiao/ngrams/5gms"
+f5d = "/nlp/data/xiao/ngrams/dummydata"
 -- * remote pattern path
 fswr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/inputs/strong-weak-patterns.txt"
 fwsr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/inputs/weak-strong-patterns.txt"
