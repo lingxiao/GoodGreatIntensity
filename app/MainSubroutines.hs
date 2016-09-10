@@ -38,7 +38,7 @@ main_p2 con = do
 
 main_test :: Config -> IO ()
 main_test con = do
-  writeDummyAt "output"
+  writeDummyTo "output"
     -- * this is the problem
     -- * execution never gets past this point
     -- * try: halfing the direcotry size --> doesnt work
@@ -49,8 +49,7 @@ main_test con = do
   (n, rrs) <- runReaderT (w1 "good" "great") con
   let f = outdir ++ "/p-w1-good-great.txt"
 
-
   -- * PROGRESS : made it to this point but have nothing
   -- * but prev attempts with query' also worked?
   -- * for some reason
-  writeOutput f (n,[])
+  writeOutput f (n,rrs)
