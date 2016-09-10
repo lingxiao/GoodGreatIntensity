@@ -20,6 +20,9 @@ import Core
 import MainSubroutines
 
 
+{-----------------------------------------------------------------------------
+  Main
+------------------------------------------------------------------------------}
 
 main :: IO ()
 main = do
@@ -30,31 +33,10 @@ main = do
     else 
         mainAt remote
 
-{-----------------------------------------------------------------------------
-  Local and remote main
-------------------------------------------------------------------------------}
-
---mainLocal :: IO ()
---mainLocal = do
---    --main_test cLocal   -- * it def runs on local
---    --main_p1 cLocal
---    --main_p2 cLocal
---    -- * sh main.sh </dev/null
---    let f = homel ++ "/GoodGreatIntensity/testo.txt"
---    saveOutput f (404, [(pack "hello", pack "word", 200)])
-
 
 mainAt :: Config -> IO ()
 mainAt con = do
     main_test con
-    -- * open file and write to it
-    --makeDirAtTop "output"
-    --let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/output/testo.txt"
-    --saveOutput f (404, [(pack "hello", pack "word", 202)])
-
-
-    --main_p1 cRemote
-    --main_p2 cRemote
 
 {-----------------------------------------------------------------------------
   System Paths

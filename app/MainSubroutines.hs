@@ -39,6 +39,10 @@ main_p2 con = do
 main_test :: Config -> IO ()
 main_test con = do
     outdir   <- makeDirAtTop "output"
+    let tf = outdir ++ "/before_w.txt"
+    saveOutput tf (404,[])
+
+
     (n, rrs) <- runReaderT (w1 "good" "great") con
     let f = outdir ++ "/p-w1-good-great.txt"
     saveOutput f (n,rrs)
