@@ -107,6 +107,10 @@ count w = do
 
 {-----------------------------------------------------------------------------
   Conduit subroutines
+  
+  Possible solution: considering doing the dumb version, 
+  not the conduit version
+
 ------------------------------------------------------------------------------}
 
 -- * `query` for occurences of utterance to be parsed by parser `p` 

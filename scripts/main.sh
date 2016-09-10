@@ -26,6 +26,14 @@ set -x
 # make sure I set my $CWD (current working directory)
 cd $HOME/xiao/GoodGreatIntensity/scripts
 
+# This will move the large file load-in to fast local 
+# disk, to see if the problem is due to using the 
+# remote shared storage.
+mkdir -p /scratch-local/users/lingxiao
+cp txtfile /scratch-local/users/lingxiao/txtfile
+# (run the binary, but point it to the /scratch-local directory above)
+rm /scratch-local/users/lingxiao/txtfile
+
 
 # when am I running
 #/bin/date
