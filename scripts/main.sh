@@ -30,9 +30,9 @@ cd $HOME/xiao/GoodGreatIntensity/scripts
 # disk, to see if the problem is due to using the 
 # remote shared storage.
 mkdir -p /scratch-local/users/lingxiao
-cp txtfile /scratch-local/users/lingxiao/txtfile
+cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4gm-0088.txt
 # (run the binary, but point it to the /scratch-local directory above)
-rm /scratch-local/users/lingxiao/txtfile
+rm /scratch-local/users/lingxiao/4gm-0088.txt
 
 
 # when am I running
