@@ -64,23 +64,23 @@ query p = lift . queryio p
 -- * `queryAll` occurences of strings recognized by `p`
 -- * and sum results
 queryio :: Parser Text -> [FilePath] -> IO Output
-queryio p ds = sourceDirs ".txt" ds >>= queryAll p
+queryio p ds = sourceDirs ".txt" ds >>= queryFiles p
 
 
 -- * Given path to ".txt" files `fs` and parser `p`,
--- * `queryOne` each ".txt" files and sum the results of
+-- * `queryFile` each ".txt" file and sum the results of
 -- * the queries
-queryAll :: Parser Text -> [FilePath] -> IO Output
-queryAll p fs = do
-  let os = queryOne p <$> fs
+queryFiles :: Parser Text -> [FilePath] -> IO Output
+queryFiles p fs = do
+  let os = queryFile p <$> fs
   rrs    <- sequence os
   let rs = foldr (\(n,q) (m,qs) -> (n+m,q++qs)) (0,[]) rrs
   return rs
 
 -- * given parser `p`, query the ".txt" file `f`
 -- * for occurences of string recognized by `p`
-queryOne :: Parser Text -> FilePath -> IO Output
-queryOne p f = do
+queryFile :: Parser Text -> FilePath -> IO Output
+queryFile p f = do
   ys <- splitOn "\n"     <$> readFile f
   let yys  = splitOn "\t" <$> ys
   let yys' = filter (\ys -> length ys == 2) yys
@@ -123,7 +123,7 @@ sourceDir ext d = do
 -- * in all files found at paths `fs`
 query' :: (Op m , Fractional a)
       => Parser Text -> [FilePath] ->  m Output
-query' p fs  = eval $ openFiles fs $$ queryFiles p
+query' p fs  = eval $ openFiles fs $$ queryFiles' p
 
 -- * open all ".txt" files found at paths `fs` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
@@ -138,10 +138,10 @@ openFiles fs =  fs `sourceDirectories` ".txt"
 
 -- * search for pattern parsed by parser `p` and 
 -- * sum all of its occurences
-queryFiles :: FileOpS m [QueryResult]
+queryFiles' :: FileOpS m [QueryResult]
            => Parser Text 
            -> Consumer QueryResult m Integer
-queryFiles p =  filterC (\(xs,_,_) -> case p <** xs of
+queryFiles' p =  filterC (\(xs,_,_) -> case p <** xs of
                         Left _ -> False
                         _      -> True)
             =$= awaitForever (\t -> do
