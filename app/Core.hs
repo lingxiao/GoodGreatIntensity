@@ -16,6 +16,7 @@ import System.Directory
 import System.FilePath.Posix
 import qualified System.IO as S
 
+import Data.Time.Clock
 import Data.Text (Text, unpack)
 import Data.List.Split (splitOn)
 import Data.Attoparsec.Text 
@@ -62,17 +63,23 @@ makeDirAtTop f = do
 saveOutput :: FilePath -> Output -> IO ()
 saveOutput f (n, rs) = do
   let name = takeFileName . dropExtension $ f
-  o <- S.openFile f S.WriteMode
+  o    <- S.openFile f S.WriteMode
+  time <- show <$> getCurrentTime
+
   S.hPutStrLn o name
+  S.hPutStrLn o time
+
   S.hPutStrLn o mark
   S.hPutStrLn o $ "total: " ++ show n
   S.hPutStrLn o mark
+  
   mapM (\(w,w',n) ->  S.hPutStrLn o 
                    $  unpack w 
                    ++ "     " 
                    ++ unpack w' 
                    ++ "     "
                    ++ show n) rs
+
   S.hClose o
   return ()
       where mark = foldr (++) mempty $ (const "-") <$> [1..50] 

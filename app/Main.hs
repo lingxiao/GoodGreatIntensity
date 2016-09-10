@@ -19,7 +19,6 @@ import Data.List.Split
 import Core
 import MainSubroutines
 
-import Data.Text (Text, pack, unpack)
 
 
 main :: IO ()
@@ -27,9 +26,9 @@ main = do
     f <- getCurrentDirectory
     let top:_ = splitOn "GoodGreatIntensity" f
     if top == "/Users/lingxiao/Documents/NLP/Code/" then 
-        doMain cLocal
+        mainAt local
     else 
-        doMain cRemote
+        mainAt remote
 
 {-----------------------------------------------------------------------------
   Local and remote main
@@ -45,14 +44,9 @@ main = do
 --    saveOutput f (404, [(pack "hello", pack "word", 200)])
 
 
-doMain :: Config -> IO ()
-doMain con = do
-    --main_test con
-    outdir <- makeDirAtTop "output"
-    let (n,rrs) = (200, [("hello", "Hello", 404)])
-    let f = outdir ++ "/test.txt"
-    saveOutput f (n,rrs)
-
+mainAt :: Config -> IO ()
+mainAt con = do
+    main_test con
     -- * open file and write to it
     --makeDirAtTop "output"
     --let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/output/testo.txt"
@@ -66,11 +60,11 @@ doMain con = do
   System Paths
 ------------------------------------------------------------------------------}
 
-cLocal :: Config
-cLocal = Con f1 [fd] fsw fws
+local :: Config
+local = Con f1 [fd] fsw fws
 
-cRemote :: Config
-cRemote = Con f1r [f4r] fswr fwsr
+remote :: Config
+remote = Con f1r [f4r] fswr fwsr
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
