@@ -61,7 +61,7 @@ clocal :: Config
 clocal = Con f1 [fd] fsw fws
 
 cremote :: Config
-cremote = Con f1r [fdr] fswr fwsr
+cremote = Con f1r [f4r,f5r] fswr fwsr
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"

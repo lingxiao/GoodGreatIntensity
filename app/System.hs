@@ -79,12 +79,18 @@ queryFiles p fs = do
 -- * for occurences of string recognized by `p`
 queryFile :: Parser Text -> FilePath -> IO Output
 queryFile p f = do
-  ys <- splitOn "\n"     <$> readFile f
+  ys       <- splitOn "\n"     <$> readFile f
   let yys  = splitOn "\t" <$> ys
   let yys' = filter (\ys -> length ys == 2) yys
-  let xs   = (\[y,n] -> (preprocess . pack $ y, pack y, read n)) 
+
+  let xs   = (\[y,n] -> ( preprocess . pack $ y
+                        , pack y
+                        , read n)) 
           <$> yys'
+
+  -- * a bug on this line is outputting item two per matchP
   let rs   = filter (matchP p) xs
+
   let n    = foldr (\(_,_,n) m -> m + n) 0 rs
   return (n,rs)
 
@@ -93,7 +99,6 @@ matchP :: Parser Text -> QueryResult -> Bool
 matchP p (t,_,_) = case p <** t of
   Right _ -> True
   _       -> False
-
 
 -- * Given file paths `fs` and file extension `ext`
 -- * list all files in directories with this extension
@@ -110,6 +115,13 @@ sourceDir ext d = do
   fs <- getDirectoryContents d
   let fs' = filter (\f -> takeExtension f == ext) fs
   return $ (\f -> d ++ "/" ++ f) <$> fs'
+
+
+
+p   = compile "* (,) but not *" (S "good") (S "great")
+fd, f :: FilePath
+fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/"
+f  = fd ++ "4gm-short.txt"
 
 
 
