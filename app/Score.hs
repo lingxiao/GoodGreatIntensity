@@ -20,22 +20,17 @@ module Score (
     , p2
   ) where
 
-import qualified System.IO as S
 
 import Control.Monad.State  
 import Control.Monad.Trans.Reader
 
-import Conduit              (mapC, scanlC, foldlC, filterC)
-
 import Data.Conduit 
-import Data.List.Split      (splitOn)
-import Data.Text            (Text, unpack, pack)
+import Data.Text (Text, unpack, pack)
 import Data.Attoparsec.Text hiding (count)
 
 
 import Core
-import Conduits
-import Preprocess
+import System
 import PatternCompiler
 
 {-----------------------------------------------------------------------------
@@ -68,13 +63,6 @@ p2 = do
   p_sw <- pattern strongWeak
   sumCount $ (\p -> p Star Star) <$> p_sw
 
--- * `get` pattern path and open, then compile
-pattern :: (Config -> FilePath) -> ReaderT Config IO [Pattern]
-pattern get = do
-  con <- ask
-  ps  <- liftIO $ S.readFile (get con) 
-  let ps' = lines ps
-  return $ compile <$> ps'
 
 {-----------------------------------------------------------------------------
   Count
@@ -93,7 +81,7 @@ sumCount ps = do
 countp :: Parser Text -> ReaderT Config IO Output
 countp phrase = do
   con     <- ask
-  (n, ts) <- (ngrams con) `query` phrase
+  (n, ts) <- phrase `query` (ngrams con)
   return (n,ts)
 
 -- * `count` occurences of some word `w` 
@@ -102,49 +90,8 @@ count :: String -> ReaderT Config IO Output
 count w = do
   let word = compile' w 
   con     <- ask
-  (n, ts) <- [onegram con] `query` word
+  (n, ts) <- word `query` [onegram con]
   return (n,ts)
-
-{-----------------------------------------------------------------------------
-  Conduit subroutines
-  
-  Possible solution: considering doing the dumb version, 
-  not the conduit version
-
-------------------------------------------------------------------------------}
-
--- * `query` for occurences of utterance to be parsed by parser `p` 
--- * in all files found at paths `fs`
-query :: (Op m , Fractional a)
-      => [FilePath] -> Parser Text -> m Output
-query fs p  = eval $ openFiles fs $$ queryFiles p
-
--- * open all ".txt" files found at paths `fs` and stream them as lines
--- * preprocess each line by casefolding and stripping of whitespace
-openFiles :: FileOpS m s => [FilePath] -> Source m QueryResult
-openFiles fs =  fs `sourceDirectories` ".txt"
-             =$= openFile
-             =$= linesOn "\t"
-             =$= filterC (\x     -> Prelude.length x == 2)
-             =$= mapC    (\[xs,n] -> ( preprocess xs
-                                    , xs
-                                    , read . unpack $ n :: Integer))
-
--- * search for pattern parsed by parser `p` and 
--- * sum all of its occurences
-queryFiles :: FileOpS m [QueryResult]
-           => Parser Text 
-           -> Consumer QueryResult m Integer
-queryFiles p =  filterC (\(xs,_,_) -> case p <** xs of
-                        Left _ -> False
-                        _      -> True)
-            =$= awaitForever (\t -> do
-                    ts <- lift get
-                    let ts' = t:ts
-                    lift . put $ ts'
-                    yield t
-                )
-            =$= foldlC  (\m (_,_,n) -> m + n) 0
 
 
 

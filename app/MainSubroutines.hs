@@ -44,7 +44,7 @@ main_test con = do
 
     -- * this is the problem
     -- * execution never gets past this point
-    -- * try: halfing the direcotry size
+    -- * try: halfing the direcotry size --> doesnt work
     -- *      halfing the file sizej
     -- *      new query code
     (n, rrs) <- runReaderT (w1 "good" "great") con

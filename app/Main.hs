@@ -20,6 +20,12 @@ import Core
 import MainSubroutines
 
 
+import Data.Text (Text, pack, unpack)
+
+import Score
+import PatternCompiler
+
+
 {-----------------------------------------------------------------------------
   Main
 ------------------------------------------------------------------------------}
@@ -42,11 +48,18 @@ mainAt con = do
   System Paths
 ------------------------------------------------------------------------------}
 
+
+p   = compile "* (,) but not *" (S "good") (S "great")
+ft1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/4gm-short.txt"
+ft2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/4gm-0089.txt"
+fts = [ft1, ft2]
+
+
 local :: Config
 local = Con f1 [fd] fsw fws
 
 remote :: Config
-remote = Con f1r [f4r] fswr fwsr
+remote = Con f1r [fdr] fswr fwsr
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
@@ -69,7 +82,7 @@ fws = projl ++ "inputs/weak-strong-patterns.txt"
 -- * remote ngram directory
 f1r, f4r, f5r, fdr :: FilePath
 f1r = datar ++ "1gms"
-f4r = datar ++ "4gmsmall"    -- * only scan 31 documents, not 131
+f4r = datar ++ "4gms"
 f5r = datar ++ "5gms"
 fdr = datar ++ "dummydata"
 
