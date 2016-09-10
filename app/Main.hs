@@ -27,31 +27,36 @@ main = do
     f <- getCurrentDirectory
     let top:_ = splitOn "GoodGreatIntensity" f
     if top == "/Users/lingxiao/Documents/NLP/Code/" then 
-        mainLocal
+        doMain cLocal
     else 
-        mainRemote
+        doMain cRemote
 
 {-----------------------------------------------------------------------------
   Local and remote main
 ------------------------------------------------------------------------------}
 
-mainLocal :: IO ()
-mainLocal = do
-    --main_test cLocal   -- * it def runs on local
-    --main_p1 cLocal
-    --main_p2 cLocal
-    -- * sh main.sh </dev/null
-    let f = homel ++ "/GoodGreatIntensity/testo.txt"
-    saveOutput f (404, [(pack "hello", pack "word", 200)])
+--mainLocal :: IO ()
+--mainLocal = do
+--    --main_test cLocal   -- * it def runs on local
+--    --main_p1 cLocal
+--    --main_p2 cLocal
+--    -- * sh main.sh </dev/null
+--    let f = homel ++ "/GoodGreatIntensity/testo.txt"
+--    saveOutput f (404, [(pack "hello", pack "word", 200)])
 
 
-mainRemote :: IO ()
-mainRemote = do
-    --main_test cRemote
+doMain :: Config -> IO ()
+doMain con = do
+    --main_test con
+    outdir <- makeDirAtTop "output"
+    let (n,rrs) = (200, [("hello", "Hello", 404)])
+    let f = outdir ++ "/test.txt"
+    saveOutput f (n,rrs)
+
     -- * open file and write to it
-    makeDirAtTop "output"
-    let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/output/testo.txt"
-    saveOutput f (404, [(pack "hello", pack "word", 202)])
+    --makeDirAtTop "output"
+    --let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/output/testo.txt"
+    --saveOutput f (404, [(pack "hello", pack "word", 202)])
 
 
     --main_p1 cRemote
@@ -67,27 +72,36 @@ cLocal = Con f1 [fd] fsw fws
 cRemote :: Config
 cRemote = Con f1r [f4r] fswr fwsr
 
-homel = "/Users/lingxiao/Documents/NLP/Code"
+projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
+datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
+
+projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
+datar = "/nlp/data/xiao/ngrams/"
 
 -- * local ngram directory
-f1 = homel ++ "Datasets/ngrams/1gms"
-f4 = homel ++ "Datasets/ngrams/4gms"
-f5 = homel ++ "Datasets/ngrams/5gms"
--- * local dummy data directory
-fd = homel ++ "Datasets/ngrams/dummydata"
+f1,f4,f5,fd :: FilePath
+f1 = datal ++ "1gms"
+f4 = datal ++ "4gms"
+f5 = datal ++ "5gms"
+fd = datal ++ "dummydata"
+
 -- * local pattern directory
-fsw = homel ++ "GoodGreatIntensity/inputs/strong-weak-patterns.txt"
-fws = homel ++ "GoodGreatIntensity/inputs/weak-strong-patterns.txt"
+fsw, fws :: FilePath
+fsw = projl ++ "inputs/strong-weak-patterns.txt"
+fws = projl ++ "inputs/weak-strong-patterns.txt"
 
 -- * remote ngram directory
-f1r, f4r, f5r :: FilePath
-f1r = "/nlp/data/xiao/ngrams/1gms"
-f4r = "/nlp/data/xiao/ngrams/4gms"
-f5r = "/nlp/data/xiao/ngrams/5gms"
-fdr = "/nlp/data/xiao/ngrams/dummydata"
+f1r, f4r, f5r, fdr :: FilePath
+f1r = datar ++ "1gms"
+f4r = datar ++ "4gms"
+f5r = datar ++ "5gms"
+fdr = datar ++ "dummydata"
+
 -- * remote pattern path
-fswr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/inputs/strong-weak-patterns.txt"
-fwsr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/inputs/weak-strong-patterns.txt"
+fswr, fwsr :: FilePath
+fswr = projr ++ "inputs/strong-weak-patterns.txt"
+fwsr = projr ++ "inputs/weak-strong-patterns.txt"
+
 
 
 
