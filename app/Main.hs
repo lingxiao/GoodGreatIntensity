@@ -54,7 +54,7 @@ cLocal :: Config
 cLocal = Con f1 [fd] fsw fws
 
 cRemote :: Config
-cRemote = Con f1r [fdr] fswr fwsr
+cRemote = Con f1r [f4r] fswr fwsr
 
 
 -- * local ngram directory
