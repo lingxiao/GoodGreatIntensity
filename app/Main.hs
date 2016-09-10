@@ -49,10 +49,9 @@ mainRemote :: IO ()
 mainRemote = do
     --main_test cRemote
     -- * open file and write to it
-    let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/testo.txt"
-    saveOutput f (404, [(pack "hello", pack "word", 200)])
-
-
+    makeDirAtTop "output"
+    let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/output/testo.txt"
+    saveOutput f (404, [(pack "hello", pack "word", 202)])
 
 
     --main_p1 cRemote
