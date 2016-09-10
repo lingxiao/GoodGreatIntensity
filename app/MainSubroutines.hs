@@ -43,9 +43,13 @@ main_test con = do
     saveOutput tf (404,[])
 
     -- * this is the problem
-    -- * executio nenver gets past this point
+    -- * execution never gets past this point
+    -- * try: halfing the direcotry size
+    -- *      halfing the file sizej
+    -- *      new query code
     (n, rrs) <- runReaderT (w1 "good" "great") con
     let f = outdir ++ "/p-w1-good-great.txt"
+
     --saveOutput f (n,rrs)
     -- * if this doesnt work then problem is in runReaderT ...
     saveOutput f (n,[])

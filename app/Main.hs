@@ -69,7 +69,7 @@ fws = projl ++ "inputs/weak-strong-patterns.txt"
 -- * remote ngram directory
 f1r, f4r, f5r, fdr :: FilePath
 f1r = datar ++ "1gms"
-f4r = datar ++ "4gms"
+f4r = datar ++ "4gmsmall"    -- * only scan 31 documents, not 131
 f5r = datar ++ "5gms"
 fdr = datar ++ "dummydata"
 
