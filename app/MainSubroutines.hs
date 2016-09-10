@@ -47,11 +47,9 @@ main_test con = do
     -- *      new query code
 
   outdir   <- makeDirAtTop "output"
-  --(n, rrs) <- runReaderT (w1 "good" "great") con
-  (n, rrs) <- runReaderT 
-              (countp $ compile "* (,) but not *" (S "good") (S "great")) 
-              con
-  let f    = outdir ++ "/p-w1-good-great.txt"
+  let p    = compile "* (,) although not *" (S "good") (S "great")
+  (n, rrs) <- runReaderT (countp p) con
+  let f    = outdir ++ "/" ++ name p
 
   -- * PROGRESS : made it to this point but have nothing
   -- * but prev attempts with query' also worked?

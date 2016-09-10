@@ -88,7 +88,7 @@ queryFile p f = do
                         , read n)) 
           <$> yys'
 
-  -- * a bug on this line is outputting item two per matchP
+
   let rs   = filter (matchP p) xs
 
   let n    = foldr (\(_,_,n) m -> m + n) 0 rs
@@ -121,7 +121,7 @@ sourceDir ext d = do
 p   = compile "* (,) but not *" (S "good") (S "great")
 fd, f :: FilePath
 fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/"
-f  = fd ++ "4gm-short.txt"
+f  = fd ++ "4gm-0044.txt"
 
 
 
@@ -133,12 +133,12 @@ f  = fd ++ "4gm-short.txt"
 -- * in all files found at paths `fs`
 query' :: (Op m , Fractional a)
       => Parser Text -> [FilePath] ->  m Output
-query' p fs  = eval $ openFiles fs $$ queryFiles' p
+query' p fs  = eval $ openFiles' fs $$ queryFiles' p
 
 -- * open all ".txt" files found at paths `fs` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
-openFiles :: FileOpS m s => [FilePath] -> Source m QueryResult
-openFiles fs =  fs `sourceDirectories` ".txt"
+openFiles' :: FileOpS m s => [FilePath] -> Source m QueryResult
+openFiles' fs =  fs `sourceDirectories` ".txt"
              =$= openFile
              =$= linesOn "\t"
              =$= filterC (\x     -> Prelude.length x == 2)
