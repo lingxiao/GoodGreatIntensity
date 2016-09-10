@@ -5,11 +5,6 @@ set -x
 
 # $HOME/sample_applications/sample_sge_script_1.sh
 
-# set logs path
--o $PWD/logs
--e $PWD/logs
-
-
 
 # wallclock time reservation (format is hours:minutes:seconds).
 # man 5 complex
