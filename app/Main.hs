@@ -37,16 +37,18 @@ main = do
 
 mainLocal :: IO ()
 mainLocal = do
-    main_test cLocal   -- * it def runs on local
+    --main_test cLocal   -- * it def runs on local
     --main_p1 cLocal
     --main_p2 cLocal
     -- * sh main.sh </dev/null
+    let f = homel ++ "/GoodGreatIntensity/testo.txt"
+    saveOutput f (404, [(pack "hello", pack "word", 200)])
+
 
 mainRemote :: IO ()
 mainRemote = do
     --main_test cRemote
     -- * open file and write to it
-    --let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity"
     let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/testo.txt"
     saveOutput f (404, [(pack "hello", pack "word", 200)])
 
