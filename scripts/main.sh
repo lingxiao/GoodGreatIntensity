@@ -30,8 +30,8 @@ cd $HOME/xiao/GoodGreatIntensity/scripts
 # disk, to see if the problem is due to using the 
 # remote shared storage.
 # (run the binary, but point it to the /scratch-local directory above)
-mkdir -p /scratch-local/users/lingxiao
-cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4gm-0088.txt
+# mkdir -p /scratch-local/users/lingxiao
+# cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4gm-0088.txt
 
 # when am I running
 #/bin/date
@@ -46,4 +46,4 @@ cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4g
 # run my scripts
 $HOME/xiao/GoodGreatIntensity/.stack-work/install/x86_64-linux/lts-6.11/7.10.3/bin/GoodGreatIntensity-exe
 
-rm /scratch-local/users/lingxiao/4gm-0088.txt
+# rm /scratch-local/users/lingxiao/4gm-0088.txt
