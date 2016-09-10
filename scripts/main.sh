@@ -29,11 +29,9 @@ cd $HOME/xiao/GoodGreatIntensity/scripts
 # This will move the large file load-in to fast local 
 # disk, to see if the problem is due to using the 
 # remote shared storage.
-# mkdir -p /scratch-local/users/lingxiao
-# cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4gm-0088.txt
 # (run the binary, but point it to the /scratch-local directory above)
-# rm /scratch-local/users/lingxiao/4gm-0088.txt
-
+mkdir -p /scratch-local/users/lingxiao
+cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4gm-0088.txt
 
 # when am I running
 #/bin/date
@@ -47,3 +45,5 @@ cd $HOME/xiao/GoodGreatIntensity/scripts
 
 # run my scripts
 $HOME/xiao/GoodGreatIntensity/.stack-work/install/x86_64-linux/lts-6.11/7.10.3/bin/GoodGreatIntensity-exe
+
+rm /scratch-local/users/lingxiao/4gm-0088.txt
