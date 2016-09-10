@@ -50,19 +50,15 @@ pattern get = do
 
 {-----------------------------------------------------------------------------
   Query using non-list-streaming solution
+  TODO: factor out the pure from the IO stuff
 ------------------------------------------------------------------------------}
 
 -- * given *directory paths* `ds`, and parser `p`
 -- * `queryAll` occurences of strings recognized by `p`
 -- * and sum results
 query :: MonadTrans m => Parser Text -> [FilePath] -> m IO Output
-query p = lift . queryio p
+query p ds = lift $ sourceDirs ".txt" ds >>= queryFiles p
 
--- * given *directory paths* `ds`, and parser `p`
--- * `queryAll` occurences of strings recognized by `p`
--- * and sum results
-queryio :: Parser Text -> [FilePath] -> IO Output
-queryio p ds = sourceDirs ".txt" ds >>= queryFiles p
 
 
 -- * Given path to ".txt" files `fs` and parser `p`,
@@ -92,6 +88,12 @@ queryFile p f = do
   let rs   = filter (matchP p) xs
 
   let n    = foldr (\(_,_,n) m -> m + n) 0 rs
+
+  --  * save output of each query for debugging purposes
+  let fname = name p ++ "_" ++ (takeBaseName $ takeFileName f) ++ ".txt"
+  writeOutput (projr ++ "/" ++ fname) (n,rs)
+  -- * end debug block
+
   return (n,rs)
 
 -- * check if text `t` is recognized by `p`
@@ -112,17 +114,20 @@ sourceDirs ext fs = do
 -- * list all files in directory with this extension
 sourceDir :: String -> FilePath -> IO [FilePath]
 sourceDir ext d = do
-  fs <- getDirectoryContents d
+  fs      <- getDirectoryContents d
   let fs' = filter (\f -> takeExtension f == ext) fs
   return $ (\f -> d ++ "/" ++ f) <$> fs'
 
 
+projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
+projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
 
-p   = compile "* (,) but not *" (S "good") (S "great")
+p :: Parser Text
+p     = compile "* (,) but not *" (S "good") (S "great")
+
 fd, f :: FilePath
 fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/"
 f  = fd ++ "4gm-0044.txt"
-
 
 
 {-----------------------------------------------------------------------------
