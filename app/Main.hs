@@ -19,6 +19,9 @@ import Data.List.Split
 import Core
 import MainSubroutines
 
+import qualified System.IO as S
+
+
 
 main :: IO ()
 main = do
@@ -42,7 +45,18 @@ mainLocal = do
 
 mainRemote :: IO ()
 mainRemote = do
-    main_test cRemote
+    --main_test cRemote
+    -- * open file and write to it
+    let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity"
+    o <- S.openFile f S.WriteMode
+    S.hPutStrLn o "hello world"
+    S.hPutStrLn o "404"
+    S.hClose o
+
+              
+
+
+
     --main_p1 cRemote
     --main_p2 cRemote
 
