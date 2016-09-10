@@ -19,6 +19,8 @@ library
                     ,  Parsers
                     ,  Conduits
                     ,  Preprocess
+                    ,  PatternCompiler
+
 
   build-depends:       base >= 4.7 && < 5
                      , mtl
@@ -46,7 +48,7 @@ executable GoodGreatIntensity-exe
 
   other-modules  :     Core
                      , Score
-                     , PatternCompiler
+                     , System
                      , MainSubroutines
                      , Untar
 

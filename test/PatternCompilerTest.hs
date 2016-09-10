@@ -130,6 +130,10 @@ tbutnot =  let o1 = right "good (,) but not great"
                     , p1 <** (pack "good, but not great"       ) ~?= o1
                     , p1 <** (pack "good ,  but not great"     ) ~?= o1
                     , p1 <** (pack "good but not great comment") ~?= o1
+
+                    -- * TODO: This test fails 
+                    , p1 <** (pack "good ,but not great "      ) ~?= o1
+
                     , p1 <** (pack "foo but not bar"           ) ~?= name' p1
                     , p1 <** (pack "foo,  but not bar"         ) ~?= name' p1
 
