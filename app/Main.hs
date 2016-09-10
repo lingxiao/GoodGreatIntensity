@@ -19,8 +19,7 @@ import Data.List.Split
 import Core
 import MainSubroutines
 
-import qualified System.IO as S
-
+import Data.Text (Text, pack, unpack)
 
 
 main :: IO ()
@@ -47,13 +46,10 @@ mainRemote :: IO ()
 mainRemote = do
     --main_test cRemote
     -- * open file and write to it
-    let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity"
-    o <- S.openFile f S.WriteMode
-    S.hPutStrLn o "hello world"
-    S.hPutStrLn o "404"
-    S.hClose o
+    --let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity"
+    let f = "/home1/l/lingxiao/xiao/GoodGreatIntensity/testo.txt"
+    saveOutput f (404, [(pack "hello", pack "word", 200)])
 
-              
 
 
 
@@ -70,16 +66,17 @@ cLocal = Con f1 [fd] fsw fws
 cRemote :: Config
 cRemote = Con f1r [f4r] fswr fwsr
 
+homel = "/Users/lingxiao/Documents/NLP/Code"
 
 -- * local ngram directory
-f1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/1gms"
-f4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
-f5 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/5gms"
+f1 = homel ++ "Datasets/ngrams/1gms"
+f4 = homel ++ "Datasets/ngrams/4gms"
+f5 = homel ++ "Datasets/ngrams/5gms"
 -- * local dummy data directory
-fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata"
+fd = homel ++ "Datasets/ngrams/dummydata"
 -- * local pattern directory
-fsw = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/inputs/strong-weak-patterns.txt"
-fws = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/inputs/weak-strong-patterns.txt"
+fsw = homel ++ "GoodGreatIntensity/inputs/strong-weak-patterns.txt"
+fws = homel ++ "GoodGreatIntensity/inputs/weak-strong-patterns.txt"
 
 -- * remote ngram directory
 f1r, f4r, f5r :: FilePath
