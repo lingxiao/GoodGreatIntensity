@@ -38,6 +38,7 @@ mainLocal = do
     main_test cLocal   -- * it def runs on local
     --main_p1 cLocal
     --main_p2 cLocal
+    -- * sh main.sh </dev/null
 
 mainRemote :: IO ()
 mainRemote = do
@@ -45,13 +46,12 @@ mainRemote = do
     --main_p1 cRemote
     --main_p2 cRemote
 
-
 {-----------------------------------------------------------------------------
   System Paths
 ------------------------------------------------------------------------------}
 
 cLocal :: Config
-cLocal = Con f1 [f4] fsw fws
+cLocal = Con f1 [fd] fsw fws
 
 cRemote :: Config
 cRemote = Con f1r [fdr] fswr fwsr

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -x
+
+
 # $HOME/sample_applications/sample_sge_script_1.sh
 
 
