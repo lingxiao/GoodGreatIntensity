@@ -16,6 +16,7 @@ import Control.Monad.Trans.Reader
 
 import Core
 import Score
+import PatternCompiler
 
 {-----------------------------------------------------------------------------
   Subroutines
@@ -46,8 +47,11 @@ main_test con = do
     -- *      new query code
 
   outdir   <- makeDirAtTop "output"
-  (n, rrs) <- runReaderT (w1 "good" "great") con
-  let f = outdir ++ "/p-w1-good-great.txt"
+  --(n, rrs) <- runReaderT (w1 "good" "great") con
+  (n, rrs) <- runReaderT 
+              (countp $ compile "* (,) but not *" (S "good") (S "great")) 
+              con
+  let f    = outdir ++ "/p-w1-good-great.txt"
 
   -- * PROGRESS : made it to this point but have nothing
   -- * but prev attempts with query' also worked?

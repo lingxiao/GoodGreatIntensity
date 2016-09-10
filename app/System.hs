@@ -12,7 +12,7 @@
 
 module System (
       query
-    , query'
+    --, query'
     , pattern
   ) where
 

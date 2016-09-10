@@ -16,13 +16,15 @@ module Main where
 import System.Directory
 import Data.List.Split
 
-import Core
-import MainSubroutines
+import Control.Monad.Trans.Reader
+
 
 
 import Data.Text (Text, pack, unpack)
 
+import Core
 import Score
+import MainSubroutines
 import PatternCompiler
 
 
@@ -35,9 +37,9 @@ main = do
     f <- getCurrentDirectory
     let top:_ = splitOn "GoodGreatIntensity" f
     if top == "/Users/lingxiao/Documents/NLP/Code/" then 
-        mainAt local
+        mainAt clocal
     else 
-        mainAt remote
+        mainAt cremote
 
 
 mainAt :: Config -> IO ()
@@ -55,11 +57,11 @@ ft2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/4gm-0089.txt
 fts = [ft1, ft2]
 
 
-local :: Config
-local = Con f1 [fd] fsw fws
+clocal :: Config
+clocal = Con f1 [fd] fsw fws
 
-remote :: Config
-remote = Con f1r [fdr] fswr fwsr
+cremote :: Config
+cremote = Con f1r [fdr] fswr fwsr
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"

@@ -12,6 +12,7 @@
 
 module Score (
       count     -- * todo: this function is easily abused
+    , countp
     , w1
     , w2
     , s1
@@ -62,7 +63,6 @@ p2 :: ReaderT Config IO Output
 p2 = do
   p_sw <- pattern strongWeak
   sumCount $ (\p -> p Star Star) <$> p_sw
-
 
 {-----------------------------------------------------------------------------
   Count
