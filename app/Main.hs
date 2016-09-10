@@ -50,7 +50,6 @@ mainAt con = do
   System Paths
 ------------------------------------------------------------------------------}
 
-
 p   = compile "* (,) but not *" (S "good") (S "great")
 ft1 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/4gm-short.txt"
 ft2 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/4gm-0089.txt"
@@ -61,7 +60,7 @@ clocal :: Config
 clocal = Con f1 [fd] fsw fws
 
 cremote :: Config
-cremote = Con f1r [f4r,f5r] fswr fwsr
+cremote = Con f1r [f4r] fswr fwsr
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"

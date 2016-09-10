@@ -39,19 +39,12 @@ main_p2 con = do
 
 main_test :: Config -> IO ()
 main_test con = do
+
   writeDummyTo "output"
-    -- * this is the problem
-    -- * execution never gets past this point
-    -- * try: halfing the direcotry size --> doesnt work
-    -- *      halfing the file sizej
-    -- *      new query code
+
+  let p    = compile "* (,) but not *" (S "good") (S "great")
+  (n, rrs) <- runReaderT (countp p) con
 
   outdir   <- makeDirAtTop "output"
-  let p    = compile "* (,) although not *" (S "good") (S "great")
-  (n, rrs) <- runReaderT (countp p) con
   let f    = outdir ++ "/" ++ name p
-
-  -- * PROGRESS : made it to this point but have nothing
-  -- * but prev attempts with query' also worked?
-  -- * for some reason
   writeOutput f (n,rrs)
