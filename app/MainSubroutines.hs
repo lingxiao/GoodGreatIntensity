@@ -42,8 +42,8 @@ main_test con = do
     let tf = outdir ++ "/before_w.txt"
     saveOutput tf (404,[])
 
-    -- * it's possible this might be the problem
-    -- * save en empty rrs to confirm
+    -- * this is the problem
+    -- * executio nenver gets past this point
     (n, rrs) <- runReaderT (w1 "good" "great") con
     let f = outdir ++ "/p-w1-good-great.txt"
     --saveOutput f (n,rrs)
