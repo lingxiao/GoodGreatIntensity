@@ -58,9 +58,17 @@ makeDirAtTop f = do
       createDirectoryIfMissing False dir
       return dir
 
+-- * given new folder name `f`, 
+-- * create folder at $HOME/Project and 
+-- * save a dummy file for test purposes
+writeDummyAt :: FilePath -> IO ()      
+writeDummyAt f = do
+    outdir   <- makeDirAtTop f
+    let tf = outdir ++ "/dummyTest.txt"
+    writeOutput tf (404,[])
 
-saveOutput :: FilePath -> Output -> IO ()
-saveOutput f (n, rs) = do
+writeOutput :: FilePath -> Output -> IO ()
+writeOutput f (n, rs) = do
   let name = takeFileName . dropExtension $ f
   o    <- S.openFile f S.WriteMode
   time <- show <$> getCurrentTime

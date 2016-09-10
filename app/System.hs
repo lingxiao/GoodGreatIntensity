@@ -24,13 +24,11 @@ import qualified System.IO as S
 import Control.Monad.State  
 import Control.Monad.Trans.Reader
 
-import Conduit              (mapC, scanlC, foldlC, filterC)
-
 import Data.Conduit 
 import Data.List.Split      (splitOn)
 import Data.Text            (Text, unpack, pack)
 import Data.Attoparsec.Text hiding (count)
-
+import Conduit              (mapC, scanlC, foldlC, filterC)
 
 import Core
 import Conduits
