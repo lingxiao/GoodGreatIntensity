@@ -23,7 +23,7 @@ import Data.Text (Text, pack, unpack)
 
 import Lib
 import Src
-import MainSubroutines
+import Subroutines
 
 
 {-----------------------------------------------------------------------------
