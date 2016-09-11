@@ -42,7 +42,8 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-  cutFiles 10000 r4gms
+  let path:_ = ngrams con
+  cutFiles 10000 path
   return ()
     --main_test con
     --let d:_ = ngrams con
