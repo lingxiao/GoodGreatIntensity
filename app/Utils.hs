@@ -85,7 +85,7 @@ cutFiles :: DirectoryPath -> IO FilePath
 cutFiles d = do
   let dir   = takeDirectory d
   let name' = takeBaseName  d
-  let name  = name' ++ "_small"
+  let name  = name' ++ "_copy"
   let d'    = dir ++ "/" ++ name
   createDirectoryIfMissing False d'
 
