@@ -46,7 +46,7 @@ runFrom con = do
 
 
 local :: Config
-local = Con f1 [f4] fsw fws
+local = Con f1 [fd] fsw fws
 
 remote :: Config
 remote = Con r1gms [r4gms_shard] fswr fwsr
@@ -56,6 +56,7 @@ remote = Con r1gms [r4gms_shard] fswr fwsr
   Local Paths    
 ------------------------------------------------------------------------------}
 
+projl, datal :: DirectoryPath
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
 
@@ -75,11 +76,9 @@ fws = projl ++ "inputs/weak-strong-patterns.txt"
   Remote Paths
 ------------------------------------------------------------------------------}
 
-
-
+projr, datar :: DirectoryPath
 projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
 datar = "/nlp/data/xiao/ngrams/"
-
 
 r1gms       = datar ++ "1gms"
 r4gms       = datar ++ "4gms"

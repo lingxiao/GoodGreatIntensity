@@ -44,13 +44,19 @@ main_test con = do
 
   outdir   <- makeDirAtTop "outputs"
 
-  let p    = compile "* (,) but not *" (S "good") (S "great")
+  -- * these are *known* to be in the directory
+  --let p    = compile "* (,) but not *" (S "good") (S "great")
+  --Flying without wings "  83
+  --Flying without wings (  151
+  --Flying without wings -  86
+  --Flying without wings :  52
+  --Flying without wings </S>       409
+  --Flying without wings Westlife   55
+  let p    = compile' "flying without wings"
   (n, rrs) <- runReaderT (countp p) con
 
   let f    = outdir ++ "/" ++ name p
   writeOutput f (n,rrs)
-
-
 
 main_shard :: Int -> Config -> IO ()
 main_shard n con = do
@@ -58,10 +64,6 @@ main_shard n con = do
   let o   = p ++ "_shard"
   createDirectoryIfMissing False o
   shardFiles ".txt" n p o
-
-
-
-
 
 
 
