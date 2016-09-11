@@ -116,22 +116,20 @@ takeN n (x:xs) = x : takeN (n-1) xs
 takeN _ _      = []
 
 
-datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
-
-
--- * local ngram directory
-f1,f4,f5,fd :: DirectoryPath
-f1 = datal ++ "1gms"
-f4 = datal ++ "4gms"
-f5 = datal ++ "5gms"
-fd = datal ++ "dummydata"
-
-f  = fd ++ "/4gm-0044.txt"
 
 
 
 
+projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
+datar = "/nlp/data/xiao/ngrams/"
 
+f1r, f4r, f4sr, f5r, fdr, fnr :: DirectoryPath
+f1r = datar ++ "1gms"
+f4r = datar ++ "4gms"
+f4sr = datar ++ "4gms_small"
+f5r = datar ++ "5gms"
+fdr = datar ++ "dummydata"
+fnr = datar ++ "ngrams"
 
 
 

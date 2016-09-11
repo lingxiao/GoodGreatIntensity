@@ -25,7 +25,7 @@ import Core
 import Score
 import MainSubroutines
 import PatternCompiler
-import Utils
+
 
 
 {-----------------------------------------------------------------------------
