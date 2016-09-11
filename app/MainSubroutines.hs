@@ -48,3 +48,36 @@ main_test con = do
   outdir   <- makeDirAtTop "output"
   let f    = outdir ++ "/" ++ name p
   writeOutput f (n,rrs)
+
+{-----------------------------------------------------------------------------
+  concat all files
+------------------------------------------------------------------------------}
+
+concatFiles :: DirectoryPath -> IO ()
+concatFiles d = do
+  fs   <- sourceDirs ".txt" ds
+  file <- sequence $ readFile <$> fs
+  return ()  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
