@@ -128,38 +128,3 @@ queryFile' p =  filterC (\(xs,_,_) -> case p <** xs of
                 )
             =$= foldlC  (\m (_,_,n) -> m + n) 0
 
-
-
-{-----------------------------------------------------------------------------
-  Adhoc tests
-------------------------------------------------------------------------------}
-
-qs1, qs2, qs3 :: [QueryResult]
-qs1 = [(pack "ok", pack "", 0)]
-qs2 = [(pack "good but not great", pack "", 0)
-     ,(pack "good but not great", pack "", 0)
-     ] ++ qs1
-qs3 = qs1 ++ qs2
-qsi = qs1 ++ qsi
-qs4 = qs3 ++ qsi
-
-ts :: [QueryResult]
-ts = (\(t,t',n) -> (pack t, pack t', n)) 
-  <$> [("good but not great","Good but not great",7112)
-      ,("good but not great","Good but not Great",1540)
-      ,("good but not great","Good but Not Great",595)
-      ,("good but not great","Good but NOT Great",160)
-      ,("good but not great","Good But Not Great",690)]
-
-p :: Parser Text
-p     = compile "* (,) but not *" (S "good") (S "great")
-
-
-projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
-
-fd, f :: FilePath
-fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/"
-f4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
-f  = fd ++ "4gm-0044.txt"
-
-

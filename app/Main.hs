@@ -57,7 +57,7 @@ fts = [ft1, ft2]
 
 
 clocal :: Config
-clocal = Con f1 [fd] fsw fws
+clocal = Con f1 [f4] fsw fws
 
 cremote :: Config
 cremote = Con f1r [f4r] fswr fwsr
