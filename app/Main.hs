@@ -53,7 +53,7 @@ local :: Config
 local = Con f1 [f4] fsw fws
 
 remote :: Config
-remote = Con r1gms [r4gms_small] fswr fwsr
+remote = Con r1gms [rdummydata] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
