@@ -23,17 +23,19 @@ import Src
   Subroutines
 ------------------------------------------------------------------------------}
 
+out = "outputs"
+
 -- * create output directory, run `p1` and save results
 main_p1 :: Config -> IO ()
 main_p1 con = do
-  outdir   <- makeDirAtTop "outputs"
+  outdir   <- makeDirAtTop out
   (n, rrs) <- runReaderT p1 con
   let f = outdir ++ "/p-weak-strong.txt"
   writeOutput f (n,rrs)
 
 main_p2 :: Config -> IO ()
 main_p2 con = do
-  outdir   <- makeDirAtTop "outputs"
+  outdir   <- makeDirAtTop out
   (n, rrs) <- runReaderT p2 con
   let f = outdir ++ "/p-strong-weak.txt"
   writeOutput f (n, rrs)
@@ -41,12 +43,12 @@ main_p2 con = do
 main_test :: Config -> IO ()
 main_test con = do
 
-  writeDummyTo "outputs"
+  writeDummyTo out
 
   let p    = compile "* (,) but not *" (S "good") (S "great")
   (n, rrs) <- runReaderT (countp p) con
 
-  outdir   <- makeDirAtTop "output"
+  outdir   <- makeDirAtTop out
   let f    = outdir ++ "/" ++ name p
   writeOutput f (n,rrs)
 
