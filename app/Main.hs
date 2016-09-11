@@ -25,7 +25,7 @@ import Core
 import Score
 import MainSubroutines
 import PatternCompiler
-
+import Utils
 
 
 {-----------------------------------------------------------------------------
@@ -45,12 +45,17 @@ main = do
 runFrom :: Config -> IO ()
 runFrom con = do
     main_test con
+    --let d:_ = ngrams con
+    --cutFiles d
+    --return ()
+
+
 
 local :: Config
-local = Con f1 [f4] fsw fws
+local = Con f1 [f5] fsw fws
 
 remote :: Config
-remote = Con f1r [f4sr] fswr fwsr
+remote = Con f1r [f4cr] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
@@ -82,12 +87,13 @@ projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
 datar = "/nlp/data/xiao/ngrams/"
 
 f1r, f4r, f4sr, f5r, fdr, fnr :: DirectoryPath
-f1r = datar ++ "1gms"
-f4r = datar ++ "4gms"
+f1r  = datar ++ "1gms"
+f4r  = datar ++ "4gms"
 f4sr = datar ++ "4gms_small"
-f5r = datar ++ "5gms"
-fdr = datar ++ "dummydata"
-fnr = datar ++ "ngrams"
+f4cr = datar ++ "4gms_copy"
+f5r  = datar ++ "5gms"
+fdr  = datar ++ "dummydata"
+fnr  = datar ++ "ngrams"
 
 -- * remote pattern path
 fswr, fwsr :: FilePath

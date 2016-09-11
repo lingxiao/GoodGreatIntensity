@@ -13,6 +13,8 @@
 module Utils (
       untar
     , shardAll
+    , concatFiles
+    , cutFiles
     ) where
 
 
@@ -115,10 +117,6 @@ takeN :: Int -> [a] -> [a]
 takeN 0 _      = []
 takeN n (x:xs) = x : takeN (n-1) xs
 takeN _ _      = []
-
-
-
-
 
 
 projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"

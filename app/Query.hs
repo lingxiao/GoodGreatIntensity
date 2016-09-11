@@ -108,6 +108,7 @@ openTxtFiles ds = do
   file <- sequence $ readFile <$> fs
   return . pack . concat $ file
 
+
 -- * Given text file `f`, query for occurences of 
 -- * string recognized by `p`
 queryFile :: Parser Text -> Text -> Output
