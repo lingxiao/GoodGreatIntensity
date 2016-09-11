@@ -42,12 +42,15 @@ main_p2 con = do
 main_test :: Config -> IO ()
 main_test con = do
 
+  outdir   <- makeDirAtTop "outputs"
+  let f    = outdir ++ "/" ++ name p
+
   let p    = compile "* (,) but not *" (S "good") (S "great")
   (n, rrs) <- runReaderT (countp p) con
 
-  outdir   <- makeDirAtTop "outputs"
-  let f    = outdir ++ "/" ++ name p
   writeOutput f (n,rrs)
+
+
 
 main_shard :: Int -> Config -> IO ()
 main_shard n con = do
