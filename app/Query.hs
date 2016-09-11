@@ -173,12 +173,12 @@ queryFileOld p f = do
   let n    = foldr (\(_,_,n) m -> m + n) 0 rs
 
   --  * save output of each query for debugging purposes
-  createDirectoryIfMissing False templ
+  createDirectoryIfMissing False tempr
   let fname = name p 
             ++ "_" 
             ++ (takeBaseName $ takeFileName f) 
             ++ ".txt"
-  writeOutput (templ ++ "/" ++ fname) (n,rs)
+  writeOutput (tempr ++ "/" ++ fname) (n,rs)
   -- * end debug block
 
   return (n,rs)
