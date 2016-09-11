@@ -100,7 +100,7 @@ writeDummyTo :: FilePath -> IO ()
 writeDummyTo f = do
     outdir   <- makeDirAtTop f
     let tf = outdir ++ "/dummyTest.txt"
-    writeOutput tf (404,[])
+    writeOutput tf (000,[("ping directory", "Ping Directory", 000)])
 
 writeOutput :: FilePath -> Output -> IO ()
 writeOutput f (n, rs) = do

@@ -30,9 +30,9 @@ import Data.Text (Text, unpack, pack)
 import Data.Attoparsec.Text hiding (count)
 
 
+import Lib
 import Core
 import Query
-import PatternCompiler
 
 {-----------------------------------------------------------------------------
   Score 
@@ -81,7 +81,7 @@ sumCount ps = do
 countp :: Parser Text -> ReaderT Config IO Output
 countp phrase = do
   con     <- ask
-  (n, ts) <- phrase `query'` (ngrams con)
+  (n, ts) <- phrase `query` (ngrams con)
   return (n,ts)
 
 -- * `count` occurences of some word `w` 
@@ -90,7 +90,7 @@ count :: String -> ReaderT Config IO Output
 count w = do
   let word = compile' w 
   con     <- ask
-  (n, ts) <- word `query'` [onegram con]
+  (n, ts) <- word `query` [onegram con]
   return (n,ts)
 
 

@@ -15,9 +15,9 @@ module MainSubroutines where
 import qualified System.IO as S
 import Control.Monad.Trans.Reader
 
-import Core
-import Score
-import PatternCompiler
+import Lib
+import Src
+
 
 {-----------------------------------------------------------------------------
   Subroutines
@@ -26,14 +26,14 @@ import PatternCompiler
 -- * create output directory, run `p1` and save results
 main_p1 :: Config -> IO ()
 main_p1 con = do
-  outdir   <- makeDirAtTop "output"
+  outdir   <- makeDirAtTop "outputs"
   (n, rrs) <- runReaderT p1 con
   let f = outdir ++ "/p-weak-strong.txt"
   writeOutput f (n,rrs)
 
 main_p2 :: Config -> IO ()
 main_p2 con = do
-  outdir   <- makeDirAtTop "output"
+  outdir   <- makeDirAtTop "outputs"
   (n, rrs) <- runReaderT p2 con
   let f = outdir ++ "/p-strong-weak.txt"
   writeOutput f (n, rrs)
@@ -41,7 +41,7 @@ main_p2 con = do
 main_test :: Config -> IO ()
 main_test con = do
 
-  writeDummyTo "output"
+  writeDummyTo "outputs"
 
   let p    = compile "* (,) but not *" (S "good") (S "great")
   (n, rrs) <- runReaderT (countp p) con

@@ -13,7 +13,7 @@
 module Query (
     query
   , query'
-  , queryOld
+  , query''
   , pattern
   ) where
 
@@ -31,10 +31,8 @@ import Data.Attoparsec.Text hiding (count)
 import Conduit              (mapC, scanlC, foldlC, filterC)
 import qualified Data.List.Split as S
 
+import Lib
 import Core
-import Conduits
-import Preprocess
-import PatternCompiler
 
 
 {-----------------------------------------------------------------------------
@@ -56,14 +54,14 @@ pattern get = do
 
 -- * `query` for occurences of utterance to be parsed by parser `p` 
 -- * in all files found at paths `fs`
-query' :: (Op m , Fractional a)
+query :: (Op m , Fractional a)
       => Parser Text -> [FilePath] ->  m Output
-query' p fs  = eval $ openTxtFiles' fs $$ queryFile' p
+query p fs  = eval $ openTxtFiles fs $$ queryFile p
 
 -- * open all ".txt" files found at directories `fs` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
-openTxtFiles' :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
-openTxtFiles' fs =  fs `sourceDirectories` ".txt"
+openTxtFiles :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
+openTxtFiles fs =  fs `sourceDirectories` ".txt"
              =$= openFile
              =$= linesOn "\t"
              =$= filterC (\x     -> Prelude.length x == 2)
@@ -73,10 +71,10 @@ openTxtFiles' fs =  fs `sourceDirectories` ".txt"
 
 -- * search for pattern parsed by parser `p` and 
 -- * sum all of its occurences
-queryFile' :: FileOpS m [QueryResult]
+queryFile :: FileOpS m [QueryResult]
            => Parser Text 
            -> Consumer QueryResult m Integer
-queryFile' p =  filterC (\(xs,_,_) -> case p <** xs of
+queryFile p =  filterC (\(xs,_,_) -> case p <** xs of
                         Left _ -> False
                         _      -> True)
             =$= awaitForever (\t -> do
@@ -88,24 +86,24 @@ queryFile' p =  filterC (\(xs,_,_) -> case p <** xs of
             =$= foldlC  (\m (_,_,n) -> m + n) 0
 
 {-----------------------------------------------------------------------------
-  Query using non-list-streaming solution
+  Query using naive non-list-streaming solution
 ------------------------------------------------------------------------------}
 
 -- * given *directory paths* `ds`, and parser `p`
 -- * `queryAll` occurences of strings recognized by `p`
 -- * and sum results
-query :: MonadTrans t 
+query' :: MonadTrans t 
       => Parser Text 
       -> [DirectoryPath] 
       -> t IO Output
-query p ds = lift $ do
-  ts <- openTxtFiles ds
-  return $ p `queryFile` ts
+query' p ds = lift $ do
+  ts <- openTxtFiles' ds
+  return $ queryFile' p ts
 
 -- * given directory paths `ds`
 -- * open all text files and concat results
-openTxtFiles :: [DirectoryPath] -> IO Text
-openTxtFiles ds = do
+openTxtFiles' :: [DirectoryPath] -> IO Text
+openTxtFiles' ds = do
   fs   <- sourceDirs ".txt" ds
   file <- sequence $ readFile <$> fs
   return . pack . concat $ file
@@ -113,8 +111,8 @@ openTxtFiles ds = do
 
 -- * Given text file `f`, query for occurences of 
 -- * string recognized by `p`
-queryFile :: Parser Text -> Text -> Output
-queryFile p ts = (n, rs)
+queryFile' :: Parser Text -> Text -> Output
+queryFile' p ts = (n, rs)
   where
     ys   = splitOn (pack "\n") ts
     yys  = splitOn (pack "\t") <$> ys
@@ -133,31 +131,31 @@ matchLoop p = filter (match p) where
 
 
 {-----------------------------------------------------------------------------
-  Query using non-list-streaming solution
-  TODO: factor out the pure from the IO stuff
+  Query using naive non-list-streaming solution
+  and save result of each query in directory `temp`
 ------------------------------------------------------------------------------}
 
 -- * given *directory paths* `ds`, and parser `p`
 -- * `queryAll` occurences of strings recognized by `p`
 -- * and sum results
-queryOld :: MonadTrans m => Parser Text -> [FilePath] -> m IO Output
-queryOld p ds = lift $ sourceDirs ".txt" ds >>= queryFilesOld p
+query'' :: MonadTrans m => Parser Text -> [FilePath] -> m IO Output
+query'' p ds = lift $ sourceDirs ".txt" ds >>= queryFiles'' p
 
 
 -- * Given path to ".txt" files `fs` and parser `p`,
 -- * `queryFile` each ".txt" file and sum the results of
 -- * the queries
-queryFilesOld :: Parser Text -> [FilePath] -> IO Output
-queryFilesOld p fs = do
-  let os = queryFileOld p <$> fs
+queryFiles'' :: Parser Text -> [FilePath] -> IO Output
+queryFiles'' p fs = do
+  let os = queryFile'' p <$> fs
   rrs    <- sequence os
   let rs = foldr (\(n,q) (m,qs) -> (n+m,q++qs)) (0,[]) rrs
   return rs
 
 -- * given parser `p`, query the ".txt" file `f`
 -- * for occurences of string recognized by `p`
-queryFileOld :: Parser Text -> FilePath -> IO Output
-queryFileOld p f = do
+queryFile'' :: Parser Text -> FilePath -> IO Output
+queryFile'' p f = do
   ys       <- S.splitOn "\n" <$> readFile f
   let yys  =  S.splitOn "\t" <$> ys
   let yys' = filter (\ys -> length ys == 2) yys
@@ -172,17 +170,16 @@ queryFileOld p f = do
 
   let n    = foldr (\(_,_,n) m -> m + n) 0 rs
 
-  --  * save output of each query for debugging purposes
-  createDirectoryIfMissing False tempr
+  --  * save output of each query for monitoring purposes
+  temp <- makeDirAtTop "temp"
   let fname = name p 
             ++ "_" 
             ++ (takeBaseName $ takeFileName f) 
             ++ ".txt"
-  writeOutput (tempr ++ "/" ++ fname) (n,rs)
-  -- * end debug block
+  writeOutput (temp ++ "/" ++ fname) (n,rs)
+  -- * end monitor
 
   return (n,rs)
-
 
 
 -- * check if text `t` is recognized by `p`
@@ -192,9 +189,6 @@ matchP p (t,_,_) = case p <** t of
   _       -> False
 
 
--- TODO: remove these hard coded directory paths
-templ = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/temp"
-tempr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/temp"
 
 
 

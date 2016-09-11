@@ -21,11 +21,9 @@ import Data.List.Split
 
 import Data.Text (Text, pack, unpack)
 
-import Core
-import Score
+
+import Src
 import MainSubroutines
-import PatternCompiler
-import Utils
 
 
 {-----------------------------------------------------------------------------

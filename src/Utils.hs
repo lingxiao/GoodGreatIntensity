@@ -21,12 +21,12 @@ module Utils (
 import System.Directory
 import System.FilePath.Posix
 import qualified System.IO as S
-
 import Data.Conduit 
-import Core
-import Conduits
-
 import Data.List.Split
+
+import Core
+import Lib
+
 
 
 {-----------------------------------------------------------------------------
