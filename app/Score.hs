@@ -94,5 +94,4 @@ count w = do
   return (n,ts)
 
 
-"hello world"
 
