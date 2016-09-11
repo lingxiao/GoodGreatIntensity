@@ -50,10 +50,10 @@ runFrom con = do
 
 
 local :: Config
-local = Con f1 [f5] fsw fws
+local = Con f1 [f4] fsw fws
 
 remote :: Config
-remote = Con f1r [f4r] fswr fwsr
+remote = Con f1r [fnr] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
