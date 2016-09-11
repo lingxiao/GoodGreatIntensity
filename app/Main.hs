@@ -42,12 +42,8 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-    main_test con
-
-  --let path:_ = ngrams con
-  --cutFiles 10000 path
-  --return ()
-
+    --main_test con
+    main_shard 10000 con
 
 
 local :: Config

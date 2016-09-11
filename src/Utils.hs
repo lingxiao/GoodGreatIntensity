@@ -11,8 +11,8 @@
 ---------------------------------------------------------------------------------------------------
 
 module Utils (
-      untar
-    , shard
+      untarFiles
+    , shardFiles
     , concatFiles
     , cutFiles
     ) where
@@ -36,8 +36,8 @@ import Lib
 -- * @Use: run $ untar "/path/to/file" ".gz" ".txt"
 -- * Untar all files with extension `e1` found at directory `p`
 -- * and save them in the same directory with extension `e2` 
-untar :: Op m => DirectoryPath -> String -> String -> m ()
-untar p e1 e2 = run
+untarFiles :: Op m => DirectoryPath -> String -> String -> m ()
+untarFiles p e1 e2 = run
                 $  [p] `sourceDirectories` e1
                 $$  untarSaveAs e2
                 =$= cap
@@ -46,13 +46,13 @@ untar p e1 e2 = run
 -- * Shard all files with `ext` found at directory `p`
 -- * into chunks of n lines each
 -- * and save in output directory `o`
-shard :: Op m
+shardFiles :: Op m
          => String 
          -> Int
          -> DirectoryPath 
          -> DirectoryPath 
          -> m ()
-shard ext n p o = run
+shardFiles ext n p o = run
                 $   [p] `sourceDirectories` ext
                 $$  shardFile ext o n
                 -- =$= logm "Sharded all files!"

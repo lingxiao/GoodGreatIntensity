@@ -12,6 +12,7 @@
  
 module Subroutines where
 
+import System.Directory
 import qualified System.IO as S
 import Control.Monad.Trans.Reader
 
@@ -47,6 +48,15 @@ main_test con = do
   outdir   <- makeDirAtTop "outputs"
   let f    = outdir ++ "/" ++ name p
   writeOutput f (n,rrs)
+
+main_shard :: Int -> Config -> IO ()
+main_shard n con = do
+  let p:_ = ngrams con
+  let o   = p ++ "_shard"
+  createDirectoryIfMissing False o
+  shardFiles ".txt" n p o
+
+
 
 
 
