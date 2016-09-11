@@ -23,7 +23,7 @@ set -x
 
 
 # make sure I set my $CWD (current working directory)
-cd $HOME/xiao/GoodGreatIntensity/scripts
+cd $HOME/xiao/GoodGreatIntensity/shell
 
 # This will move the large file load-in to fast local 
 # disk, to see if the problem is due to using the 
