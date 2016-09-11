@@ -8,11 +8,11 @@ set -x
 
 # wallclock time reservation (format is hours:minutes:seconds).
 # man 5 complex
-#$ -l h_rt=1:10:0
+#$ -l h_rt=2:10:0
 
-# request 1 gigabyte of RAM 
+# request x gigabyte of RAM 
 # man 5 complex
-#$ -l mem=80G
+#$ -l mem=100G
 
 # name of job
 # man 1 qsub

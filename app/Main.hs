@@ -43,7 +43,6 @@ main = do
 runFrom :: Config -> IO ()
 runFrom con = do
     main_test con
-    --main_shard 10000 con
 
 
 local :: Config
@@ -55,7 +54,6 @@ remote = Con r1gms [r4gms_shard] fswr fwsr
 
 {-----------------------------------------------------------------------------
   Local Paths    
-
 ------------------------------------------------------------------------------}
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
