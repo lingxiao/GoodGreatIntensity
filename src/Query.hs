@@ -58,6 +58,8 @@ query :: (Op m , Fractional a)
       => Parser Text -> [FilePath] ->  m Output
 query p fs  = eval $ openTxtFiles fs $$ queryFile p
 
+
+-- * TODO: test this ... why did i write "\t"??
 -- * open all ".txt" files found at directories `fs` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
 openTxtFiles :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
@@ -116,7 +118,7 @@ queryFile' p ts = (n, rs)
   where
     ys   = splitOn (pack "\n") ts
     yys  = splitOn (pack "\t") <$> ys
-    yys' = filter (\ys -> length ys == 2) yys
+    yys' = filter  (\ys -> length ys == 2) yys
     xs   = (\[y,n] -> (preprocess y, y, read . unpack $ n)) <$> yys'
     rs   = p `matchLoop` xs
     n    = foldr (\(_,_,n) m -> n + m) 0 rs
@@ -124,10 +126,7 @@ queryFile' p ts = (n, rs)
 -- * loop through all files and check if text `t` is 
 -- * recognzied by parser `p`, if so then put into stack  
 matchLoop :: Parser Text -> [QueryResult] -> [QueryResult]
-matchLoop p = filter (match p) where
-    match p (t,_,_) = case p <** t of
-        Right _ -> True
-        _       -> False
+matchLoop p = filter (matchP p)
 
 
 {-----------------------------------------------------------------------------
