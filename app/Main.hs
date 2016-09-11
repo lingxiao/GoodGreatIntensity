@@ -53,7 +53,7 @@ local :: Config
 local = Con f1 [f4] fsw fws
 
 remote :: Config
-remote = Con f1r [f4sr] fswr fwsr
+remote = Con r1gms [r4gms_small] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
@@ -84,14 +84,14 @@ fws = projl ++ "inputs/weak-strong-patterns.txt"
 projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
 datar = "/nlp/data/xiao/ngrams/"
 
-f1r, f4r, f4sr, f5r, fdr, fnr :: DirectoryPath
-f1r  = datar ++ "1gms"
-f4r  = datar ++ "4gms"
-f4sr = datar ++ "4gms_small"
-f4cr = datar ++ "4gms_copy"
-f5r  = datar ++ "5gms"
-fdr  = datar ++ "dummydata"
-fnr  = datar ++ "ngrams"
+
+r1gms       = datar ++ "1gms"
+r4gms       = datar ++ "4gms"
+r4gms_small = datar ++ "4gms_small"
+r4gms_copy  = datar ++ "4gms_copy"
+r5gms       = datar ++ "5gms"
+rdummydata  = datar ++ "dummydata"
+rngrams     = datar ++ "ngrams"
 
 -- * remote pattern path
 fswr, fwsr :: FilePath
