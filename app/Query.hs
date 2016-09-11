@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
--- | Module  : Exposes two solutions to query ngrams on disk
+-- | Module  : Exposes three solutions to query ngrams on disk
 -- | Author  : Xiao Ling
 -- | Date    : 9/10/2016
 -- |             
