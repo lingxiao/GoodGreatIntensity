@@ -26,10 +26,10 @@ import Control.Monad.State
 import Control.Monad.Trans.Reader
 
 import Data.Conduit 
-import Data.Text            (Text, unpack, pack, splitOn)
 import Data.Attoparsec.Text hiding (count)
+import Data.Text            (Text, unpack, pack, splitOn)
 import Conduit              (mapC, scanlC, foldlC, filterC)
-import qualified Data.List.Split as S
+import qualified Data.List.Split as L
 
 import Lib
 import Core
@@ -59,7 +59,6 @@ query :: (Op m , Fractional a)
 query p fs  = eval $ openTxtFiles fs $$ queryFile p
 
 
--- * TODO: test this ... why did i write "\t"??
 -- * open all ".txt" files found at directories `fs` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
 openTxtFiles :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
@@ -155,8 +154,8 @@ queryFiles'' p fs = do
 -- * for occurences of string recognized by `p`
 queryFile'' :: Parser Text -> FilePath -> IO Output
 queryFile'' p f = do
-  ys       <- S.splitOn "\n" <$> readFile f
-  let yys  =  S.splitOn "\t" <$> ys
+  ys       <- L.splitOn "\n" <$> readFile f
+  let yys  =  L.splitOn "\t" <$> ys
   let yys' = filter (\ys -> length ys == 2) yys
 
   let xs   = (\[y,n] -> ( preprocess . pack $ y
