@@ -192,7 +192,7 @@ matchP p (t,_,_) = case p <** t of
   _       -> False
 
 
-
+-- TODO: remove these hard coded directory paths
 templ = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/temp"
 tempr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/temp"
 
