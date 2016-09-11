@@ -41,8 +41,6 @@ main_p2 con = do
 main_test :: Config -> IO ()
 main_test con = do
 
-  writeDummyTo "outputs"
-
   let p    = compile "* (,) but not *" (S "good") (S "great")
   (n, rrs) <- runReaderT (countp p) con
 
