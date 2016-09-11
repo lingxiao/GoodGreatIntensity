@@ -96,7 +96,7 @@ makeDirAtTop f = do
 -- * given new folder name `f`, 
 -- * create folder at $HOME/Project and 
 -- * save a dummy file for test purposes
-writeDummyTo :: FilePath -> IO ()      
+writeDummyTo :: DirectoryPath -> IO ()      
 writeDummyTo f = do
     outdir   <- makeDirAtTop f
     let tf = outdir ++ "/dummyTest.txt"
