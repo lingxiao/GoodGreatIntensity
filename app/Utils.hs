@@ -101,6 +101,7 @@ cutFile d f = do
 
     let ys   = splitOn "\n" xs
     --let ys'  = takeN (length ys) ys
+    let ys' = ys
     let name = (takeBaseName . takeFileName $ f) ++ ".txt"
     let out  = d ++ "/" ++ name
 
