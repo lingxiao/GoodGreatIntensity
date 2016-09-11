@@ -13,6 +13,7 @@
 module Query (
     query
   , query'
+  , queryOld
   , pattern
   ) where
 
@@ -28,6 +29,7 @@ import Data.Conduit
 import Data.Text            (Text, unpack, pack, splitOn)
 import Data.Attoparsec.Text hiding (count)
 import Conduit              (mapC, scanlC, foldlC, filterC)
+import qualified Data.List.Split as S
 
 import Core
 import Conduits
@@ -128,4 +130,71 @@ matchLoop p = filter (match p) where
     match p (t,_,_) = case p <** t of
         Right _ -> True
         _       -> False
+
+
+{-----------------------------------------------------------------------------
+  Query using non-list-streaming solution
+  TODO: factor out the pure from the IO stuff
+------------------------------------------------------------------------------}
+
+-- * given *directory paths* `ds`, and parser `p`
+-- * `queryAll` occurences of strings recognized by `p`
+-- * and sum results
+queryOld :: MonadTrans m => Parser Text -> [FilePath] -> m IO Output
+queryOld p ds = lift $ sourceDirs ".txt" ds >>= queryFilesOld p
+
+
+-- * Given path to ".txt" files `fs` and parser `p`,
+-- * `queryFile` each ".txt" file and sum the results of
+-- * the queries
+queryFilesOld :: Parser Text -> [FilePath] -> IO Output
+queryFilesOld p fs = do
+  let os = queryFileOld p <$> fs
+  rrs    <- sequence os
+  let rs = foldr (\(n,q) (m,qs) -> (n+m,q++qs)) (0,[]) rrs
+  return rs
+
+-- * given parser `p`, query the ".txt" file `f`
+-- * for occurences of string recognized by `p`
+queryFileOld :: Parser Text -> FilePath -> IO Output
+queryFileOld p f = do
+  ys       <- S.splitOn "\n" <$> readFile f
+  let yys  =  S.splitOn "\t" <$> ys
+  let yys' = filter (\ys -> length ys == 2) yys
+
+  let xs   = (\[y,n] -> ( preprocess . pack $ y
+                        , pack y
+                        , read n)) 
+          <$> yys'
+
+
+  let rs   = filter (matchP p) xs
+
+  let n    = foldr (\(_,_,n) m -> m + n) 0 rs
+
+  --  * save output of each query for debugging purposes
+  createDirectoryIfMissing False templ
+  let fname = name p 
+            ++ "_" 
+            ++ (takeBaseName $ takeFileName f) 
+            ++ ".txt"
+  writeOutput (templ ++ "/" ++ fname) (n,rs)
+  -- * end debug block
+
+  return (n,rs)
+
+
+
+-- * check if text `t` is recognized by `p`
+matchP :: Parser Text -> QueryResult -> Bool
+matchP p (t,_,_) = case p <** t of
+  Right _ -> True
+  _       -> False
+
+
+
+templ = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/temp"
+tempr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/temp"
+
+
 
