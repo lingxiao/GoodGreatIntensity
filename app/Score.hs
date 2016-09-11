@@ -31,7 +31,7 @@ import Data.Attoparsec.Text hiding (count)
 
 
 import Core
-import System
+import Query
 import PatternCompiler
 
 {-----------------------------------------------------------------------------

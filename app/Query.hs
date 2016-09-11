@@ -10,10 +10,10 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module System (
-      query
-    --, query'
-    , pattern
+module Query (
+    query
+  , query'
+  , pattern
   ) where
 
 
@@ -25,8 +25,7 @@ import Control.Monad.State
 import Control.Monad.Trans.Reader
 
 import Data.Conduit 
-import Data.List.Split      (splitOn)
-import Data.Text            (Text, unpack, pack)
+import Data.Text            (Text, unpack, pack, splitOn)
 import Data.Attoparsec.Text hiding (count)
 import Conduit              (mapC, scanlC, foldlC, filterC)
 
@@ -50,74 +49,46 @@ pattern get = do
 
 {-----------------------------------------------------------------------------
   Query using non-list-streaming solution
-  TODO: factor out the pure from the IO stuff
 ------------------------------------------------------------------------------}
 
 -- * given *directory paths* `ds`, and parser `p`
 -- * `queryAll` occurences of strings recognized by `p`
 -- * and sum results
-query :: MonadTrans m => Parser Text -> [FilePath] -> m IO Output
-query p ds = lift $ sourceDirs ".txt" ds >>= queryFiles p
+query :: MonadTrans t 
+      => Parser Text 
+      -> [DirectoryPath] 
+      -> t IO Output
+query p ds = lift $ do
+  ts <- openTxtFiles ds
+  return $ p `queryFile` ts
 
+-- * given directory paths `ds`
+-- * open all text files and concat results
+openTxtFiles :: [DirectoryPath] -> IO Text
+openTxtFiles ds = do
+  fs   <- sourceDirs ".txt" ds
+  file <- sequence $ readFile <$> fs
+  return . pack . concat $ file
 
--- * Given path to ".txt" files `fs` and parser `p`,
--- * `queryFile` each ".txt" file and sum the results of
--- * the queries
-queryFiles :: Parser Text -> [FilePath] -> IO Output
-queryFiles p fs = do
-  let os = queryFile p <$> fs
-  rrs    <- sequence os
-  let rs = foldr (\(n,q) (m,qs) -> (n+m,q++qs)) (0,[]) rrs
-  return rs
+-- * Given text file `f`, query for occurences of 
+-- * string recognized by `p`
+queryFile :: Parser Text -> Text -> Output
+queryFile p ts = (n, rs)
+  where
+    ys   = splitOn (pack "\n") ts
+    yys  = splitOn (pack "\t") <$> ys
+    yys' = filter (\ys -> length ys == 2) yys
+    xs   = (\[y,n] -> (preprocess y, y, read . unpack $ n)) <$> yys'
+    rs   = p `matchLoop` xs
+    n    = foldr (\(_,_,n) m -> n + m) 0 rs
 
--- * given parser `p`, query the ".txt" file `f`
--- * for occurences of string recognized by `p`
-queryFile :: Parser Text -> FilePath -> IO Output
-queryFile p f = do
-  ys       <- splitOn "\n"     <$> readFile f
-  let yys  = splitOn "\t" <$> ys
-  let yys' = filter (\ys -> length ys == 2) yys
-
-  let xs   = (\[y,n] -> ( preprocess . pack $ y
-                        , pack y
-                        , read n)) 
-          <$> yys'
-
-
-  let rs   = filter (matchP p) xs
-
-  let n    = foldr (\(_,_,n) m -> m + n) 0 rs
-
-  --  * save output of each query for debugging purposes
-  let fname = name p 
-            ++ "_" 
-            ++ (takeBaseName $ takeFileName f) 
-            ++ ".txt"
-  writeOutput (projl ++ "/" ++ fname) (n,rs)
-  -- * end debug block
-
-  return (n,rs)
-
-
-
--- * check if text `t` is recognized by `p`
-matchP :: Parser Text -> QueryResult -> Bool
-matchP p (t,_,_) = case p <** t of
-  Right _ -> True
-  _       -> False
-
-
-
-projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
-projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
-
-p :: Parser Text
-p     = compile "* (,) but not *" (S "good") (S "great")
-
-fd, f :: FilePath
-fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/"
-f4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
-f  = fd ++ "4gm-0044.txt"
+-- * loop through all files and check if text `t` is 
+-- * recognzied by parser `p`, if so then put into stack  
+matchLoop :: Parser Text -> [QueryResult] -> [QueryResult]
+matchLoop p = filter (match p) where
+    match p (t,_,_) = case p <** t of
+        Right _ -> True
+        _       -> False
 
 
 {-----------------------------------------------------------------------------
@@ -128,12 +99,12 @@ f  = fd ++ "4gm-0044.txt"
 -- * in all files found at paths `fs`
 query' :: (Op m , Fractional a)
       => Parser Text -> [FilePath] ->  m Output
-query' p fs  = eval $ openFiles' fs $$ queryFiles' p
+query' p fs  = eval $ openTxtFiles' fs $$ queryFile' p
 
--- * open all ".txt" files found at paths `fs` and stream them as lines
+-- * open all ".txt" files found at directories `fs` and stream them as lines
 -- * preprocess each line by casefolding and stripping of whitespace
-openFiles' :: FileOpS m s => [FilePath] -> Source m QueryResult
-openFiles' fs =  fs `sourceDirectories` ".txt"
+openTxtFiles' :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
+openTxtFiles' fs =  fs `sourceDirectories` ".txt"
              =$= openFile
              =$= linesOn "\t"
              =$= filterC (\x     -> Prelude.length x == 2)
@@ -143,10 +114,10 @@ openFiles' fs =  fs `sourceDirectories` ".txt"
 
 -- * search for pattern parsed by parser `p` and 
 -- * sum all of its occurences
-queryFiles' :: FileOpS m [QueryResult]
+queryFile' :: FileOpS m [QueryResult]
            => Parser Text 
            -> Consumer QueryResult m Integer
-queryFiles' p =  filterC (\(xs,_,_) -> case p <** xs of
+queryFile' p =  filterC (\(xs,_,_) -> case p <** xs of
                         Left _ -> False
                         _      -> True)
             =$= awaitForever (\t -> do
@@ -157,5 +128,38 @@ queryFiles' p =  filterC (\(xs,_,_) -> case p <** xs of
                 )
             =$= foldlC  (\m (_,_,n) -> m + n) 0
 
+
+
+{-----------------------------------------------------------------------------
+  Adhoc tests
+------------------------------------------------------------------------------}
+
+qs1, qs2, qs3 :: [QueryResult]
+qs1 = [(pack "ok", pack "", 0)]
+qs2 = [(pack "good but not great", pack "", 0)
+     ,(pack "good but not great", pack "", 0)
+     ] ++ qs1
+qs3 = qs1 ++ qs2
+qsi = qs1 ++ qsi
+qs4 = qs3 ++ qsi
+
+ts :: [QueryResult]
+ts = (\(t,t',n) -> (pack t, pack t', n)) 
+  <$> [("good but not great","Good but not great",7112)
+      ,("good but not great","Good but not Great",1540)
+      ,("good but not great","Good but Not Great",595)
+      ,("good but not great","Good but NOT Great",160)
+      ,("good but not great","Good But Not Great",690)]
+
+p :: Parser Text
+p     = compile "* (,) but not *" (S "good") (S "great")
+
+
+projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
+
+fd, f :: FilePath
+fd = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/dummydata/"
+f4 = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/4gms"
+f  = fd ++ "4gm-0044.txt"
 
 

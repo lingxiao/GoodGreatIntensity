@@ -10,7 +10,20 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Core where 
+module Core (
+
+    Output
+  , QueryResult
+  , DirectoryPath
+  , Config (..)
+
+  , sourceDirs
+  , sourceDir
+  , makeDirAtTop
+  , writeDummyTo
+  , writeOutput
+
+  ) where 
 
 import System.Directory
 import System.FilePath.Posix
@@ -29,9 +42,10 @@ import Data.Attoparsec.Text
 -- * Results from a single `Query` to ngram documents
 -- * the first field is preprocess text, second field is orginal text
 -- * the third field is number of results
-type QueryResult = (Text,Text,Integer)
-type Output      = (Integer, [QueryResult])
+type QueryResult  = (Text,Text,Integer)
+type Output       = (Integer, [QueryResult])
 
+type DirectoryPath = FilePath
 
 {-----------------------------------------------------------------------------
     Filepath configuration
@@ -45,7 +59,28 @@ data Config = Con {
 } deriving (Show, Eq)
 
 {-----------------------------------------------------------------------------
-  Write
+  Read from Disk
+------------------------------------------------------------------------------}
+
+-- * Given directory paths `ds` and file extension `ext`
+-- * list all files in directories with this extension
+sourceDirs :: String -> [FilePath] -> IO [FilePath]
+sourceDirs ext ds = do
+  dds <- sequence $  sourceDir ext <$> ds
+  return $ concat dds
+
+
+-- * Given directory path `d` and file extension `ext`
+-- * list all files in directory with this extension
+sourceDir :: String -> FilePath -> IO [FilePath]
+sourceDir ext d = do
+  fs      <- getDirectoryContents d
+  let fs' = filter (\f -> takeExtension f == ext) fs
+  return $ (\f -> d ++ "/" ++ f) <$> fs'
+
+
+{-----------------------------------------------------------------------------
+  Write to Disk
 ------------------------------------------------------------------------------}
 
 -- * create directory `f` at top of project folder

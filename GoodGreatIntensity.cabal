@@ -48,6 +48,7 @@ executable GoodGreatIntensity-exe
 
   other-modules  :     Core
                      , Score
+                     , Query
                      , System
                      , MainSubroutines
                      , Untar
