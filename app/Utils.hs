@@ -101,7 +101,7 @@ cutFile d f = do
 
     let ys   = splitOn "\n" xs
     let ys'  = takeN (length ys) ys
-    let name = (takeFileName . takeFileName $ f) ++ "_small.txt"
+    let name = (takeBaseName . takeFileName $ f) ++ ".txt"
     let out  = d ++ "/" ++ name
 
     h  <- S.openFile out S.WriteMode
