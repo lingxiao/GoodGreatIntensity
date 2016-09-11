@@ -42,15 +42,15 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-    --main_test con
-    main_shard 10000 con
+    main_test con
+    --main_shard 10000 con
 
 
 local :: Config
 local = Con f1 [f4] fsw fws
 
 remote :: Config
-remote = Con r1gms [r4gms_small] fswr fwsr
+remote = Con r1gms [r4gms_shard] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ datar = "/nlp/data/xiao/ngrams/"
 r1gms       = datar ++ "1gms"
 r4gms       = datar ++ "4gms"
 r4gms_small = datar ++ "4gms_small"
-r4gms_copy  = datar ++ "4gms_copy"
+r4gms_shard = datar ++ "4gms_shard"
 r5gms       = datar ++ "5gms"
 rdummydata  = datar ++ "dummydata"
 rngrams     = datar ++ "ngrams"

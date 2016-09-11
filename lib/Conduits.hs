@@ -152,7 +152,7 @@ shardFile ext out size = awaitForever $ \p -> do
 
     liftIO $ foldM 
            (\n t -> do
-                let name' = name ++ show n ++ ext
+                let name' = name ++ "-" ++ show n ++ ext
                 let path  = out  ++ "/" ++ name'
 
                 --banner 
