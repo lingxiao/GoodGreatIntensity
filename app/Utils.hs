@@ -16,7 +16,7 @@ module Utils (
     ) where
 
 
-
+import System.Directory
 import System.FilePath.Posix
 import qualified System.IO as S
 
@@ -77,21 +77,43 @@ concatFiles d f = do
   S.hClose o
   return ()
 
-cutFile :: FilePath -> DirectoryPath -> IO ()
-cutFile f d = do
+{-----------------------------------------------------------------------------
+  downsize all files
+------------------------------------------------------------------------------}
+
+cutFiles :: DirectoryPath -> IO FilePath
+cutFiles d = do
+  let dir   = takeDirectory d
+  let name' = takeBaseName  d
+  let name  = name' ++ "_small"
+  let d'    = dir ++ "/" ++ name
+  createDirectoryIfMissing False d'
+
+  fs <- sourceDir ".txt" d
+  mapM (\f -> cutFile d' f) fs
+  return d'
+
+
+-- * open file found at `f`, truncate and save in directory `d`
+cutFile :: DirectoryPath -> FilePath -> IO [String]
+cutFile d f = do
     xs <- readFile f
-    let ys = splitOn "\n" xs
-    h  <- S.openFile f S.WriteMode
-    S.hPutStrLn h xs
+
+    let ys   = splitOn "\n" xs
+    let ys'  = takeN 100 ys
+    let name = (takeFileName . takeFileName $ f) ++ "_small.txt"
+    let out  = d ++ "/" ++ name
+
+    h  <- S.openFile out S.WriteMode
+    mapM (S.hPutStrLn h) ys'
     S.hClose h
-    return ()
 
+    return ys'
 
---cut :: Int -> [String] -> String
---cut n xs = 
-
-
-
+takeN :: Int -> [a] -> [a]
+takeN 0 _      = []
+takeN n (x:xs) = x : takeN (n-1) xs
+takeN _ _      = []
 
 
 datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
