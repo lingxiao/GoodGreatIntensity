@@ -12,6 +12,7 @@
  
 module MainSubroutines where
 
+import qualified System.IO as S
 import Control.Monad.Trans.Reader
 
 import Core
@@ -53,11 +54,17 @@ main_test con = do
   concat all files
 ------------------------------------------------------------------------------}
 
-concatFiles :: DirectoryPath -> IO ()
-concatFiles d = do
-  fs   <- sourceDirs ".txt" ds
+concatFiles :: DirectoryPath -> FilePath -> IO ()
+concatFiles d f = do
+  fs   <- sourceDirs ".txt" [d]
   file <- sequence $ readFile <$> fs
-  return ()  
+  let ts   = concat file
+  let path = f ++ "/" ++ "catGrams.txt"
+
+  o <- S.openFile path S.WriteMode
+  S.hPutStrLn o ts
+  S.hClose o
+  return ()
 
 
 
