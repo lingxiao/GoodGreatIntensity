@@ -55,7 +55,7 @@ local :: Config
 local = Con f1 [f5] fsw fws
 
 remote :: Config
-remote = Con f1r [f4cr] fswr fwsr
+remote = Con f1r [f4r] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
