@@ -42,6 +42,7 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
+
   let path:_ = ngrams con
   cutFiles 10000 path
   return ()
@@ -56,7 +57,7 @@ local :: Config
 local = Con f1 [f4] fsw fws
 
 remote :: Config
-remote = Con r1gms [r4gms_small] fswr fwsr
+remote = Con r1gms [r4gms] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
