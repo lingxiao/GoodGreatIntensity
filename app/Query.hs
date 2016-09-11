@@ -47,6 +47,44 @@ pattern get = do
   let ps' = lines ps
   return $ compile <$> ps'
 
+
+{-----------------------------------------------------------------------------
+  Query using list streaming solution build from Data.Conduit
+------------------------------------------------------------------------------}
+
+-- * `query` for occurences of utterance to be parsed by parser `p` 
+-- * in all files found at paths `fs`
+query' :: (Op m , Fractional a)
+      => Parser Text -> [FilePath] ->  m Output
+query' p fs  = eval $ openTxtFiles' fs $$ queryFile' p
+
+-- * open all ".txt" files found at directories `fs` and stream them as lines
+-- * preprocess each line by casefolding and stripping of whitespace
+openTxtFiles' :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
+openTxtFiles' fs =  fs `sourceDirectories` ".txt"
+             =$= openFile
+             =$= linesOn "\t"
+             =$= filterC (\x     -> Prelude.length x == 2)
+             =$= mapC    (\[xs,n] -> ( preprocess xs
+                                    , xs
+                                    , read . unpack $ n :: Integer))
+
+-- * search for pattern parsed by parser `p` and 
+-- * sum all of its occurences
+queryFile' :: FileOpS m [QueryResult]
+           => Parser Text 
+           -> Consumer QueryResult m Integer
+queryFile' p =  filterC (\(xs,_,_) -> case p <** xs of
+                        Left _ -> False
+                        _      -> True)
+            =$= awaitForever (\t -> do
+                    ts <- lift get
+                    let ts' = t:ts
+                    lift . put $ ts'
+                    yield t
+                )
+            =$= foldlC  (\m (_,_,n) -> m + n) 0
+
 {-----------------------------------------------------------------------------
   Query using non-list-streaming solution
 ------------------------------------------------------------------------------}
@@ -89,42 +127,4 @@ matchLoop p = filter (match p) where
     match p (t,_,_) = case p <** t of
         Right _ -> True
         _       -> False
-
-
-{-----------------------------------------------------------------------------
-  Query using list streaming solution build from Data.Conduit
-------------------------------------------------------------------------------}
-
--- * `query` for occurences of utterance to be parsed by parser `p` 
--- * in all files found at paths `fs`
-query' :: (Op m , Fractional a)
-      => Parser Text -> [FilePath] ->  m Output
-query' p fs  = eval $ openTxtFiles' fs $$ queryFile' p
-
--- * open all ".txt" files found at directories `fs` and stream them as lines
--- * preprocess each line by casefolding and stripping of whitespace
-openTxtFiles' :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
-openTxtFiles' fs =  fs `sourceDirectories` ".txt"
-             =$= openFile
-             =$= linesOn "\t"
-             =$= filterC (\x     -> Prelude.length x == 2)
-             =$= mapC    (\[xs,n] -> ( preprocess xs
-                                    , xs
-                                    , read . unpack $ n :: Integer))
-
--- * search for pattern parsed by parser `p` and 
--- * sum all of its occurences
-queryFile' :: FileOpS m [QueryResult]
-           => Parser Text 
-           -> Consumer QueryResult m Integer
-queryFile' p =  filterC (\(xs,_,_) -> case p <** xs of
-                        Left _ -> False
-                        _      -> True)
-            =$= awaitForever (\t -> do
-                    ts <- lift get
-                    let ts' = t:ts
-                    lift . put $ ts'
-                    yield t
-                )
-            =$= foldlC  (\m (_,_,n) -> m + n) 0
 

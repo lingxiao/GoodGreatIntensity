@@ -77,6 +77,10 @@ compile' xs = compile xs Nil Nil
     Tokenizer
 ------------------------------------------------------------------------------}
 
+-- * maps a string to some set of tokens
+tokenizer :: String -> [Token]
+tokenizer = fmap token . concat . fmap recoverComma . splitOn " "
+
 -- * `token`ize a string
 -- * note if `token` sees a string `xs` it does not recognize,
 -- * it just outputs a `Word xs`
@@ -91,11 +95,6 @@ token xs     = case splitOn "/" xs of
 
 catOr :: Token -> [String] -> Token
 catOr t = foldr (\x ts -> ts `Or` Word (stripParens x)) t
-
--- * maps a string to some set of tokens
-tokenizer :: String -> [Token]
-tokenizer = fmap token . concat . fmap recoverComma . splitOn " "
-
 
 {-----------------------------------------------------------------------------
     Compiler

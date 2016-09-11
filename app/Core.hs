@@ -105,24 +105,24 @@ writeDummyTo f = do
 writeOutput :: FilePath -> Output -> IO ()
 writeOutput f (n, rs) = do
   let name = takeFileName . dropExtension $ f
-  o    <- S.openFile f S.WriteMode
+  h    <- S.openFile f S.WriteMode
   time <- show <$> getCurrentTime
 
-  S.hPutStrLn o name
-  S.hPutStrLn o time
+  S.hPutStrLn h name
+  S.hPutStrLn h time
 
-  S.hPutStrLn o mark
-  S.hPutStrLn o $ "total: " ++ show n
-  S.hPutStrLn o mark
+  S.hPutStrLn h mark
+  S.hPutStrLn h $ "total: " ++ show n
+  S.hPutStrLn h mark
   
-  mapM (\(w,w',n) ->  S.hPutStrLn o 
+  mapM (\(w,w',n) ->  S.hPutStrLn h
                    $  unpack w 
                    ++ "     " 
                    ++ unpack w' 
                    ++ "     "
                    ++ show n) rs
 
-  S.hClose o
+  S.hClose h
   return ()
       where mark = foldr (++) mempty $ (const "-") <$> [1..50] 
 

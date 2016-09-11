@@ -50,21 +50,6 @@ main_test con = do
   let f    = outdir ++ "/" ++ name p
   writeOutput f (n,rrs)
 
-{-----------------------------------------------------------------------------
-  concat all files
-------------------------------------------------------------------------------}
-
-concatFiles :: DirectoryPath -> FilePath -> IO ()
-concatFiles d f = do
-  fs   <- sourceDirs ".txt" [d]
-  file <- sequence $ readFile <$> fs
-  let ts   = concat file
-  let path = f ++ "/" ++ "catGrams.txt"
-
-  o <- S.openFile path S.WriteMode
-  S.hPutStrLn o ts
-  S.hClose o
-  return ()
 
 
 
