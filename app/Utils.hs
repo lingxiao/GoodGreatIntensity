@@ -100,7 +100,7 @@ cutFile d f = do
     xs <- readFile f
 
     let ys   = splitOn "\n" xs
-    let ys'  = takeN 100 ys
+    let ys'  = takeN (length ys) ys
     let name = (takeFileName . takeFileName $ f) ++ "_small.txt"
     let out  = d ++ "/" ++ name
 
