@@ -135,13 +135,13 @@ untarSaveAs ext = awaitForever $ \p -> do
 
 
 -- * Shard all file with extension `ext` found at path `p` into 
--- * `size`ed pieces and save in output directory `o`
+-- * `size`ed pieces and save in output directory `out`
 shardFile :: FileOpS m s 
           => String 
           -> FilePath 
           -> Int 
           -> Conduit FilePath m ()
-shardFile ext o size = awaitForever $ \p -> do
+shardFile ext out size = awaitForever $ \p -> do
     
     let name = dropExtension . takeFileName $ p
     let dir  = takeExtension p
@@ -153,11 +153,10 @@ shardFile ext o size = awaitForever $ \p -> do
     liftIO $ foldM 
            (\n t -> do
                 let name' = name ++ show n ++ ext
-                let path  = o    ++ name'
+                let path  = out  ++ name'
 
-                banner 
-                print $ "saving file: " ++ path
-
+                --banner 
+                --print $ "saving file: " ++ path
                 writeFile path t
                 return $ n + 1
 

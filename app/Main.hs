@@ -57,7 +57,8 @@ remote = Con r1gms [r4gms_small] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
-  Local Paths
+  Local Paths    
+
 ------------------------------------------------------------------------------}
 
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"

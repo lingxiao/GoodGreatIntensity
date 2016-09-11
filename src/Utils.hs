@@ -12,7 +12,7 @@
 
 module Utils (
       untar
-    , shardAll
+    , shard
     , concatFiles
     , cutFiles
     ) where
@@ -36,19 +36,26 @@ import Lib
 -- * @Use: run $ untar "/path/to/file" ".gz" ".txt"
 -- * Untar all files with extension `e1` found at directory `p`
 -- * and save them in the same directory with extension `e2` 
-untar :: FileOpS m s => FilePath -> String -> String -> m ()
-untar p e1 e2 =  [p] `sourceDirectories` e1
+untar :: Op m => DirectoryPath -> String -> String -> m ()
+untar p e1 e2 = run
+                $  [p] `sourceDirectories` e1
                 $$  untarSaveAs e2
                 =$= cap
 
 
 -- * Shard all files with `ext` found at directory `p`
--- * into chunks of 100000 lines each
+-- * into chunks of n lines each
 -- * and save in output directory `o`
-shardAll :: FileOpS m s => String -> FilePath -> FilePath -> m ()
-shardAll ext p o =  [p] `sourceDirectories` ext
-                $$  shardFile ext o 100000
-                =$= logm "Sharded all files!"
+shard :: Op m
+         => String 
+         -> Int
+         -> DirectoryPath 
+         -> DirectoryPath 
+         -> m ()
+shard ext n p o = run
+                $   [p] `sourceDirectories` ext
+                $$  shardFile ext o n
+                -- =$= logm "Sharded all files!"
                 =$= cap                
 
 {-----------------------------------------------------------------------------
@@ -83,8 +90,8 @@ concatFiles d f = do
   downsize all files
 ------------------------------------------------------------------------------}
 
-cutFiles :: DirectoryPath -> IO FilePath
-cutFiles d = do
+cutFiles :: Int -> DirectoryPath -> IO FilePath
+cutFiles n d = do
   let dir   = takeDirectory d
   let name' = takeBaseName  d
   let name  = name' ++ "_copy"
@@ -92,17 +99,17 @@ cutFiles d = do
   createDirectoryIfMissing False d'
 
   fs <- sourceDir ".txt" d
-  mapM (\f -> cutFile d' f) fs
+  mapM (\f -> cutFile n d' f) fs
   return d'
 
 
 -- * open file found at `f`, truncate and save in directory `d`
-cutFile :: DirectoryPath -> FilePath -> IO [String]
-cutFile d f = do
+cutFile :: Int -> DirectoryPath -> FilePath -> IO [String]
+cutFile n d f = do
     xs <- readFile f
 
     let ys   = splitOn "\n" xs
-    --let ys'  = takeN (length ys) ys
+    let ys'  = takeN n ys
     let ys' = ys
     let name = (takeBaseName . takeFileName $ f) ++ ".txt"
     let out  = d ++ "/" ++ name
