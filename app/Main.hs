@@ -41,7 +41,7 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-    main_p1 con
+    main_test con
 
 
 
@@ -84,7 +84,6 @@ r1gms       = datar ++ "1gms"
 r4gms       = datar ++ "4gms"
 r5gms       = datar ++ "5gms"
 rdummydata  = datar ++ "dummydata"
-rngrams     = datar ++ "ngrams"
 
 -- * remote pattern path
 fswr, fwsr :: FilePath
