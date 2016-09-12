@@ -8,7 +8,7 @@ set -x
 
 # wallclock time reservation (format is hours:minutes:seconds).
 # man 5 complex
-#$ -l h_rt=2:10:0
+#$ -l h_rt=10:10:0
 
 # request x gigabyte of RAM 
 # man 5 complex
