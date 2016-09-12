@@ -58,7 +58,7 @@ remote = Con r1gms [r4gms_shard] fswr fwsr
 
 projl, datal :: DirectoryPath
 projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
-datal = "/Users/lingxiao/Documents/NLP/Code/Datasets/ngrams/"
+datal = "/Users/lingxiao/Documents/NLP/Datasets/ngrams/"
 
 -- * ngrams
 f1,f4,f5,fd :: DirectoryPath
