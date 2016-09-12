@@ -42,14 +42,15 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-    main_test con
+    --main_test con
+    main_shard 50000 con
 
 
 local :: Config
 local = Con f1 [fd] fsw fws
 
 remote :: Config
-remote = Con r1gms [r4gms_shard] fswr fwsr
+remote = Con r1gms [r4gms] fswr fwsr
 
 
 {-----------------------------------------------------------------------------
