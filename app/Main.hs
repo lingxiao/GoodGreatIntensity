@@ -18,7 +18,6 @@ import Data.List.Split
 
 
 
-
 import Data.Text (Text, pack, unpack)
 
 import Lib
@@ -42,8 +41,8 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-    --main_test con
-    main_shard 50000 con
+    main_p1 con
+
 
 
 local :: Config
