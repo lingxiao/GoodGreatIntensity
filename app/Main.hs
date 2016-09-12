@@ -82,8 +82,6 @@ datar = "/nlp/data/xiao/ngrams/"
 
 r1gms       = datar ++ "1gms"
 r4gms       = datar ++ "4gms"
-r4gms_small = datar ++ "4gms_small"
-r4gms_shard = datar ++ "4gms_shard"
 r5gms       = datar ++ "5gms"
 rdummydata  = datar ++ "dummydata"
 rngrams     = datar ++ "ngrams"
