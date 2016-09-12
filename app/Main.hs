@@ -41,7 +41,7 @@ main = do
 
 runFrom :: Config -> IO ()
 runFrom con = do
-    main_test con
+    main_p1 con
 
 
 
