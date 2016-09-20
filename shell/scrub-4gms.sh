@@ -25,24 +25,6 @@ set -x
 # make sure I set my $CWD (current working directory)
 cd $HOME/xiao/GoodGreatIntensity/shell
 
-# You must set the error and output locations, as the default log output
-# location is the directory you qsub'ed from. For instance, say I cd to
-# "/home/whaun/blargh" and qsub from there, not specifying "-e" or "-o." The
-# output location for the error and output logs is going to default to
-# "/home/whaun/blargh." To make it easier you may add -e and -o to your job
-# script so you do not have to specify them every qsub call. Ex.:
-#$ -o $PWD/logs
-#$ -e $PWD/logs
-
-
-
-# This will move the large file load-in to fast local 
-# disk, to see if the problem is due to using the 
-# remote shared storage.
-# (run the binary, but point it to the /scratch-local directory above)
-# mkdir -p /scratch-local/users/lingxiao
-# cp /nlp/data/xiao/ngrams/dummydata/4gm-0088.txt /scratch-local/users/lingxiao/4gm-0088.txt
-
 # when am I running
 #/bin/date
 
@@ -54,6 +36,5 @@ cd $HOME/xiao/GoodGreatIntensity/shell
 #echo $JOB_ID $SGE_STDOUT_PATH 
 
 # run my scripts
-$HOME/xiao/good-great-excellent/.stack-work/install/x86_64-linux/lts-6.11/7.10.3/bin/good-great-excellent-exe
+$HOME/xiao/GoodGreatIntensity/.stack-work/install/x86_64-linux/lts-6.11/7.10.3/bin/GoodGreatIntensity-exe
 
-# rm /scratch-local/users/lingxiao/4gm-0088.txt
