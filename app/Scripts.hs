@@ -42,7 +42,7 @@ import Lib
 
 main_normalize :: DirectoryPath -> String -> Int -> IO ()
 main_normalize root filename n = do
-  let outr = root     ++ "/scrub/"
+  let outr = root     ++ "scrub/"
   let idx  = (concat $ replicate (4 - (length . show $ n)) "0")  
           ++ show n
   let name = filename ++ "-" ++ idx ++ ".txt"
