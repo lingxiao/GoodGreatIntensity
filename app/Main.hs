@@ -25,7 +25,7 @@ import Scripts
 
 main :: IO ()
 main = do
-  (main_normalize l4gm "4gm") `mapM` [30..131]
+  (main_normalize r4gm "4gm") `mapM` [30..131]
   return ()
 
 
