@@ -1,4 +1,4 @@
-:% format:
+% format:
 % === antonym-headword-1, antonym-headword-1
 % ranked list of words from less intense to more intense on separate lines
 % words on the same lines (comma-separated) are of (near-)equal intensity

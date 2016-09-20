@@ -10,7 +10,7 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module ParsersTest where
+module ParserSimpleTest where
 
 import Test.HUnit
 import Data.Text hiding (foldr)
@@ -27,37 +27,39 @@ import Parsers
 main :: IO ()
 main = do
     runTestTT . TestList 
-              $ [ talgebra
+              $ [ tcombinators
                 , tspaces
                 , tspaces1
                 , tNotAlphaDigitSpace
                 , teow
+                , topt
                 , tword
                 , tanyWord
+                , topt
                 , tcomma
                 ]
     return ()
 
 
-
 right :: String -> Either String Text
 right = Right . pack
 
-name' :: Show a => Parser a -> Either String a
-name' = Left . name
+echo' :: Show a => Parser a -> Either String a
+echo' = Left . echo
 
 {-----------------------------------------------------------------------------
     Basic parsers
 ------------------------------------------------------------------------------}
 
-talgebra :: Test
-talgebra = let p    = word "hello"
+tcombinators :: Test
+tcombinators = let p    = word "hello"
         in let q    = word "world"
         in let r    = word "stuff"
         in let pq   = p <+> q
         in let pqr  = p <+> q <+> r
         in let pqr' = p <+> (q <+> r)
-        in "talgebra"
+        in let p_q  = p <||> q
+        in "combinators"
         ~: TestList [ (p <+> q) <** (pack "hello world") 
                       ~?= right "hello world"
               
@@ -76,12 +78,20 @@ talgebra = let p    = word "hello"
                     -- * identity w/ failed inputs
                     , pq <+> pzero <** (pack "foo bar")     
                     ~?= pq         <** (pack "foo bar")
+
+                    -- * parser or
+                    , p_q <** (pack "hello") ~?= right "hello"
+                    , p_q <** (pack "world") ~?= right "world"
+                    , p_q <** (pack "foooo") ~?= echo' p_q
+
                     ]
+
+
 
 tword :: Test
 tword =  let p   = word  "hello"
       in let o   = right "hello"
-      in let err = name' p 
+      in let err = echo' p 
       in "word"                    
       ~: TestList [ p <** (pack "hello"  ) ~?= o
                   , p <** (pack "hello!" ) ~?= o
@@ -101,9 +111,10 @@ tword =  let p   = word  "hello"
                   ]
 
 
+
 tanyWord :: Test
 tanyWord = let o   = right "hello" 
-        in let err = name' anyWord
+        in let err = echo' anyWord
         in "anyWord"
         ~: TestList [ anyWord <** (pack "hello"      ) ~?= o
                     , anyWord <** (pack "hello world") ~?= o
@@ -123,13 +134,27 @@ tanyWord = let o   = right "hello"
                     ]
 
 
+topt :: Test
+topt = let p   = opt . word $ "foo"
+          in "maybeWord"
+          ~: TestList [ p <** (pack "foo"         ) ~?= right "(foo)"
+                      , p <** (pack "foo word"    ) ~?= right "(foo)"
+                      , p <** (pack "  foo   word") ~?= right "(foo)"
+                      , p <** (pack " word"       ) ~?= right "(foo)"
+                      , p <** (pack "word"        ) ~?= right "(foo)"
+                      , p <** (pack "fooo"        ) ~?= right "(foo)"
+                      ]
+
+
+
 tcomma :: Test
-tcomma = let o = right "(,)"
+tcomma = let comma = opt . word $ ","
+       in let o = right "(,)"
        in "comma'" 
        ~: TestList [ comma <** (pack ","  ) ~?= o
                    , comma <** (pack "  ,") ~?= o
                    , comma <** (pack " ")   ~?= o
-                   , comma <** (pack "h"  ) ~?= name' comma
+                   , comma <** (pack "h"  ) ~?= o
                    ]
 
 
@@ -144,8 +169,8 @@ tspaces = "spaces"
 
 tspaces1 :: Test
 tspaces1 = "spaces1" 
-        ~: TestList [ spaces1<**  (pack ""   ) ~?= name' spaces1
-                    , spaces1<**  (pack "hel") ~?= name' spaces1
+        ~: TestList [ spaces1<**  (pack ""   ) ~?= echo' spaces1
+                    , spaces1<**  (pack "hel") ~?= echo' spaces1
                     , spaces1<**  (pack "   ") ~?= right " "
                     ]
 
@@ -153,7 +178,7 @@ tspaces1 = "spaces1"
 
 tNotAlphaDigitSpace :: Test
 tNotAlphaDigitSpace = 
-    let err = name' notAlphaDigitSpace
+    let err = echo' notAlphaDigitSpace
     in     "notAlphaDigitSpace"
      ~: TestList [ notAlphaDigitSpace <** (pack ".") ~?= Right '.'
                  , notAlphaDigitSpace <** (pack " ") ~?= err
@@ -168,9 +193,9 @@ teow = "eow"
                 , eow <** (pack ".. "  ) ~?= right ".."
                 , eow <** (pack ".. hi") ~?= right ".."
 
-                , eow <** (pack "..1"  ) ~?= name' eow
-                , eow <** (pack ".h" )   ~?= name' eow
-                , eow <** (pack "..h")   ~?= name' eow
+                , eow <** (pack "..1"  ) ~?= echo' eow
+                , eow <** (pack ".h" )   ~?= echo' eow
+                , eow <** (pack "..h")   ~?= echo' eow
     ]
 
 

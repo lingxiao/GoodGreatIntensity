@@ -5,30 +5,28 @@
 -- | 
 -- | Module  : All functions used to find score
 -- | Author  : Xiao Ling
--- | Date    : 8/17/2016
+-- | Date    : 9/14/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
 module Score (
-      count     -- * todo: this function is easily abused
-    , countp
-    , w1
-    , w2
-    , s1
-    , s2
-    , p1
-    , p2
+    sumCnt
+  , cnt
+
+  , w1
+  , s1
+  , w2
+  , s2
+
   ) where
 
-
-import Control.Monad.State  
 import Control.Monad.Trans.Reader
+import Control.Monad.IO.Class
 
-import Data.Conduit 
+import Data.Attoparsec.Text
+import Data.Attoparsec.Combinator
 import Data.Text (Text, unpack, pack)
-import Data.Attoparsec.Text hiding (count)
-
 
 import Lib
 import Core
@@ -40,13 +38,13 @@ import Query
 
 w1 :: String -> String -> ReaderT Config IO Output
 w1 a1 a2 = do
-  p_ws <- pattern weakStrong
-  sumCount $ (\p -> p (S a1) (S a2)) <$> p_ws
+  wss <- weakStrong <$> ask 
+  sumCnt $ (\ws -> compile ws (S a1) (S a2)) <$> wss
 
 s1 :: String -> String -> ReaderT Config IO Output
 s1 a1 a2 = do
-  p_sw <- pattern strongWeak
-  sumCount $ (\p -> p (S a1) (S a2)) <$> p_sw
+  sws <- strongWeak <$> ask 
+  sumCnt $ (\sw -> compile sw (S a1) (S a2)) <$> sws
 
 w2 :: String -> String -> ReaderT Config IO Output
 w2 = flip w1
@@ -55,14 +53,7 @@ s2 :: String -> String -> ReaderT Config IO Output
 s2 = flip s1
 
 p1 :: ReaderT Config IO Output
-p1 = do
-  p_ws <- pattern weakStrong
-  sumCount $ (\p -> p Star Star) <$> p_ws
-
-p2 :: ReaderT Config IO Output
-p2 = do
-  p_sw <- pattern strongWeak
-  sumCount $ (\p -> p Star Star) <$> p_sw
+p1 = undefined
 
 {-----------------------------------------------------------------------------
   Count
@@ -70,34 +61,20 @@ p2 = do
 
 -- * sum the results of multiple `count`s 
 -- * and sum their counts, list all results
-sumCount :: [Parser Text] -> ReaderT Config IO Output
-sumCount ps = do
-  rrs <- mapM countp ps
+sumCnt :: [Parser Text] -> ReaderT Config IO Output
+sumCnt ps = do
+  rrs <- mapM cnt ps
   let ns = fst <$> rrs
   let rs = snd <$> rrs
   return (sum ns, concat rs)
 
--- * `count` for occurences of some phrase among ngram files
-countp :: Parser Text -> ReaderT Config IO Output
-countp phrase = do
-  con     <- ask
-  (n, ts) <- phrase `query` (ngrams con)
-  return (n,ts)
-
--- * `count` occurences of some word `w` 
--- * in onegram file
-count :: String -> ReaderT Config IO Output
-count w = do
-  let word = compile' w 
-  con     <- ask
-  (n, ts) <- word `query` [onegram con]
-  return (n,ts)
+cnt :: Parser Text -> ReaderT Config IO Output
+cnt parser = do
+  dir <- corpus <$> ask
+  parser `query` dir
 
 
 
 
-
-
-
-
-
+  
+  

@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
--- | Module  : Misc scripts to operate on files
+-- | Module  : Misc scripts to operate on files, and others
 -- | Author  : Xiao Ling
 -- | Date    : 8/27/2016
 -- |             
@@ -11,29 +11,82 @@
 ---------------------------------------------------------------------------------------------------
 
 module Utils (
-      untarFiles
+
+      takeN
+    , sourceDirs
+    , makeDirUnder
+
+    , untarFiles
     , shardFiles
     , concatFiles
     , cutFiles
+
     ) where
 
 
 import System.Directory
 import System.FilePath.Posix
 import qualified System.IO as S
+
+
 import Data.Conduit 
-import Data.List.Split
+import Data.List.Split (splitOn)
 
-import Core
-import Lib
+import Conduits
 
+
+type DirectoryPath = FilePath
+
+{-----------------------------------------------------------------------------
+  Pure
+------------------------------------------------------------------------------}
+
+
+takeN :: Int -> [a] -> [a]
+takeN 0 _      = []
+takeN n (x:xs) = x : takeN (n-1) xs
+takeN _ _      = []
 
 
 {-----------------------------------------------------------------------------
-   Untar files
+  Read from Disk
 ------------------------------------------------------------------------------}
 
--- * @Use: run $ untar "/path/to/file" ".gz" ".txt"
+-- * Given directory paths `ds` and file extension `ext`
+-- * list all files in directories with this extension
+sourceDirs :: String -> [FilePath] -> IO [FilePath]
+sourceDirs ext ds = do
+  dds <- sequence $  sourceDir ext <$> ds
+  return $ concat dds
+
+
+-- * Given directory path `d` and file extension `ext`
+-- * list all files in directory with this extension
+sourceDir :: String -> FilePath -> IO [FilePath]
+sourceDir ext d = do
+  fs      <- getDirectoryContents d
+  let fs' = filter (\f -> takeExtension f == ext) fs
+  return $ (\f -> d ++ "/" ++ f) <$> fs'
+
+
+{-----------------------------------------------------------------------------
+  Write to Disk
+------------------------------------------------------------------------------}
+
+-- * create directory `f` under `project` folder named: `name`
+makeDirUnder :: String -> String -> IO FilePath
+makeDirUnder project name = do
+      xs <- getCurrentDirectory
+      let top:_   = splitOn project xs
+      let dir     = top ++ project ++ "/" ++ name ++ "/"
+      createDirectoryIfMissing False dir
+      return dir
+
+{-----------------------------------------------------------------------------
+   Modify files on Disk
+------------------------------------------------------------------------------}
+
+-- * @Use: untar "/path/to/file" ".gz" ".txt"
 -- * Untar all files with extension `e1` found at directory `p`
 -- * and save them in the same directory with extension `e2` 
 untarFiles :: Op m => DirectoryPath -> String -> String -> m ()
@@ -42,7 +95,7 @@ untarFiles p e1 e2 = run
                 $$  untarSaveAs e2
                 =$= cap
 
-
+-- * @Use: shardFiles ".txt" 50000 "/path/to/src" "/path/to/tgt"
 -- * Shard all files with `ext` found at directory `p`
 -- * into chunks of n lines each
 -- * and save in output directory `o`
@@ -55,41 +108,29 @@ shardFiles :: Op m
 shardFiles ext n p o = run
                 $   [p] `sourceDirectories` ext
                 $$  shardFile ext o n
-                -- =$= logm "Sharded all files!"
                 =$= cap                
 
-{-----------------------------------------------------------------------------
-   untar all files
-------------------------------------------------------------------------------}
 
---untarAll :: IO ()
---untarAll = do
---    run $ untar p1 ".gz" ".txt"
---    run $ untar p2 ".gz" ".txt"
---    run $ untar p3 ".gz" ".txt"
---    run $ untar p4 ".gz" ".txt"
---    run $ untar p5 ".gz" ".txt"
-
-{-----------------------------------------------------------------------------
-  concat all files
-------------------------------------------------------------------------------}
-
-concatFiles :: DirectoryPath -> FilePath -> IO ()
-concatFiles d f = do
+-- * @Use: conatFiles "/path/to/src" "/path/to/tgt"
+-- * Concat all .txt files found at directory `d`
+-- * and save at output path `o`
+concatFiles :: DirectoryPath -> DirectoryPath -> IO ()
+concatFiles d o = do
   fs   <- sourceDirs ".txt" [d]
   file <- sequence $ readFile <$> fs
   let ts   = concat file
-  let path = f ++ "/" ++ "catGrams.txt"
+  let path = o ++ "/" ++ "catGrams.txt"
 
   o <- S.openFile path S.WriteMode
   S.hPutStrLn o ts
   S.hClose o
   return ()
 
-{-----------------------------------------------------------------------------
-  downsize all files
-------------------------------------------------------------------------------}
 
+-- * @Use: cutFiles 100 "path/to/hugeFiles"
+-- * downsize all files found at directory `d` to size `n`
+-- * and save at newly created directory directory "d_small"
+-- * if `n` is larger than size of file, the original file is output
 cutFiles :: Int -> DirectoryPath -> IO FilePath
 cutFiles n d = do
   let dir   = takeDirectory d
@@ -104,7 +145,7 @@ cutFiles n d = do
 
 
 -- * open file found at `f`, truncate and save in directory `d`
-cutFile :: Int -> DirectoryPath -> FilePath -> IO [String]
+cutFile :: Int -> DirectoryPath -> DirectoryPath -> IO [String]
 cutFile n d f = do
     xs <- readFile f
 
@@ -118,36 +159,6 @@ cutFile n d f = do
     S.hClose h
 
     return ys'
-
-takeN :: Int -> [a] -> [a]
-takeN 0 _      = []
-takeN n (x:xs) = x : takeN (n-1) xs
-takeN _ _      = []
-
-
-projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
-datar = "/nlp/data/xiao/ngrams/"
-
-f1r, f4r, f4sr, f5r, fdr, fnr :: DirectoryPath
-f1r = datar ++ "1gms"
-f4r = datar ++ "4gms"
-f4sr = datar ++ "4gms_small"
-f5r = datar ++ "5gms"
-fdr = datar ++ "dummydata"
-fnr = datar ++ "ngrams"
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

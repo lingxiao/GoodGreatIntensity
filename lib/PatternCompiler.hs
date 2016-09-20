@@ -19,10 +19,10 @@ module PatternCompiler (
   , compile
   , compile'
   , token
-  , tokenizer
+  , tokenize
 
   , (<**)
-  , name
+  , echo
 
   ) where
 
@@ -37,12 +37,11 @@ import Parsers
     Tokenization and Parsing
 ------------------------------------------------------------------------------}
 
+
 data Token = Word String 
            | Hole 
-           | Slash
-           | Comma
-           | OptComma
-           | Or Token Token
+           | Opt Token
+           | Or  Token Token
            deriving (Eq, Show)
 
 -- * Input into Pattern
@@ -64,7 +63,7 @@ type Pattern = PInput -> PInput -> Parser Text
 
 -- * given an expression, output pattern
 compile :: String -> Pattern
-compile = compiler . tokenizer
+compile = compiler . tokenize
 
 -- * compile a string into a parser, the pattern described by the string 
 -- * does not have any `Hole`s in it
@@ -78,23 +77,21 @@ compile' xs = compile xs Nil Nil
 ------------------------------------------------------------------------------}
 
 -- * maps a string to some set of tokens
-tokenizer :: String -> [Token]
-tokenizer = fmap token . concat . fmap recoverComma . splitOn " "
+tokenize :: String -> [Token]
+tokenize = fmap token . concat . fmap recoverComma . splitOn " "
 
 -- * `token`ize a string
 -- * note if `token` sees a string `xs` it does not recognize,
 -- * it just outputs a `Word xs`
--- * TODO: quick and dirty here, consider doing something real
 token :: String -> Token
-token "*"    = Hole
-token ","    = Comma
-token "(,)"  = OptComma
-token xs     = case splitOn "/" xs of
-  y:ys  -> Word (stripParens y) `catOr` ys
-  _     -> Word $ stripParens xs
+token "*" = Hole
+token xs  | inParens xs = Opt (token $ stripParens xs)
+          | otherwise   = case splitOn "|" xs of 
+              y:ys -> (Word y) `catOr` ys
+              _    -> Word xs
 
 catOr :: Token -> [String] -> Token
-catOr t = foldr (\x ts -> ts `Or` Word (stripParens x)) t
+catOr t = foldl (\ts x -> ts `Or` Word x) t
 
 {-----------------------------------------------------------------------------
     Compiler
@@ -112,9 +109,9 @@ compiler ts = \u v -> [u,v] `fill` ts
 -- * `Hole` tokens are mapped to parser `star`
 fill :: [PInput] -> [Token] -> Parser Text
 fill (i:is) (Hole:ts) = case i of
-  S w   -> word w <+> fill is ts 
-  Star  -> star   <+> fill is ts
-  Nil   -> pzero  <+> fill is ts
+  S w   -> word w  <+> fill is ts 
+  Star  -> anyWord <+> fill is ts
+  Nil   -> pzero   <+> fill is ts
 fill _       []       = pzero  
 fill is      (t:ts)   = toP t <+> fill is ts
 
@@ -122,12 +119,10 @@ fill is      (t:ts)   = toP t <+> fill is ts
 -- * convert token to parser, note `Hole` is sent to `star` which accept
 -- * any string of alphabetical symbols
 toP :: Token -> Parser Text
-toP (Word xs)  = word xs
-toP Hole       = star
-toP Slash      = pzero
-toP OptComma   = comma
-toP Comma      = word ","
-toP (Or t1 t2) = toP t1 <|> toP t2
+toP Hole       = anyWord
+toP (Word xs ) = word xs
+toP (Opt ts  ) = opt $ toP ts
+toP (Or t1 t2) = toP t1 <||> toP t2
 
 
 {-----------------------------------------------------------------------------
@@ -136,15 +131,22 @@ toP (Or t1 t2) = toP t1 <|> toP t2
 
 recoverComma :: String -> [String]
 recoverComma []                  = []
-recoverComma xs | last xs == ',' = [init xs, ","]
+recoverComma xs | xs == ","      = [","]
+                | last xs == ',' = [init xs, ","]
                 | otherwise      = [xs]
 
--- * aggressively remove all occurences of "(" and/or ")" in a string
+-- * check if string wrapped by parens
+inParens :: String -> Bool
+inParens []     = False
+inParens (_:[]) = False
+inParens (x:xs) | x == '(' && Prelude.last xs == ')' = True
+                | otherwise                          = False
+
+-- * Given string of for "(...)", strip parens
 stripParens :: String -> String
-stripParens = foldr strip mempty
-    where strip c cs | c == '('   = cs
-                     | c == ')'   = cs
-                     | otherwise  = c:cs
+stripParens = reverse . tail . reverse . tail
+
+
 
 
 

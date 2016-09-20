@@ -8,10 +8,17 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Preprocess where
+module NormalizeText (
+
+    normalize
+
+  ) where
 
 
-import Data.Text
+import Control.Monad
+import Data.Text (Text, pack, unpack, empty)
+import qualified Data.Text as T
+import Tokenize
 
 
 {-----------------------------------------------------------------------------
@@ -19,15 +26,67 @@ import Data.Text
 ------------------------------------------------------------------------------}
 
 -- * preprocess text
-preprocess :: Text -> Text
-preprocess = foldStrip
-
+-- *    (1) fold case
+-- *    (2) fold space
+-- *    (3) interspace punctations
+normalize :: Text -> Text
+normalize = T.toCaseFold . fromWords . toWords
 
 {-----------------------------------------------------------------------------
     specific tasks
 ------------------------------------------------------------------------------}
 
+fromWords :: [Text] -> Text
+fromWords = T.intercalate (pack " ")
 
-foldStrip :: Text -> Text
-foldStrip = toCaseFold . strip
+
+toWords :: Text -> [Text]
+toWords =   concat 
+          . fmap tokenizer
+          . filter ((/=) empty) 
+          . T.splitOn (pack " ") 
+
+
+-- * (1) strip white space
+-- * (2) preserve urls and web addresses
+-- * (3) put space around punctations, 
+-- * (4) preserve contractions such as he's, he'll
+tokenizer :: Text -> [Text]
+tokenizer =   run 
+          $   whitespace
+          >=> uris
+          >=> punctuation 
+          >=> contractions           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

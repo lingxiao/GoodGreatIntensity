@@ -1,29 +1,23 @@
-{-# LANGUAGE ConstraintKinds, FlexibleContexts, RankNTypes, OverloadedStrings #-}
-{-# LANGUAGE UndecidableInstances, ScopedTypeVariables, AllowAmbiguousTypes   #-}
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
 -- | Module  : Main
 -- | Author  : Xiao Ling
--- | Date    : 8/10/2016
+-- | Date    : 9/11/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
- 
+
 module Main where
 
 
-import System.Directory
-import Data.List.Split
+import Data.Text hiding (head, replicate, filter, foldr, zip)
+import System.FilePath.Posix
 
 
-
-import Data.Text (Text, pack, unpack)
-
-import Lib
 import Src
-import Subroutines
-
+import Lib
+import Scripts
 
 {-----------------------------------------------------------------------------
   Main
@@ -31,64 +25,60 @@ import Subroutines
 
 main :: IO ()
 main = do
-    f <- getCurrentDirectory
-    let top:_ = splitOn "GoodGreatIntensity" f
-    if top == "/Users/lingxiao/Documents/NLP/Code/" then 
-        runFrom local
-    else 
-        runFrom remote
-
-
-runFrom :: Config -> IO ()
-runFrom con = do
-    main_p1 con
-
-
-
-local :: Config
-local = Con f1 [fd] fsw fws
-
-remote :: Config
-remote = Con r1gms [r4gms] fswr fwsr
+  (main_normalize r4gm "4gm") `mapM` [30..131]
+  return ()
 
 
 {-----------------------------------------------------------------------------
-  Local Paths    
+    Configurations
 ------------------------------------------------------------------------------}
 
-projl, datal :: DirectoryPath
-projl = "/Users/lingxiao/Documents/NLP/Code/GoodGreatIntensity/"
-datal = "/Users/lingxiao/Documents/NLP/Datasets/ngrams/"
+-- * remote
+r4gm, r4gm_scrub, r5gm, r5gm_scrub :: DirectoryPath
+r4gm       = "/nlp/data/xiao/ngrams/raw/4gms/"
+r4gm_scrub = r4gm ++ "scrub/"
+r5gm       = "/nlp/data/xiao/ngrams/raw/5gms/"
+r5gm_scrub = r5gm ++ "scrub/"
 
--- * ngrams
-f1,f4,f5,fd :: DirectoryPath
-f1 = datal ++ "1gms"
-f4 = datal ++ "4gms"
-f5 = datal ++ "5gms"
-fd = datal ++ "dummydata"
 
--- * patterns
-fsw, fws :: FilePath
-fsw = projl ++ "inputs/strong-weak-patterns.txt"
-fws = projl ++ "inputs/weak-strong-patterns.txt"
 
-{-----------------------------------------------------------------------------
-  Remote Paths
-------------------------------------------------------------------------------}
+-- * local
+grep_sm = "/Users/lingxiao/Documents/research/data/ngrams/grep-small/"
+grep_ws = "/Users/lingxiao/Documents/research/data/ngrams/grep-weak-strong/"
+grep_sw = "/Users/lingxiao/Documents/research/data/ngrams/grep-strong-weak/"
 
-projr, datar :: DirectoryPath
-projr = "/home1/l/lingxiao/xiao/GoodGreatIntensity/"
-datar = "/nlp/data/xiao/ngrams/"
 
-r1gms       = datar ++ "1gms"
-r4gms       = datar ++ "4gms"
-r5gms       = datar ++ "5gms"
-rdummydata  = datar ++ "dummydata"
+corpus_l   = "/Users/lingxiao/Documents/research/data/ngrams/corpus/"
+patterns_l = "/Users/lingxiao/Documents/research/code/good-great-excellent/inputs/"
 
--- * remote pattern path
-fswr, fwsr :: FilePath
-fswr = projr ++ "inputs/strong-weak-patterns.txt"
-fwsr = projr ++ "inputs/weak-strong-patterns.txt"
+root_ws    = "/Users/lingxiao/Documents/research/data/ngrams/grep-weak-strong/"
+root_sw    = "/Users/lingxiao/Documents/research/data/ngrams/grep-strong-weak/"
+
+
+config_l :: IO Config
+config_l = do
+    Just con <- config corpus_l patterns_l
+    return con
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

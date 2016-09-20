@@ -3,7 +3,7 @@
 -- | 
 -- | Module  : Export src modules
 -- | Author  : Xiao Ling
--- | Date    : 8/10/2016
+-- | Date    : 9/12/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
@@ -11,14 +11,12 @@
 
 module Src (
       module Core
-    , module Query
     , module Score
-    , module Utils
+    , module Query
+    , module ScrubData
 ) where
 
-
-
 import Core
-import Query
 import Score
-import Utils
+import Query
+import ScrubData
