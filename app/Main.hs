@@ -25,7 +25,7 @@ import Scripts
 
 main :: IO ()
 main = do
-  (main_normalize r4gm "4gm") `mapM` [30..131]
+  (main_normalize l4gm "4gm") `mapM` [30..131]
   return ()
 
 
@@ -43,6 +43,10 @@ r5gm_scrub = r5gm ++ "scrub/"
 
 
 -- * local
+l4gm = "/Users/lingxiao/Documents/research/data/ngrams/raw/4gms/"
+
+
+
 grep_sm = "/Users/lingxiao/Documents/research/data/ngrams/grep-small/"
 grep_ws = "/Users/lingxiao/Documents/research/data/ngrams/grep-weak-strong/"
 grep_sw = "/Users/lingxiao/Documents/research/data/ngrams/grep-strong-weak/"
