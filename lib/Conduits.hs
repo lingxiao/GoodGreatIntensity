@@ -10,33 +10,22 @@
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
-module Conduits (
-
-     FileOpS
-   , FileOp
-   , Op
-
-   , eval
-   , run
-
-   , sourceDirectories
-   , openFile
-
-   , untarSaveAs
-   , shardFile
-   , logi
-   , logm
-   , cap
-
-  ) where
+module Conduits where
 
 import Prelude hiding           (readFile, writeFile , 
                                  lines               )
 import System.FilePath
+import System.Directory
+
 import Control.Monad.State  
+import Control.Monad.Except    
+import Control.Monad.Trans.Resource
+import Control.Monad.IO.Class   (MonadIO, liftIO     )
 import Control.Exception.Base   (SomeException       )
+
 import Codec.Compression.GZip   (decompress          )
 
+import Data.Conduit 
 import Data.Conduit.Text 
 import Conduit hiding           (sourceDirectory     ,
                                  sourceFile          )
@@ -119,9 +108,7 @@ openFile = awaitForever $ \p -> do
 -- * Awaits bytestring and convert to list of text,
 -- * splitting on token char
 linesOn :: FileOpS m s => String -> Conduit B.ByteString m [Text]
-linesOn tok =  decode utf8 
-           =$= lines 
-           =$= mapC (splitOn . pack $ tok)
+linesOn tok = decode utf8 =$= lines =$= mapC (splitOn . pack $ tok)
 
 
 -- * TODO: swap out the L.readFile for something more safe

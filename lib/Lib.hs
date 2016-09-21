@@ -12,15 +12,13 @@
 module Lib (
       module Parsers
     , module Conduits
-    , module NormalizeText
+    , module Preprocess
     , module PatternCompiler
-    , module Utils
 ) where
 
 
 
 import Parsers
 import Conduits
-import NormalizeText
+import Preprocess
 import PatternCompiler
-import Utils

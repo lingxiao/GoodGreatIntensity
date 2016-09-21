@@ -3,117 +3,188 @@
 -----------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 -- | 
--- | Module  : Query files for certain patterns
+-- | Module  : Exposes three solutions to query ngrams on disk
 -- | Author  : Xiao Ling
--- | Date    : 9/13/2016
+-- | Date    : 9/10/2016
 -- |             
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 
 module Query (
     query
-  , query_at
-  , total_freq
-  , raw_freq
+  , query'
+  , query''
+  , pattern
   ) where
 
 
+import System.Directory
 import System.FilePath.Posix
-import Control.Monad.State
+import qualified System.IO as S
+
+import Control.Monad.State  
+import Control.Monad.Trans.Reader
 
 import Data.Conduit 
-import Conduit              (foldlC)
 import Data.Attoparsec.Text hiding (count)
 import Data.Text            (Text, unpack, pack, splitOn)
-import Data.Conduit.Binary  (sourceFile, sinkFile)
-import qualified Data.ByteString as B
-import qualified Data.Conduit.Text as CT
-import qualified Data.Conduit.Combinators as C
-
+import Conduit              (mapC, scanlC, foldlC, filterC)
+import qualified Data.List.Split as L
 
 import Lib
 import Core
 
 
 {-----------------------------------------------------------------------------
-  Query all files in directory
+  Open pattern
 ------------------------------------------------------------------------------}
 
-query :: Op m => Parser Text -> DirectoryPath -> m Output
-query p f =  eval 
-          $  [f] `sourceDirectories` ".txt" 
-          $= openFile 
-          $= prepFileWith CT.utf8
-          $$ queryFile p
+-- * `get` pattern path and open, then compile
+pattern :: (Config -> FilePath) -> ReaderT Config IO [Pattern]
+pattern get = do
+  con <- ask
+  ps  <- liftIO $ S.readFile (get con) 
+  let ps' = lines ps
+  return $ compile <$> ps'
+
 
 {-----------------------------------------------------------------------------
-  Query one file
+  Query using list streaming solution build from Data.Conduit
 ------------------------------------------------------------------------------}
 
--- * query preprocessed text file
-query_at :: Op m => Parser Text -> FilePath -> m Output
-query_at p f =  eval
-             $  sourceFile f 
-             $= prepFileWith CT.utf8
-             $$ queryFile p
+-- * `query` for occurences of utterance to be parsed by parser `p` 
+-- * in all files found at paths `fs`
+query :: (Op m , Fractional a)
+      => Parser Text -> [FilePath] ->  m Output
+query p fs  = eval $ openTxtFiles fs $$ queryFile p
 
-{-----------------------------------------------------------------------------
-  Sum all frequencies in a file
-------------------------------------------------------------------------------}
 
--- * count total frequency, compatible with file that `conform_pattern`
--- * and file that `not_conform_pattern`
-total_freq :: Op m => FilePath -> m Integer
-total_freq inp =   run 
-               $   sourceFile inp
-               $=  prepFileWith CT.utf8   -- CT.iso8859_1
-               $=  C.map (\(_,_,n,_) -> n)
-               $$  foldlC (+) 0
+-- * open all ".txt" files found at directories `fs` and stream them as lines
+-- * preprocess each line by casefolding and stripping of whitespace
+openTxtFiles :: FileOpS m s => [DirectoryPath] -> Source m QueryResult
+openTxtFiles fs =  fs `sourceDirectories` ".txt"
+             =$= openFile
+             =$= linesOn "\t"
+             =$= filterC (\x     -> Prelude.length x == 2)
+             =$= mapC    (\[xs,n] -> ( preprocess xs
+                                    , xs
+                                    , read . unpack $ n :: Integer))
 
--- * count total frequency in greped file
-raw_freq :: Op m => FilePath -> m Integer
-raw_freq inp =  run
-                $  sourceFile inp               
-                $= CT.decode CT.utf8
-                $= CT.lines
-                $= C.map    (splitOn . pack $ "\t"        )
-                $= C.filter ((==2) . length               )
-                $= C.map    (\[t,n] -> (read . unpack $ n))
-                $$ foldlC (+) 0
-
-{-----------------------------------------------------------------------------
-  Subroutines
-------------------------------------------------------------------------------}
-
--- linesOn "\n"
-prepFileWith :: FileOpS m s 
-         => CT.Codec
-         -> Conduit B.ByteString m QueryResult
-prepFileWith c = CT.decode c 
-              $= CT.lines
-              $= C.map    (splitOn . pack $ "\n")
-              $= C.map    head
-              $= C.map    (splitOn $ pack "\t")
-              $= C.filter (\x -> length x == 3)
-              $= C.map    (\[a,b,c] -> ( normalize a
-                                       , a
-                                       , read . unpack $ b
-                                       , c))
-
+-- * search for pattern parsed by parser `p` and 
+-- * sum all of its occurences
 queryFile :: FileOpS m [QueryResult]
-          => Parser Text
-          -> Consumer QueryResult m Integer
-queryFile p = C.filter     (\(t,_,_,_)  -> p <**? t)
-           $= awaitForever (\t@(_,_,n,_) -> do
-                       ts <- lift get
-                       let ts' = t:ts
-                       lift . put $ ts'
-                       yield n
-            )     
-            =$= foldlC (+) 0
+           => Parser Text 
+           -> Consumer QueryResult m Integer
+queryFile p =  filterC (\(xs,_,_) -> case p <** xs of
+                        Left _ -> False
+                        _      -> True)
+            =$= awaitForever (\t -> do
+                    ts <- lift get
+                    let ts' = t:ts
+                    lift . put $ ts'
+                    yield t
+                )
+            =$= foldlC  (\m (_,_,n) -> m + n) 0
+
+{-----------------------------------------------------------------------------
+  Query using naive non-list-streaming solution
+------------------------------------------------------------------------------}
+
+-- * given *directory paths* `ds`, and parser `p`
+-- * `queryAll` occurences of strings recognized by `p`
+-- * and sum results
+query' :: MonadTrans t 
+      => Parser Text 
+      -> [DirectoryPath] 
+      -> t IO Output
+query' p ds = lift $ do
+  ts <- openTxtFiles' ds
+  return $ queryFile' p ts
+
+-- * given directory paths `ds`
+-- * open all text files and concat results
+openTxtFiles' :: [DirectoryPath] -> IO Text
+openTxtFiles' ds = do
+  fs   <- sourceDirs ".txt" ds
+  file <- sequence $ readFile <$> fs
+  return . pack . concat $ file
 
 
+-- * Given text file `f`, query for occurences of 
+-- * string recognized by `p`
+queryFile' :: Parser Text -> Text -> Output
+queryFile' p ts = (n, rs)
+  where
+    ys   = splitOn (pack "\n") ts
+    yys  = splitOn (pack "\t") <$> ys
+    yys' = filter  (\ys -> length ys == 2) yys
+    xs   = (\[y,n] -> (preprocess y, y, read . unpack $ n)) <$> yys'
+    rs   = p `matchLoop` xs
+    n    = foldr (\(_,_,n) m -> n + m) 0 rs
 
+-- * loop through all files and check if text `t` is 
+-- * recognzied by parser `p`, if so then put into stack  
+matchLoop :: Parser Text -> [QueryResult] -> [QueryResult]
+matchLoop p = filter (matchP p)
+
+
+{-----------------------------------------------------------------------------
+  Query using naive non-list-streaming solution
+  and save result of each query in directory `temp`
+------------------------------------------------------------------------------}
+
+-- * given *directory paths* `ds`, and parser `p`
+-- * `queryAll` occurences of strings recognized by `p`
+-- * and sum results
+query'' :: MonadTrans m => Parser Text -> [FilePath] -> m IO Output
+query'' p ds = lift $ sourceDirs ".txt" ds >>= queryFiles'' p
+
+
+-- * Given path to ".txt" files `fs` and parser `p`,
+-- * `queryFile` each ".txt" file and sum the results of
+-- * the queries
+queryFiles'' :: Parser Text -> [FilePath] -> IO Output
+queryFiles'' p fs = do
+  let os = queryFile'' p <$> fs
+  rrs    <- sequence os
+  let rs = foldr (\(n,q) (m,qs) -> (n+m,q++qs)) (0,[]) rrs
+  return rs
+
+-- * given parser `p`, query the ".txt" file `f`
+-- * for occurences of string recognized by `p`
+queryFile'' :: Parser Text -> FilePath -> IO Output
+queryFile'' p f = do
+  ys       <- L.splitOn "\n" <$> readFile f
+  let yys  =  L.splitOn "\t" <$> ys
+  let yys' = filter (\ys -> length ys == 2) yys
+
+  let xs   = (\[y,n] -> ( preprocess . pack $ y
+                        , pack y
+                        , read n)) 
+          <$> yys'
+
+
+  let rs   = filter (matchP p) xs
+
+  let n    = foldr (\(_,_,n) m -> m + n) 0 rs
+
+  --  * save output of each query for monitoring purposes
+  temp <- makeDirAtTop "temp"
+  let fname = name p 
+            ++ "_" 
+            ++ (takeBaseName $ takeFileName f) 
+            ++ ".txt"
+  writeOutput (temp ++ "/" ++ fname) (n,rs)
+  -- * end monitor
+
+  return (n,rs)
+
+
+-- * check if text `t` is recognized by `p`
+matchP :: Parser Text -> QueryResult -> Bool
+matchP p (t,_,_) = case p <** t of
+  Right _ -> True
+  _       -> False
 
 
 

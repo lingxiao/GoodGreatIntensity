@@ -8,7 +8,7 @@ set -x
 
 # wallclock time reservation (format is hours:minutes:seconds).
 # man 5 complex
-#$ -l h_rt=10:10:0
+#$ -l h_rt=30:10:0
 
 # request x gigabyte of RAM 
 # man 5 complex
@@ -25,6 +25,15 @@ set -x
 # make sure I set my $CWD (current working directory)
 cd $HOME/xiao/GoodGreatIntensity/shell
 
+# You must set the error and output locations, as the default log output
+# location is the directory you qsub'ed from. For instance, say I cd to
+# "/home/whaun/blargh" and qsub from there, not specifying "-e" or "-o." The
+# output location for the error and output logs is going to default to
+# "/home/whaun/blargh." To make it easier you may add -e and -o to your job
+# script so you do not have to specify them every qsub call. Ex.:
+#$ -o $PWD/logs
+#$ -e $PWD/logs
+
 # when am I running
 #/bin/date
 
@@ -38,3 +47,4 @@ cd $HOME/xiao/GoodGreatIntensity/shell
 # run my scripts
 $HOME/xiao/GoodGreatIntensity/.stack-work/install/x86_64-linux/lts-6.11/7.10.3/bin/GoodGreatIntensity-exe
 
+# rm /scratch-local/users/lingxiao/4gm-0088.txt
