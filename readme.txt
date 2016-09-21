@@ -1,1 +1,0 @@
-Recreating the paper Good, Great, Excellent by Bansal et. al.
